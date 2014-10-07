@@ -1,0 +1,21 @@
+//- div(style="margin-top: -20px;")
+//-   ul.image(rn-carousel, rn-carousel-indicator, rn-carousel-control, rn-carousel-auto-slide="6")
+//-     li
+//-       img(src="images/header/4.jpg", style="height: 500px;width: 100%;")
+//-     li
+//-       img(src="images/header/3.jpg", style="height: 500px;width: 100%;")
+//-     li
+//-       img(src="images/header/2.jpg", style="height: 500px;width: 100%;")
+.container
+  .page-header
+    h1 Wir über uns
+  div(ng-show="html && authenticated", ui-ace, ng-model="about")
+  button.btn.btn-default(ng-show="html && authenticated", ng-click="beautify()") Beautify
+  div(ng-show="authenticated", medium-editor, ng-model="about", options='{"buttons": ["bold", "italic", "underline", "anchor", "header1" , "header2", "quote", "orderedlist", "unorderedlist", "html", "save"]}', bind-options="mediumBindOptions")
+  div(ng-bind-html="about", ng-hide="authenticated")
+  .page-header
+    h1 Unsere Ziele
+  p
+    | Mussum ipsum cacilds, vidis litro abertis. Consetis adipiscings elitis. Pra lá , depois divoltis porris, paradis. Paisis, filhis, espiritis santis. Mé faiz elementum girarzis, nisi eros vermeio, in elementis mé pra quem é amistosis quis leo. Manduma pindureta quium dia nois paga. Sapien in monti palavris qui num significa nadis i pareci latim. Interessantiss quisso pudia ce receita de bolis, mais bolis eu num gostis.
+  p
+    | Suco de cevadiss, é um leite divinis, qui tem lupuliz, matis, aguis e fermentis. Interagi no mé, cursus quis, vehicula ac nisi. Aenean vel dui dui. Nullam leo erat, aliquet quis tempus a, posuere ut mi. Ut scelerisque neque et turpis posuere pulvinar pellentesque nibh ullamcorper. Pharetra in mattis molestie, volutpat elementum justo. Aenean ut ante turpis. Pellentesque laoreet mé vel lectus scelerisque interdum cursus velit auctor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam ac mauris lectus, non scelerisque augue. Aenean justo massa.

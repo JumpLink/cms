@@ -1,0 +1,5 @@
+.container-fluid
+  div(masonry)
+    .masonry-brick(ng-repeat="image in images")
+      a(ui-sref="bootstrap-layout.gallery-slider({slideIndex: $index})")
+        img(ng-src="{{ image.thumb.path }}", width="100px", alt="A masonry brick")
