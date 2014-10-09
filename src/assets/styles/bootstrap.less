@@ -244,6 +244,7 @@
 
 // views / states
 body {
+  padding-top: 70px;
   background-color: white;
   &.home {
     // background-color: black;
@@ -252,6 +253,7 @@ body {
     background-color: #333333;
   }
   &.gallery-slider {
+    padding-top: 0;
     background-color: #333333;
   }
 }
@@ -270,6 +272,12 @@ body {
   }
 }
 
+// https://github.com/angular/angular.js/issues/2070#issuecomment-57405205
+.anchor-static-navbar {
+  margin-top: -50px;
+  padding-top: 50px;
+}
+
 // slider
 .center-slider {
   height: 100%;
@@ -278,13 +286,6 @@ body {
     top: 50%;
     transform: translateY(-50%);
   }
-}
-
-// sidenav
-.bs-sidenav {
-    margin-top: 40px;
-    margin-bottom: 20px;
-    width: 124px;
 }
 
 // sidebar

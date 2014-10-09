@@ -59,6 +59,10 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
         templateUrl: 'bootstrap/toolbar'
         , controller: 'ToolbarController'
       }
+      , 'footer' : {
+        templateUrl: 'bootstrap/footer'
+        , controller: 'FooterController'
+      }
     }
   })
   // gallery slideshow
@@ -87,6 +91,10 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
         templateUrl: 'bootstrap/toolbar'
         , controller: 'ToolbarController'
       }
+      , 'footer' : {
+        templateUrl: 'bootstrap/footer'
+        , controller: 'FooterController'
+      }
     }
   })
   // members
@@ -100,6 +108,10 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
       , 'toolbar' : {
         templateUrl: 'bootstrap/toolbar'
         , controller: 'ToolbarController'
+      }
+      , 'footer' : {
+        templateUrl: 'bootstrap/footer'
+        , controller: 'FooterController'
       }
     }
   })
@@ -115,6 +127,10 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
         templateUrl: 'bootstrap/toolbar'
         , controller: 'ToolbarController'
       }
+      , 'footer' : {
+        templateUrl: 'bootstrap/footer'
+        , controller: 'FooterController'
+      }
     }
   })
   // imprint
@@ -129,6 +145,10 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
         templateUrl: 'bootstrap/toolbar'
         , controller: 'ToolbarController'
       }
+      , 'footer' : {
+        templateUrl: 'bootstrap/footer'
+        , controller: 'FooterController'
+      }
     }
   })
   // links
@@ -137,11 +157,15 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
     , views: {
       'content' : {
         templateUrl: 'bootstrap/links/content'
-        , controller: 'ImprintController'
+        , controller: 'LinksController'
       }
       , 'toolbar' : {
         templateUrl: 'bootstrap/toolbar'
         , controller: 'ToolbarController'
+      }
+      , 'footer' : {
+        templateUrl: 'bootstrap/footer'
+        , controller: 'FooterController'
       }
     }
   })

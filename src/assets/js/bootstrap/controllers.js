@@ -1,4 +1,4 @@
-jumplink.cms.controller('AppController', function($rootScope, $state, Fullscreen) {
+jumplink.cms.controller('AppController', function($rootScope, $state, $window, $timeout, Fullscreen) {
 
   $rootScope.isFullscreen = false;
   Fullscreen.$on('FBFullscreen.change', function(evt, isFullscreenEnabled){
@@ -32,6 +32,46 @@ jumplink.cms.controller('AppController', function($rootScope, $state, Fullscreen
       break;
     }
   });
+
+
+  // fix resizes
+  $timeout(function() {
+    // http://stackoverflow.com/questions/23637834/how-can-i-trigger-resize-event-in-angularjs
+    angular.element($window).triggerHandler('resize')
+  }, 1000)
+
+  $rootScope.getWindowDimensions = function () {
+    return { 'h': angular.element($window).height(), 'w': angular.element($window).width() };
+  };
+
+  angular.element($window).bind('resize', function () {
+    $rootScope.$apply();
+  });
+
+  // http://stackoverflow.com/questions/641857/javascript-window-resize-event
+  if(angular.element($window).onresize) { // if jQuery is used
+    angular.element($window).onresize = function(event) {
+      $rootScope.$apply();
+    };
+  }
+
+  // http://stackoverflow.com/questions/22991481/window-orientationchange-event-in-angular
+  angular.element($window).bind('orientationchange', function () {
+    $rootScope.$apply();
+  });
+
+  angular.element($window).bind('deviceorientation', function () {
+    $rootScope.$apply();
+  });
+
+  $rootScope.$watch($rootScope.getWindowDimensions, function (newValue, oldValue) {
+    $rootScope.windowHeight = newValue.h;
+    $rootScope.windowWidth = newValue.w;
+    $timeout(function(){
+      $rootScope.$apply();
+    });
+  }, true);
+
 });
 
 jumplink.cms.controller('LayoutController', function($scope) {
@@ -49,78 +89,50 @@ jumplink.cms.controller('FooterController', function($scope) {
 
 });
 
-jumplink.cms.controller('HomeContentController', function($scope, $sailsSocket) {
+jumplink.cms.controller('HomeContentController', function($scope, $sailsSocket, $location, $anchorScroll, $timeout, $window) {
 
   $scope.about = 'Lade..';
-
-  console.log(html_beautify());
-
-  // TODO move to custom service
-  $scope.beautify = function () {
-    $scope.about = html_beautify($scope.about);
-  }
+  $scope.goals = 'Lade..';
 
   $sailsSocket.post('/content/get', {name: 'about'}).success(function(data, status, headers, config){
     console.log(data);
     console.log(status);
     $scope.about = data[0].content;
+    $scope.about = html_beautify($scope.about);
   });
 
+  $sailsSocket.post('/content/get', {name: 'goals'}).success(function(data, status, headers, config){
+    console.log(data);
+    console.log(status);
+    $scope.goals = data[0].content;
+    $scope.goals = html_beautify($scope.goals);
+  });
 
-
-  // medium editor save button
-  function Saver() {
-    this.button = document.createElement('button');
-    this.button.className = 'medium-editor-action';
-    this.button.innerText = 'Speichern';
-    this.button.onclick = this.onClick.bind(this);
-    this.save = function() {
-      // save about html
-      $sailsSocket.put("/content/replace", {name: 'about', content: $scope.about}, function (response) {
-        if(response != null && typeof(response) !== "undefined") {
-          console.log (response);
-        } else {
-          console.log ("Can't save site");
-        }
-      });
-    }
+  $scope.goTo = function (hash) {
+    $location.hash(hash);
+    $anchorScroll();
   }
-  Saver.prototype.onClick = function() {
-    this.save();
-  };
-  Saver.prototype.getButton = function() {
-    return this.button;
-  };
-  Saver.prototype.checkState = function(node) {};
 
-  // medium editor show / hide html button
-  function Htmler() {
-    this.button = document.createElement('button');
-    this.button.className = 'medium-editor-action';
-    this.button.innerText = 'HTML';
-    this.button.onclick = this.onClick.bind(this);
-    this.toogleHtml = function() {
-      $scope.html = !$scope.html;
-      $scope.$apply();
-    }
+  $scope.toogleHtml = function() {
+    $scope.html = !$scope.html;
   }
-  Htmler.prototype.onClick = function() {
-    this.toogleHtml();
-  };
-  Htmler.prototype.getButton = function() {
-    return this.button;
-  };
-  Htmler.prototype.checkState = function(node) {
-    if ($scope.html) {
-      // this.button.classList.add('medium-editor-button-active');
-    }
-  };
 
-  $scope.mediumBindOptions = {
-    extensions: {
-      'save': new Saver()
-      , 'html' : new Htmler()
-    }
+  $scope.save = function() {
+    $sailsSocket.put("/content/replace", {name: 'about', content: $scope.about}, function (response) {
+      if(response != null && typeof(response) !== "undefined") {
+        console.log (response);
+      } else {
+        console.log ("Can't save site");
+      }
+    });
+
+    $sailsSocket.put("/content/replace", {name: 'goals', content: $scope.goals}, function (response) {
+      if(response != null && typeof(response) !== "undefined") {
+        console.log (response);
+      } else {
+        console.log ("Can't save site");
+      }
+    });
   }
 });
 
@@ -185,8 +197,62 @@ jumplink.cms.controller('MembersController', function($scope) {
 jumplink.cms.controller('ApplicationController', function($scope) {
 });
 
-jumplink.cms.controller('LinksController', function($scope) {
+jumplink.cms.controller('LinksController', function($scope, $sailsSocket) {
+  $scope.links = 'Lade..';
+
+  $sailsSocket.post('/content/get', {name: 'links'}).success(function(data, status, headers, config){
+    console.log(data);
+    console.log(status);
+    $scope.links = data[0].content;
+    $scope.links = html_beautify($scope.links);
+  });
+
+  $scope.goTo = function (hash) {
+    $location.hash(hash);
+    $anchorScroll();
+  }
+
+  $scope.toogleHtml = function() {
+    $scope.html = !$scope.html;
+  }
+
+  $scope.save = function() {
+    $sailsSocket.put("/content/replace", {name: 'links', content: $scope.links}, function (response) {
+      if(response != null && typeof(response) !== "undefined") {
+        console.log (response);
+      } else {
+        console.log ("Can't save site");
+      }
+    });
+  }
 });
 
-jumplink.cms.controller('ImprintController', function($scope) {
+jumplink.cms.controller('ImprintController', function($scope, $sailsSocket) {
+  $scope.imprint = 'Lade..';
+
+  $sailsSocket.post('/content/get', {name: 'imprint'}).success(function(data, status, headers, config){
+    console.log(data);
+    console.log(status);
+    $scope.imprint = data[0].content;
+    $scope.imprint = html_beautify($scope.imprint);
+  });
+
+  $scope.goTo = function (hash) {
+    $location.hash(hash);
+    $anchorScroll();
+  }
+
+  $scope.toogleHtml = function() {
+    $scope.html = !$scope.html;
+  }
+
+  $scope.save = function() {
+    $sailsSocket.put("/content/replace", {name: 'imprint', content: $scope.imprint}, function (response) {
+      if(response != null && typeof(response) !== "undefined") {
+        console.log (response);
+      } else {
+        console.log ("Can't save site");
+      }
+    });
+  }
 });
