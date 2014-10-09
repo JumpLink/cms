@@ -29,12 +29,34 @@ module.exports.policies = {
   '*': 'sessionAuth',
 
   ViewController: {
-    'signin': true
+    'signin': true,
+    'singlePageBootstrap': true
   },
 
   SessionController: {
     'create': true
-  }
+  },
+
+  ContentController: {
+    'get': true
+  },
+
+  DocumentController: {
+    'upload': true,
+    'convert': true
+  },
+
+  EmailController: {
+    'send': true
+  },
+
+  GalleryController: {
+    'get': true
+  },
+
+  GalleryController: {
+    'get': true
+  },
 
 
   /***************************************************************************

@@ -7,6 +7,7 @@
 
 var exec = require('child_process').exec;
 var path = require('path');
+var fs = require('fs');
 var UPLOADFOLDER =  __dirname+'/../../.tmp/uploads';
 
 module.exports = {
@@ -23,6 +24,8 @@ module.exports = {
       for (var i = 0; i < files.length; i++) {
         files[i].uploadedAs = path.basename(files[i].fd);
       };
+
+      // EmailService.send(from, subject, text, html);
 
       return res.json({
         message: files.length + ' file(s) uploaded successfully!',
@@ -222,9 +225,12 @@ module.exports = {
   // impress_flash_Export
   // draw_pgm_Export
   convert: function (req, res) {
+    var stdout = '';
+    var stderr = '';
     sails.log.info('convert');
     if(!req.param('filename')) res.badRequest('filename is required');
-    var inputDir = UPLOADFOLDER +'/'+req.param('filename');
+    var source = req.param('filename');
+    var inputDir = UPLOADFOLDER +'/'+source;
     var outputFileExtension = req.param('extension') ? req.param('extension') : 'pdf'; // example 'pdf';
     var outputFilterName = req.param('filter') ? ':'+req.param('filter') : '';  //(optinal) example ':'+'MS Excel 95';
     var outputDir = UPLOADFOLDER;
@@ -233,11 +239,12 @@ module.exports = {
     }
     outputDir = path.normalize(outputDir);
     inputDir = path.normalize(inputDir);
+    var target = outputDir+"/"+path.basename(source, '.odt')+"."+outputFileExtension;
     var command = 'soffice --headless --invisible --convert-to '+outputFileExtension+outputFilterName+' --outdir '+outputDir+' '+inputDir;
     sails.log.info(command);
-    var child = exec(command, function (error, stdout, stderr) {
-      if(error) {
-        sails.log.error(error);
+    var child = exec(command, function (code, stdout, stderr) {
+      if(code) {
+        sails.log.error(code);
       }
       if(stderr) {
         sails.log.error(stderr);
@@ -245,7 +252,8 @@ module.exports = {
       if(stdout) {
         sails.log.info(stdout);
       }
-      res.json({error: error, stdout: stdout, stderr: stderr});
+      res.json({target:target, code: code, stdout: stdout, stderr: stderr});
+      // res.download(target); // not working over socket.io
     });
   }
 };

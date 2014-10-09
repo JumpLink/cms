@@ -1,3 +1,55 @@
 .container
   .page-header
     h1 Aufnahmeantrag
+  form(role='form')
+    .form-group
+      label(for='name') Name
+      input#name.form-control(type='text', placeholder='Name eingeben', ng-model="member.name")
+    .form-group
+      label(for='vorname') Vorname
+      input#vorname.form-control(type='text', placeholder='Vorname eingeben', ng-model="member.vorname")
+    .form-group
+      label(for='geburtstag') Geburtstag
+      input#geburtstag.form-control(type='text', placeholder='Geburtstag eingeben', ng-model="member.geburtstag")
+    .form-group
+      label(for='geburtsort') Geburtsort
+      input#geburtsort.form-control(type='text', placeholder='Geburtsort eingeben', ng-model="member.geburtsort")
+    .form-group
+      label(for='email') E-Mail
+      input#email.form-control(type='email', placeholder='E-Mail eingeben', ng-model="member.email")
+    .form-group
+      label(for='telefon') Telefon
+      input#telefon.form-control(type='text', placeholder='Telefon eingeben', ng-model="member.telefon")
+    .form-group
+      label(for='beruf') Beruf
+      input#beruf.form-control(type='text', placeholder='Beruf eingeben', ng-model="member.beruf")
+    .form-group
+      label(for='strasse') Straße
+      input#strasse.form-control(type='text', placeholder='Beruf eingeben', ng-model="member.strasse")
+    .form-group
+      label(for='plz') Postleitzahl
+      input#plz.form-control(type='text', placeholder='Postleitzahl eingeben', ng-model="member.plz")
+    .form-group
+      label(for='plz') Ort
+      input#ort.form-control(type='text', placeholder='Ort eingeben', ng-model="member.ort")
+    .form-group
+      label(for='bankname') Bankname
+      input#bankname.form-control(type='text', placeholder='Bankname eingeben', ng-model="member.bank.name")
+    .form-group
+      label(for='iban') IBAN
+      input#iban.form-control(type='text', placeholder='IBAN eingeben', ng-model="member.bank.iban")
+    .form-group
+      label(for='iban') BIC
+      input#iban.form-control(type='text', placeholder='IBAN eingeben', ng-model="member.bank.bic")
+    button.btn.btn-default(ng-click="upload()") Absenden
+  #odf(ng-show="authenticated")
+    webodfview(data-file="/aufnahmeantrag.odt", data-invoice="member", data-upload="webodf.upload", data-refresh="webodf.refresh", data-ready="webodf.ready", data-download="webodf.download")
+nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="authenticated")
+  .container
+    .navbar-left
+      p.navbar-text Admininstration
+    //- form.navbar-from.navbar-right
+    //-   button.btn.btn-default.navbar-btn(ng-click="toogleHtml()")
+    //-     | HTML
+    //-   button.btn.btn-default.navbar-btn(ng-click="save()")
+    //-     i.fa.fa-floppy-o

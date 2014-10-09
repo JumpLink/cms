@@ -1,4 +1,9 @@
-jumplink.cms.controller('AppController', function($rootScope, $state, $window, $timeout, Fullscreen) {
+jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $window, $timeout, Fullscreen) {
+
+  if($scope.authenticated)
+    $scope.mainStyle = {'padding-bottom':'50px'};
+  else
+    $scope.mainStyle = {};
 
   $rootScope.isFullscreen = false;
   Fullscreen.$on('FBFullscreen.change', function(evt, isFullscreenEnabled){
@@ -194,7 +199,96 @@ jumplink.cms.controller('TimelineController', function($scope) {
 jumplink.cms.controller('MembersController', function($scope) {
 });
 
-jumplink.cms.controller('ApplicationController', function($scope) {
+// Aufnahmeantrag
+jumplink.cms.controller('ApplicationController', function($scope, $sailsSocket) {
+
+  $scope.member = {
+    datum: ''
+    , name: ''
+    , vorname: ''
+    , geburtstag: ''
+    , geburtsort: ''
+    , email: ''
+    , telefon: ''
+    , beruf: ''
+    , strasse: ''
+    , plz: ''
+    , ort: ''
+    , bank: {
+      name: ''
+      , iban: ''
+      , bic: ''
+    }
+  }
+
+  $scope.member = {
+    datum: ''
+    , name: 'Garber'
+    , vorname: 'Pascal'
+    , geburtstag: '15.09.86'
+    , geburtsort: 'Cuxhaven'
+    , email: 'pascal@jumplink.eu'
+    , telefon: '123456'
+    , beruf: 'Softwareentwickler'
+    , strasse: 'Bei der Kirche 12'
+    , plz: '27476'
+    , ort: 'Cuxhaven'
+    , bank: {
+      name: 'Volskank'
+      , iban: '1234'
+      , bic: '124'
+    }
+  }
+
+  // $scope.$watch('invoice.date', function(newVal) {
+  //   $scope.invoice.dateHuman = $filter('amDateFormat')(newVal, 'dddd, Do MMMM YYYY');
+  // });
+
+  // $scope.$watch('invoice.duedate', function(newVal) {
+  //   $scope.invoice.duedateHuman = $filter('amDateFormat')(newVal, 'dddd, Do MMMM YYYY');
+  // });
+
+
+  $scope.upload = function() {
+    $scope.webodf.upload(function(error, response ) {
+      if(error) console.log(error);
+      console.log(response);
+      var odtFilename = response.files[0].uploadedAs;
+      var odtPath = response.files[0].fd;
+      $sailsSocket.put("/document/convert/", {filename: odtFilename, extension: 'pdf'}).success(function(data, status, headers, config){
+        console.log(data);
+         var pdfPath = data.target;
+        $sailsSocket.put("/document/convert/", {filename: odtFilename, extension: 'html'}).success(function(data, status, headers, config){
+          console.log(data);
+           var htmlPath = data.target;
+          // callback(null, resInfo, data, status, headers, config);
+          var attachmentFilename = 'aufnahmeantrag_'+$scope.member.vorname+'_'+$scope.member.name;
+          attachmentFilename = attachmentFilename.toLowerCase();
+          $sailsSocket.post('/email/send', {from: $scope.member.email, subject:'Aufnahmeantrag von '+$scope.member.vorname+' '+$scope.member.name, text: '', htmlPath: htmlPath, attachments: [{filename: attachmentFilename+".pdf", path:pdfPath}, {filename: attachmentFilename+".html", path:htmlPath}, {filename: attachmentFilename+".odt", path:odtPath}]}).success(function(data, status, headers, config){
+            console.log(data);
+          });
+        });
+      });
+    });
+  }
+
+  $scope.download = function() {
+    $scope.webodf.download();
+  }
+
+  $scope.refresh = function() {
+    $scope.webodf.refresh();
+  }
+
+  var onWebODFReady = function() {
+    console.log("ready");
+    $scope.refresh();
+  }
+
+  $scope.webodf = {
+    ready: onWebODFReady
+  };
+
 });
 
 jumplink.cms.controller('LinksController', function($scope, $sailsSocket) {

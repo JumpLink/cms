@@ -58,11 +58,9 @@ angular.module('webodf', [])
           req.send(formData);
           req.onload = function(res) {
             resInfo = JSON.parse(req.responseText);
-            console.log(resInfo);
+            // console.log(resInfo);
             // convert to pdf
-            $sailsSocket.put("/document/convert/", {filename: resInfo.files[0].uploadedAs, extension: 'pdf'}, function (response) {
-              console.log(response);
-            });
+            callback(null, resInfo);
           }
         }
       });
@@ -74,7 +72,7 @@ angular.module('webodf', [])
     var download = function(odfContainer, callback) {
       odfContainer.createByteArray(function(data) {
         downloadBlob(odfContainer.getDocumentType(), data, callback)
-      }, callback);
+      });
     }
 
     /*
@@ -83,7 +81,7 @@ angular.module('webodf', [])
     var downloadAs = function(odfContainer, filename, callback) {
       odfContainer.createByteArray(function(data) {
         downloadBlobAs(filename, odfContainer.getDocumentType(), data, callback)
-      }, callback);
+      });
     }
 
     /*
@@ -92,7 +90,7 @@ angular.module('webodf', [])
     var uploadAs = function(odfContainer, folder, filename, callback) {
       odfContainer.createByteArray(function(data) {
         uploadBlobAs(folder, filename, odfContainer.getDocumentType(), data, callback)
-      }, callback);
+      });
     }
 
     /*
@@ -225,106 +223,6 @@ angular.module('webodf', [])
       }
     }
 
-    /*
-     * Get all tables from parent node
-     * return: array of table nodes
-     */
-    var getTableElements = function(odfParentNodeElement, callback) {
-      var tablens = 'urn:oasis:names:tc:opendocument:xmlns:table:1.0';
-      var tableElements = odfParentNodeElement.getElementsByTagNameNS(tablens, 'table');
-      if(callback) callback(null, tableElements);
-      return tableElements;
-    }
-
-    /*
-     * Get table node by table name.
-     * Required: array of table nodes
-     */
-    var getTableElementByName = function(tableElements, name, callback) {
-      var error, notFound = true;
-      for (var i = 0; i < tableElements.length; i++) {
-        var element = tableElements[i];
-        var currentName = element.getAttribute('table:name');
-        if(currentName === name) {
-          notFound = false;
-          callback(error, element);
-          return error;
-        }
-      };
-      if(notFound) {
-        error = "not found";
-        callback(error);
-        return error;
-      }
-    }
-
-    /*
-     * Custom insertAfter function as a contrast to the native insertBefore method
-     * source: http://blog.svidgen.com/2007/10/javascript-insertafter.html
-     */
-    var insertAfter = function (newNodeElement, existingNodeElement) {
-      // if the existing node has a following sibling, insert the current
-      // node before it. otherwise appending it to the parent node
-      // will correctly place it just after the existing node.
-      if (existingNodeElement.nextSibling) {
-        // there is a next sibling. insert before it using the mutual
-        // parent's insertBefore() method.
-        existingNodeElement.parentNode.insertBefore(newNodeElement, existingNodeElement.nextSibling);
-      } else {
-        // there is no next sibling. append to the end of sthe parent's
-        // node list.
-        existingNodeElement.parentNode.appendChild(newNodeElement);
-      }
-    }
-
-    var getArea = function (odfContentNodeElement, name) {
-      var textns = "urn:oasis:names:tc:opendocument:xmlns:text:1.0";
-      var sections = odfContentNodeElement.getElementsByTagNameNS(textns, 'section');
-      for (var i = 0; i < sections.length; i++) {
-        var section = sections[i];
-        if(section.getAttribute('text:name') == name)
-          return section;
-      };
-      return null;
-    }
-
-    /*
-     * Create a new service or expenditure table based on "templateElement" and append as child to area
-     */
-    var appendNewTableElement = function (odfContentNodeElement, area, templateElement, number, values, tablename, newVarKey, oldVarKey) {
-      var textns = "urn:oasis:names:tc:opendocument:xmlns:text:1.0";
-      var newTableElement = templateElement.cloneNode(true);
-      var newTableUserFieldsGet = newTableElement.getElementsByTagNameNS(textns, 'user-field-get');
-      newTableElement.setAttribute('table:name', tablename+'.'+number);
-
-      // create new custom user field for number
-      newUserFieldDeclElement(odfContentNodeElement, "invoice."+newVarKey+"."+number+".number", number, "float");
-      // rename old custom user field to new created
-      redefineUserFieldGetElement(newTableUserFieldsGet, "invoice."+oldVarKey+".number", "invoice."+newVarKey+"."+number+".number", number);
-
-      // create user fields for each key in values
-      for (key in values) {
-        newUserFieldDeclElement(odfContentNodeElement, "invoice."+newVarKey+"."+number+"."+key, values[key], "string");
-        redefineUserFieldGetElement(newTableUserFieldsGet, "invoice."+oldVarKey+"."+key, "invoice."+newVarKey+"."+number+"."+key, values[key]);
-      }
-
-      area.appendChild(newTableElement);
-    }
-
-    /*
-     * Create a new service table based on "templateElement" and append as child to "servicearea".
-     */
-    var appendNewServiceTableElement = function (odfContentNodeElement, area, templateElement, number, values) {
-      appendNewTableElement(odfContentNodeElement, area, templateElement, number, values, "servicetable", "services", "service");
-    }
-
-    /*
-     * Create a new expenditure table based on "templateElement" (name is "expendituretable") and append as child to "expenditurearea".
-     */
-    var appendNewExpenditureTableElement = function (odfContentNodeElement, area, templateElement, number, values) {
-      appendNewTableElement(odfContentNodeElement, area, templateElement, number, values, "expendituretable", "expenditures", "expenditure");
-    }
-
     var initializeWidth = function(odfCanvas, element) {
       var paddingLeft = 0, paddingRight = 0, clientWidth = 0, innerWidth = 0;
       if(window) {
@@ -336,50 +234,21 @@ angular.module('webodf', [])
       odfCanvas.fitSmart(innerWidth); // set width to 100% of parent element
     }
 
-    var updateDocument = function(odfContentNodeElement, invoice) {
+    var updateDocument = function(odfContentNodeElement, data) {
       var userFieldNodeElements = getUserFieldElements(odfContentNodeElement);
-      if(invoice) {
-        for(var key in invoice) {
+      if(data) {
+        for(var key in data) {
           switch(key) {
-            case 'services':
-            case 'expenditures':
-              // do nothing, see updateDocumentServices function
-            break;
-            case 'approver':
-              // update all invoice.approver fields
-              for(var subkey in invoice.approver) {
-                if(subkey == 'bank') {
-                  // update all invoice.approver.bank fields
-                  for(var subsubkey in invoice.approver.bank) {
-                    updateUserFieldElement(userFieldNodeElements, 'invoice.approver.bank.'+subsubkey, invoice.approver.bank[subsubkey], function(error) {
-                      if(error) console.log(error);
-                    });
-                  }
-                } else {
-                  updateUserFieldElement(userFieldNodeElements, 'invoice.approver.'+subkey, invoice.approver[subkey], function(error) {
-                    if(error) console.log(error);
-                  });
-                }
-              }
-            break;
-            case 'recipient':
-              // update all invoice.recipient fields
-              for(var subkey in invoice.recipient) {
-                updateUserFieldElement(userFieldNodeElements, 'invoice.recipient.'+subkey, invoice.recipient[subkey], function(error) {
-                  if(error) console.log(error);
-                });
-              }
-            break;
-            case 'translate':
-              // translate all defined translations
-              for(var subkey in invoice.translate) {
-                updateUserFieldElement(userFieldNodeElements, 'invoice.translate.'+subkey, invoice.translate[subkey], function(error) {
+            case 'bank':
+              // update all data fields
+              for(var subkey in data.bank) {
+                updateUserFieldElement(userFieldNodeElements, key+'.'+subkey, data.bank[subkey], function(error) {
                   if(error) console.log(error);
                 });
               }
             break;
             default:
-              updateUserFieldElement(userFieldNodeElements, 'invoice.'+key, invoice[key], function(error) {
+              updateUserFieldElement(userFieldNodeElements, key, data[key], function(error) {
                 if(error) console.log(error);
               });
             break;
@@ -394,31 +263,6 @@ angular.module('webodf', [])
       }
     }
 
-    var updateDocumentServices = function(odfContentNodeElement, templateServiceTableElement, services) {
-      var areaElement = getArea(odfContentNodeElement, 'servicearea');
-      // remove all old services be shure to save the template service before
-      removeAllChilds(areaElement);
-      if(services) {
-        for (var i = 0; i < services.length; i++) {
-          appendNewServiceTableElement(odfContentNodeElement, areaElement, templateServiceTableElement, i+1, services[i]);
-        };
-      } else {
-        console.log("services not defined");
-      }
-    }
-
-    var updateDocumentExpenditurs = function(odfContentNodeElement, templateExpenditureTableElement, expenditures) {
-      var areaElement = getArea(odfContentNodeElement, 'expenditurearea');
-      // remove all old expenditures be shure to save the template expenditure before
-      removeAllChilds(areaElement);
-      if(expenditures) {
-        for (var i = 0; i < expenditures.length; i++) {
-          appendNewExpenditureTableElement(odfContentNodeElement, areaElement, templateExpenditureTableElement, i+1, expenditures[i]);
-        };
-      } else {
-        console.log("expenditures not defined");
-      }
-    }
 
     return {
       restrict: 'E',
@@ -431,11 +275,9 @@ angular.module('webodf', [])
         odfCanvas = new odf.OdfCanvas($element[0]);
         odfCanvas.load($scope.file);
 
-        $scope.upload = function () {
+        $scope.upload = function (callback) {
           console.log("upload");
-          uploadAs(odfContainer, "/document/upload", "new.odt", function(error) {
-            if(error) console.log(error);
-          });
+          uploadAs(odfContainer, "/document/upload", "new.odt", callback);
         }
 
         $scope.download = function () {
@@ -448,8 +290,6 @@ angular.module('webodf', [])
         $scope.refresh = function () {
           console.log("refresh");
           updateDocument(odfContentNodeElement, $scope.invoice);
-          updateDocumentServices(odfContentNodeElement, templateServiceTableElement, $scope.invoice.services);
-          updateDocumentExpenditurs(odfContentNodeElement, templateExpenditureTableElement, $scope.invoice.expenditures);
         }
 
         angular.element($window).bind('resize', function() {
@@ -466,14 +306,8 @@ angular.module('webodf', [])
           odfContainer = odfCanvas.odfContainer();
           odfContentNodeElement = odfContainer.getContentElement();
 
-          // get service template and store ot globaly
-          getTableElementByName(getTableElements(odfCanvas.odfContainer().getContentElement()), 'servicetable', function(error, serviceTableElement) {
-            templateServiceTableElement = serviceTableElement;
-            getTableElementByName(getTableElements(odfCanvas.odfContainer().getContentElement()), 'expendituretable', function(error, expenditureTableElement) {
-              templateExpenditureTableElement = expenditureTableElement;
-              $scope.ready();
-            });
-          });
+          $scope.ready();
+
         });
 
       }
