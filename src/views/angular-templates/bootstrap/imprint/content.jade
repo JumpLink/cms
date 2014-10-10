@@ -1,9 +1,14 @@
-.container
+.container(style="min-height: 200px;")
   .page-header
     h1 Impressum
   div(ng-show="html && authenticated", ng-model="imprint", ui-ace="{mode: 'html'}")
   div(ng-show="authenticated", medium-editor, ng-model="imprint", options='{"buttons": ["bold", "italic", "underline", "anchor", "header1" , "header2", "quote", "orderedlist", "unorderedlist"]}', bind-options="mediumBindOptions")
   div(ng-bind-html="imprint", ng-hide="authenticated")
+  .page-header
+    h1 Anfahrt
+  .row
+    .col-xs-12
+      leaflet(center="nvc", markers="markers", height="480px", width="100%")
 nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="authenticated")
   .container
     .navbar-left

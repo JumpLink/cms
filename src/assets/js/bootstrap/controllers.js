@@ -1,9 +1,15 @@
 jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $window, $timeout, Fullscreen) {
 
-  if($scope.authenticated)
-    $scope.mainStyle = {'padding-bottom':'50px'};
-  else
-    $scope.mainStyle = {};
+  $scope.mainStyle = {};
+
+  // http://stackoverflow.com/questions/18608161/angularjs-variable-set-in-ng-init-undefined-in-scope
+  $scope.$watch('authenticated', function () {
+    console.log("authenticated: "+$scope.authenticated);
+    if($scope.authenticated)
+      $scope.mainStyle = {'padding-bottom':'50px'};
+  });
+
+
 
   $rootScope.isFullscreen = false;
   Fullscreen.$on('FBFullscreen.change', function(evt, isFullscreenEnabled){
@@ -39,11 +45,11 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
   });
 
 
-  // fix resizes
+  // fix resizes TODO wait until image is loaded
   $timeout(function() {
     // http://stackoverflow.com/questions/23637834/how-can-i-trigger-resize-event-in-angularjs
     angular.element($window).triggerHandler('resize')
-  }, 1000)
+  }, 3000)
 
   $rootScope.getWindowDimensions = function () {
     return { 'h': angular.element($window).height(), 'w': angular.element($window).width() };
@@ -349,4 +355,29 @@ jumplink.cms.controller('ImprintController', function($scope, $sailsSocket) {
       }
     });
   }
+
+  angular.extend($scope, {
+    nvc: {
+      lat: 53.86411893791266,
+      lng: 8.70941162109375,
+      zoom: 14
+    },
+    markers: {
+      main_marker: {
+        lat: 53.86682040225137,
+        lng: 8.706825971603394,
+        focus: true,
+        //message: "Hey, drag me if you want",
+        title: "Nautischer Verein Cuxhaven e.V.",
+        draggable: true,
+        label: {
+          message: "<a target='_blank' title='Anfahrt' href='https://www.google.de/maps/dir//Kapit%C3%A4n-Alexander-Stra%C3%9Fe+40,+27472+Cuxhaven/@53.8668035,8.7066221,17z/data=!4m13!1m4!3m3!1s0x47b4040e075eaf1f:0xfaba82b12994a2e!2sKapit%C3%A4n-Alexander-Stra%C3%9Fe+40,+27472+Cuxhaven!3b1!4m7!1m0!1m5!1m1!1s0x47b4040e075eaf1f:0xfaba82b12994a2e!2m2!1d8.7066221!2d53.8668035?hl=de'>Nautischer Verein Cuxhaven e.V.</a>",
+          options: {
+            noHide: true
+          }
+        }
+      }
+    }
+  });
+
 });

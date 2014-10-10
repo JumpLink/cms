@@ -1,4 +1,4 @@
-.container-fluid
+.container-fluid(style="min-height: 200px;")
   div(masonry)
     .masonry-brick(ng-repeat="image in images")
       a(ui-sref="bootstrap-layout.gallery-slider({slideIndex: $index})")

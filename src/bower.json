@@ -28,6 +28,8 @@
     "angular-medium-editor": "*",
     "angular-ui-ace": "bower",
     "bootstrap-additions": "~0.2.*",
-    "font-awesome": "~4.2.*"
+    "font-awesome": "~4.2.*",
+    "angular-leaflet-directive": "~0.7.8",
+    "Leaflet.label": "~0.2.1"
   }
 }

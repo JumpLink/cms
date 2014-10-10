@@ -23,6 +23,9 @@ img(src="images/footer.png", width="100%", height="auto")
           dd: a(href="mailto:nvcux@t­online.de"): | nvcux@t­-online.de
           dt: | Technik & Design
           dd: a(href="http://jumplink.eu"): | Pascal Garber
-        dl.dl-horizontal
+        dl.dl-horizontal(ng-hide="authenticated")
           dt: | Administration
           dd: a(href="/signin"): | Anmelden
+        dl.dl-horizontal(ng-show="authenticated")
+          dt: | Administration
+          dd: a(href="/signout"): | Abmelden
