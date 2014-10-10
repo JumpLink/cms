@@ -7,8 +7,10 @@ nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="au
   .container
     .navbar-left
       p.navbar-text Admininstration
-    //- form.navbar-from.navbar-right
-    //-   button.btn.btn-default.navbar-btn(ng-click="toogleHtml()")
-    //-     | HTML
-    //-   button.btn.btn-default.navbar-btn(ng-click="save()")
-    //-     i.fa.fa-floppy-o
+    form.navbar-from.navbar-right
+      button.btn.btn-default.navbar-btn(ng-show="toogleHtml", ng-click="toogleHtml()")
+        | HTML
+      button.btn.btn-default.navbar-btn(ng-show="save", ng-click="save()")
+        i.fa.fa-floppy-o
+      button.btn.btn-default.navbar-btn(ui-sref='bootstrap-layout.administration')
+        i.fa.fa-cog

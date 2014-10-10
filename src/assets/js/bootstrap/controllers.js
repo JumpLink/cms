@@ -205,6 +205,41 @@ jumplink.cms.controller('TimelineController', function($scope) {
 jumplink.cms.controller('MembersController', function($scope) {
 });
 
+jumplink.cms.controller('AdminController', function($scope) {
+});
+
+jumplink.cms.controller('UsersController', function($scope, $sailsSocket) {
+  var getUsers = function () {
+    $sailsSocket.get('/user').success(function(users, status, headers, config) {
+      if(users != null && typeof(users) !== "undefined") {
+        if(angular.isUndefined($scope.users))
+          $scope.users = {};
+        $scope.users = users;
+      } else {
+        // TODO redirect
+        console.error ("Can't load users");
+      }
+    });
+  }
+  getUsers();
+});
+
+jumplink.cms.controller('UserController', function($scope, $sailsSocket, $stateParams) {
+  var getUser = function () {
+    $sailsSocket.get('/user'+'/'+$stateParams.index).success(function(user, status, headers, config) {
+      if(user != null && typeof(user) !== "undefined") {
+        if(angular.isUndefined($scope.user))
+          $scope.user = {};
+        $scope.user = user;
+      } else {
+        // TODO redirect
+        console.error ("Can't load user");
+      }
+    });
+  }
+  getUser();
+});
+
 // Aufnahmeantrag
 jumplink.cms.controller('ApplicationController', function($scope, $sailsSocket) {
 

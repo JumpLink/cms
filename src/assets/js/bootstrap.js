@@ -114,6 +114,9 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
         templateUrl: 'bootstrap/footer'
         , controller: 'FooterController'
       }
+      // 'adminbar': {
+      //   templateUrl: 'bootstrap/adminbar'
+      // }
     }
   })
   // application
@@ -168,6 +171,58 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
         templateUrl: 'bootstrap/footer'
         , controller: 'FooterController'
       }
+    }
+  })
+  // links
+  .state('bootstrap-layout.administration', {
+    url: '/admin'
+    , views: {
+      'content' : {
+        templateUrl: 'bootstrap/administration/settings'
+        , controller: 'AdminController'
+      }
+      , 'toolbar' : {
+        templateUrl: 'bootstrap/toolbar'
+        , controller: 'ToolbarController'
+      }
+      // , 'footer' : {
+      //   templateUrl: 'bootstrap/footer'
+      //   , controller: 'FooterController'
+      // }
+    }
+  })
+  .state('bootstrap-layout.users', {
+    url: '/users'
+    , views: {
+      'content' : {
+        templateUrl: 'bootstrap/administration/users'
+        , controller: 'UsersController'
+      }
+      , 'toolbar' : {
+        templateUrl: 'bootstrap/toolbar'
+        , controller: 'ToolbarController'
+      }
+      // , 'footer' : {
+      //   templateUrl: 'bootstrap/footer'
+      //   , controller: 'FooterController'
+      // }
+    }
+  })
+  .state('bootstrap-layout.user', {
+    url: '/user/:index'
+    , views: {
+      'content' : {
+        templateUrl: 'bootstrap/administration/user'
+        , controller: 'UserController'
+      }
+      , 'toolbar' : {
+        templateUrl: 'bootstrap/toolbar'
+        , controller: 'ToolbarController'
+      }
+      // , 'footer' : {
+      //   templateUrl: 'bootstrap/footer'
+      //   , controller: 'FooterController'
+      // }
     }
   })
   ;

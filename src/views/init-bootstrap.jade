@@ -16,6 +16,7 @@ html(lang="en", ng-app="jumplink.cms", ng-controller="AppController", ng-init="a
     script(type="text/ng-template", id="bootstrap/toolbar"): include angular-templates/bootstrap/toolbar.jade
     script(type="text/ng-template", id="bootstrap/footer"): include angular-templates/bootstrap/footer.jade
     script(type="text/ng-template", id="bootstrap/sidebar"): include angular-templates/bootstrap/sidebar.jade
+    script(type="text/ng-template", id="bootstrap/adminbar"): include angular-templates/bootstrap/adminbar.jade
     // home
     script(type="text/ng-template", id="bootstrap/home/content"): include angular-templates/bootstrap/home/content.jade
     // gallery
@@ -32,6 +33,10 @@ html(lang="en", ng-app="jumplink.cms", ng-controller="AppController", ng-init="a
     script(type="text/ng-template", id="bootstrap/imprint/content"): include angular-templates/bootstrap/imprint/content.jade
     // links
     script(type="text/ng-template", id="bootstrap/links/content"): include angular-templates/bootstrap/links/content.jade
+    // admin
+    script(type="text/ng-template", id="bootstrap/administration/settings"): include angular-templates/bootstrap/administration/settings.jade
+    script(type="text/ng-template", id="bootstrap/administration/users"): include angular-templates/bootstrap/administration/users.jade
+    script(type="text/ng-template", id="bootstrap/administration/user"): include angular-templates/bootstrap/administration/user.jade
   body(class="{{bodyclass}}")
     span(ui-view)
     // angular-masonry
