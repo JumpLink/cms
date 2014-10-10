@@ -9,8 +9,25 @@ var bcrypt = require('bcrypt');
 
 module.exports = {
 
+  subscribe: function (req, res, next) {
+
+    sails.log.debug("join");
+
+    if(req.session.authenticated) {
+      sails.log.info("authenticated");
+      sails.sockets.join(req.socket, 'admins');
+      // subscribe all contents
+      Content.subscribe(req.socket, ['about', 'goals', 'imprint', 'links']);
+    } else {
+      sails.sockets.join(req.socket, 'guests');
+    }
+
+    return res.ok();
+
+  }
+
   // try to create an authenticated session
-  create: function(req, res, next) {
+  , create: function(req, res, next) {
 
     // Check for email and password in params sent via the form, if none
     // redirect the browser back to the sign-in form.
@@ -78,6 +95,7 @@ module.exports = {
 
         delete user.password; // TODO do this in model?
         //return res.json({authenticated:true,user:user});
+
         if(req.session.lastUrl) {
           var url = req.session.lastUrl;
           delete req.session.lastUrl;

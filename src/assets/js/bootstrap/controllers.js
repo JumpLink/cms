@@ -1,7 +1,13 @@
-jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $window, $timeout, Fullscreen, toaster) {
+jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $window, $timeout, Fullscreen, toaster, $sailsSocket) {
 
   $scope.mainStyle = {};
   $scope.toasterPositionClass = 'toast-bottom-right';
+
+  var subscribe = function() {
+    $sailsSocket.post('/session/subscribe', {}).success(function(data, status, headers, config){
+      console.log("subscribe content");
+    });
+  }
 
   // http://stackoverflow.com/questions/18608161/angularjs-variable-set-in-ng-init-undefined-in-scope
   $scope.$watch('authenticated', function () {
@@ -9,10 +15,9 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
     if($scope.authenticated) {
       $scope.mainStyle = {'padding-bottom':'50px'};
       $scope.toasterPositionClass = 'toast-bottom-right-with-toolbar';
+      subscribe();
     }
   });
-
-
 
   $rootScope.isFullscreen = false;
   Fullscreen.$on('FBFullscreen.change', function(evt, isFullscreenEnabled){
@@ -91,21 +96,42 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
     toaster.pop(type, title, body, timeout, bodyOutputType, clickHandler);
   };
 
-  console.log($rootScope.pop);
 
-  $rootScope.pop('success', "title", "text");
-  $timeout(function() {
-    $rootScope.pop('success', "title", "text");
-  }, 1000);
-  $timeout(function() {
-    $rootScope.pop('success', "title", "text");
-  }, 2000);
-  $timeout(function() {
-    $rootScope.pop('success', "title", "text");
-  }, 3000);
-  $timeout(function() {
-    $rootScope.pop('success', "title", "text");
-  }, 4000);
+  $sailsSocket.subscribe('connect', function(msg){
+    console.log('socket.io is connected');
+  });
+
+
+  $sailsSocket.subscribe('content', function(msg){
+    console.log(msg);
+    switch(msg.verb) {
+      case 'updated':
+        switch(msg.id) {
+          case 'about':
+            $rootScope.pop('success', '"Wir über uns" wurde aktualisiert', "");
+          break;
+          case 'goals':
+            $rootScope.pop('success', '"Unsere Ziele" wurde aktualisiert', "");
+          break;
+          case 'links':
+            $rootScope.pop('success', '"Links" wurde aktualisiert', "");
+          break;
+          case 'imprint':
+            $rootScope.pop('success', '"Impressum" wurde aktualisiert', "");
+          break;
+        }
+      break;
+    }
+  });
+
+  $sailsSocket.subscribe('users', function(msg){
+    console.log(msg);
+  });
+
+  $sailsSocket.subscribe('admins', function(msg){
+    console.log(msg);
+  });
+
 });
 
 jumplink.cms.controller('LayoutController', function($scope) {

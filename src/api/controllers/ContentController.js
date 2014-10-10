@@ -31,10 +31,10 @@ module.exports = {
 
   get: function (req, res, next) {
     var name = req.param('name');
-    console.log(name);
+    // console.log(name);
     Content.find({name:name}).exec(function found(err, result) {
-      console.log(err);
-      console.log(result);
+      // console.log(err);
+      // console.log(result);
       if(typeof result === 'undefined')
         return res.notFound();
       return res.json(result);
@@ -58,9 +58,9 @@ module.exports = {
     var name = req.param('name');
     var content = req.param('content');
     var data = req.params.all();
-    console.log(name);
-    console.log(content);
-    console.log(data);
+    // console.log(name);
+    // console.log(content);
+    // console.log(data);
     if (!name) {
       return res.badRequest('No name provided.');
     }
@@ -98,7 +98,10 @@ module.exports = {
             // If we have the pubsub hook, use the Content class's publish method
             // to notify all subscribers about the created item
             if (sails.hooks.pubsub) {
+              // sails.log.debug("publishUpdate: "+name);
+              // http://sailsjs.org/#/documentation/reference/websockets/resourceful-pubsub/publishUpdate.html
               Content.publishUpdate(name, data.toJSON());
+              // Content.publishUpdate('content', data.toJSON());
             }
 
             // Set status code (HTTP 201: Created)
