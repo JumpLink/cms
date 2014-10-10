@@ -13,6 +13,7 @@ jumplink.cms = angular.module('jumplink.cms', [
   , 'angular-medium-editor'   // AngularJS directive for Medium.com editor clone: https://github.com/thijsw/angular-medium-editor
   , 'ui.ace'                  // This directive allows you to add ACE editor elements: https://github.com/angular-ui/ui-ace
   , 'leaflet-directive'       // AngularJS directive to embed an interact with maps managed by Leaflet library: https://github.com/tombatossals/angular-leaflet-directive
+  , 'toaster'                 // AngularJS-Toaster - AngularJS Toaster is a customized version of "toastr" non-blocking notification javascript library: https://github.com/jirikavi/AngularJS-Toaster
 ]);
 
 jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvider) {

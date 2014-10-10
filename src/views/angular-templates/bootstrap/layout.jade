@@ -1,4 +1,5 @@
 .main-body(ng-style="{{mainStyle}}")
+  toaster-container(toaster-options="{'position-class': toasterPositionClass}")
   .toolbar(ui-view="toolbar")
   .content(ui-view="content")
   .footer(ui-view="footer")

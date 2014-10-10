@@ -1,12 +1,15 @@
-jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $window, $timeout, Fullscreen) {
+jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $window, $timeout, Fullscreen, toaster) {
 
   $scope.mainStyle = {};
+  $scope.toasterPositionClass = 'toast-bottom-right';
 
   // http://stackoverflow.com/questions/18608161/angularjs-variable-set-in-ng-init-undefined-in-scope
   $scope.$watch('authenticated', function () {
     console.log("authenticated: "+$scope.authenticated);
-    if($scope.authenticated)
+    if($scope.authenticated) {
       $scope.mainStyle = {'padding-bottom':'50px'};
+      $scope.toasterPositionClass = 'toast-bottom-right-with-toolbar';
+    }
   });
 
 
@@ -83,6 +86,26 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
     });
   }, true);
 
+  //AngularJS Toaster - AngularJS Toaster is a customized version of "toastr" non-blocking notification javascript library: https://github.com/jirikavi/AngularJS-Toaster
+  $rootScope.pop = function(type, title, body, timeout, bodyOutputType, clickHandler) {
+    toaster.pop(type, title, body, timeout, bodyOutputType, clickHandler);
+  };
+
+  console.log($rootScope.pop);
+
+  $rootScope.pop('success', "title", "text");
+  $timeout(function() {
+    $rootScope.pop('success', "title", "text");
+  }, 1000);
+  $timeout(function() {
+    $rootScope.pop('success', "title", "text");
+  }, 2000);
+  $timeout(function() {
+    $rootScope.pop('success', "title", "text");
+  }, 3000);
+  $timeout(function() {
+    $rootScope.pop('success', "title", "text");
+  }, 4000);
 });
 
 jumplink.cms.controller('LayoutController', function($scope) {
