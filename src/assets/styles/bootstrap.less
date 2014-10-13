@@ -108,6 +108,21 @@
 @import (less) "./../third-party/medium-editor/dist/css/medium-editor.css";
 @import (less) "./../third-party/medium-editor/dist/css/themes/bootstrap.css";
 
+// textarea as class to get the bootstrap input textarea style for angular-medium-editor
+.textarea {
+  .form-control;
+  height: auto;
+  min-height: 100px;
+  &.medium-editor-placeholder:after {
+    color: @input-color-placeholder;
+    position: absolute;
+    top: 6px;
+    left: 12px;
+    font-style: normal;
+  }
+}
+
+
 // bootstrapAdditions
 @import "./../third-party/bootstrap-additions/src/alert/alert";
 @import "./../third-party/bootstrap-additions/src/aside/aside";
@@ -281,6 +296,24 @@ body {
   }
 }
 
+.load {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  display: none;
+  text-align: center;
+  padding-top: 300px;
+  &.loading {
+    display: block;
+  }
+  &.finish {
+
+  }
+}
+
 .footer {
   // margin-top: -20px;
   z-index:2;
@@ -293,6 +326,10 @@ body {
       padding-bottom: 20px;
     }
   }
+}
+
+.imprint-logo {
+  width: 100%;
 }
 
 // https://github.com/angular/angular.js/issues/2070#issuecomment-57405205
@@ -308,6 +345,18 @@ body {
   .rn-carousel-container {
     top: 50%;
     transform: translateY(-50%);
+  }
+}
+.rn-carousel-control {
+  &.rn-carousel-control-prev:before {
+    color: white;
+    content: @fa-var-arrow-circle-left;
+    font: normal normal normal 40px/1 FontAwesome;
+  }
+  &.rn-carousel-control-next:before {
+    color: white;
+    content: @fa-var-arrow-circle-right;
+    font: normal normal normal 40px/1 FontAwesome;
   }
 }
 

@@ -1,11 +1,19 @@
-#top(style="margin-top: -20px;")
-  ul.image(rn-carousel, rn-carousel-indicator, rn-carousel-control, rn-carousel-auto-slide="6")
+#top(style="margin-top: -20px;width: 100%;")
+  ul.image(rn-carousel, rn-carousel-indicator, rn-carousel-control, rn-carousel-auto-slide="10", style="width: 100%;")
     li
-      img(src="images/header/4.jpg", style="width: 100%;")
+      div(style="width: 100%;")
+        img(src="images/header/1.jpg", style="width: 100%;")
+        img(src="images/logo.svg", style="position:absolute; top:10px; right:10px;")
+    li
+      img(src="images/header/2.jpg", style="width: 100%;")
     li
       img(src="images/header/3.jpg", style="width: 100%;")
     li
-      img(src="images/header/2.jpg", style="width: 100%;")
+      img(src="images/header/4.jpg", style="width: 100%;")
+    li
+      img(src="images/header/5.jpg", style="width: 100%;")
+    li
+      img(src="images/header/6.jpg", style="width: 100%;")
 .container(style="min-height: 200px;")
   .row
     .col-md-2.hidden-sm.hidden-xs
@@ -21,16 +29,16 @@
       h1.anchor-static-navbar#about
       .page-header
         h1 Wir über uns
-      div(ng-show="html && authenticated", ui-ace="{mode: 'html'}", ng-model="about")
-      div(ng-show="authenticated", medium-editor, ng-model="about", options='{"buttons": ["bold", "italic", "underline", "anchor", "header1" , "header2", "quote", "orderedlist", "unorderedlist"]}', bind-options="mediumBindOptions")
-      div(ng-bind-html="about", ng-hide="authenticated")
+      div(ng-show="html && $root.authenticated", ui-ace="{mode: 'html'}", ng-model="about")
+      div(ng-show="$root.authenticated", medium-editor, ng-model="about", options='{"buttons": ["bold", "italic", "underline", "anchor", "header1" , "header2", "quote", "orderedlist", "unorderedlist"]}', bind-options="mediumBindOptions")
+      div(ng-bind-html="about", ng-hide="$root.authenticated")
       h1.anchor-static-navbar#goals
       .page-header
         h1 Unsere Ziele
-      div(ng-show="html && authenticated", ui-ace="{mode: 'html'}", ng-model="goals")
-      div(ng-show="authenticated", medium-editor, ng-model="goals", options='{"buttons": ["bold", "italic", "underline", "anchor", "header1" , "header2", "quote", "orderedlist", "unorderedlist"]}', bind-options="mediumBindOptions")
-      div(ng-bind-html="goals", ng-hide="authenticated")
-nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="authenticated")
+      div(ng-show="html && $root.authenticated", ui-ace="{mode: 'html'}", ng-model="goals")
+      div(ng-show="$root.authenticated", medium-editor, ng-model="goals", options='{"buttons": ["bold", "italic", "underline", "anchor", "header1" , "header2", "quote", "orderedlist", "unorderedlist"]}', bind-options="mediumBindOptions")
+      div(ng-bind-html="goals", ng-hide="$root.authenticated")
+nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="$root.authenticated")
   .container
     .navbar-left
       p.navbar-text Admininstration

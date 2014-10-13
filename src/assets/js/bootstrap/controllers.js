@@ -1,21 +1,87 @@
-jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $window, $timeout, Fullscreen, toaster, $sailsSocket) {
+jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $window, $timeout, Fullscreen, toaster, $sailsSocket, $location, $anchorScroll) {
 
-  $scope.mainStyle = {};
-  $scope.toasterPositionClass = 'toast-bottom-right';
+  // fix scroll to top on route change
+  $scope.$on("$stateChangeSuccess", function () {
+    $anchorScroll();
+  });
 
-  var subscribe = function() {
+  //AngularJS Toaster - AngularJS Toaster is a customized version of "toastr" non-blocking notification javascript library: https://github.com/jirikavi/AngularJS-Toaster
+  $rootScope.pop = function(type, title, body, timeout, bodyOutputType, clickHandler) {
+    toaster.pop(type, title, body, timeout, bodyOutputType, clickHandler);
+  };
+
+
+  var subscribes = function() {
+    // subscripe on server
     $sailsSocket.post('/session/subscribe', {}).success(function(data, status, headers, config){
       console.log("subscribe content");
+
+      // react to subscripe from server: http://sailsjs.org/#/documentation/reference/websockets/sails.io.js/io.socket.on.html
+      $sailsSocket.subscribe('connect', function(msg){
+        console.log('socket.io is connected');
+      });
+
+      // called on content changes
+      $sailsSocket.subscribe('content', function(msg){
+        console.log(msg);
+        switch(msg.verb) {
+          case 'updated':
+            switch(msg.id) {
+              case 'about':
+                $rootScope.pop('success', '"Wir über uns" wurde aktualisiert', "");
+              break;
+              case 'goals':
+                $rootScope.pop('success', '"Unsere Ziele" wurde aktualisiert', "");
+              break;
+              case 'links':
+                $rootScope.pop('success', '"Links" wurde aktualisiert', "");
+              break;
+              case 'imprint':
+                $rootScope.pop('success', '"Impressum" wurde aktualisiert', "");
+              break;
+            }
+          break;
+        }
+      });
+
+      // called on any sended email from server
+      $sailsSocket.subscribe('email', function(email){
+
+        var body = ''
+          +'<dl>'
+            +'<dt>Absender</dt>'
+            +'<dd>'+email.from+'</dd>'
+            +'<dt>Betreff</dt>'
+            +'<dd>'+email.subject+'</dd>';
+            if(email.attachments) {
+              body += ''
+              +'<dt>Anhänge</dt>'
+              +'<dd>'+email.attachments.length+'</dd>';
+            }
+            body += ''
+          +'</dl>';
+
+        $rootScope.pop('info', 'Eine E-Mail wurde versendet.', body, null, 'trustedHtml');
+      });
+
+      // admin room
+      $sailsSocket.subscribe('admins', function(msg){
+        console.log(msg);
+      });
+
     });
   }
 
   // http://stackoverflow.com/questions/18608161/angularjs-variable-set-in-ng-init-undefined-in-scope
-  $scope.$watch('authenticated', function () {
-    console.log("authenticated: "+$scope.authenticated);
-    if($scope.authenticated) {
-      $scope.mainStyle = {'padding-bottom':'50px'};
-      $scope.toasterPositionClass = 'toast-bottom-right-with-toolbar';
-      subscribe();
+  $rootScope.$watch('authenticated', function () {
+    console.log("authenticated: "+$rootScope.authenticated);
+    if($rootScope.authenticated) {
+      $rootScope.mainStyle = {'padding-bottom':'50px'};
+      $rootScope.toasterPositionClass = 'toast-bottom-right-with-toolbar';
+      subscribes();
+    } else {
+      $rootScope.mainStyle = {'padding-bottom':'0px'};
+      $rootScope.toasterPositionClass = 'toast-bottom-right';
     }
   });
 
@@ -33,9 +99,16 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
     }
   };
 
-  // on new url
-  $rootScope.$on('$stateChangeStart',
+  // TODO loading animation on $stateChangeStart
+    $rootScope.$on('$stateChangeStart',
   function(event, toState, toParams, fromState, fromParams){
+     $rootScope.loadclass = 'loading';
+  });
+
+  // on new url
+  $rootScope.$on('$stateChangeSuccess',
+  function(event, toState, toParams, fromState, fromParams){
+    $rootScope.loadclass = 'finish';
     switch(toState.name) {
       case "bootstrap-layout.home":
         $rootScope.bodyclass = 'home';
@@ -52,35 +125,37 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
     }
   });
 
-
-  // fix resizes TODO wait until image is loaded
-  $timeout(function() {
-    // http://stackoverflow.com/questions/23637834/how-can-i-trigger-resize-event-in-angularjs
-    angular.element($window).triggerHandler('resize')
-  }, 3000)
-
   $rootScope.getWindowDimensions = function () {
     return { 'h': angular.element($window).height(), 'w': angular.element($window).width() };
   };
 
   angular.element($window).bind('resize', function () {
+    // $timeout(function(){
+    //   $rootScope.$apply();
+    // });
     $rootScope.$apply();
   });
 
   // http://stackoverflow.com/questions/641857/javascript-window-resize-event
   if(angular.element($window).onresize) { // if jQuery is used
     angular.element($window).onresize = function(event) {
-      $rootScope.$apply();
+      $timeout(function(){
+        $rootScope.$apply();
+      });
     };
   }
 
   // http://stackoverflow.com/questions/22991481/window-orientationchange-event-in-angular
   angular.element($window).bind('orientationchange', function () {
-    $rootScope.$apply();
+    $timeout(function(){
+      $rootScope.$apply();
+    });
   });
 
   angular.element($window).bind('deviceorientation', function () {
-    $rootScope.$apply();
+    $timeout(function(){
+      $rootScope.$apply();
+    });
   });
 
   $rootScope.$watch($rootScope.getWindowDimensions, function (newValue, oldValue) {
@@ -91,46 +166,12 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
     });
   }, true);
 
-  //AngularJS Toaster - AngularJS Toaster is a customized version of "toastr" non-blocking notification javascript library: https://github.com/jirikavi/AngularJS-Toaster
-  $rootScope.pop = function(type, title, body, timeout, bodyOutputType, clickHandler) {
-    toaster.pop(type, title, body, timeout, bodyOutputType, clickHandler);
-  };
-
-
-  $sailsSocket.subscribe('connect', function(msg){
-    console.log('socket.io is connected');
-  });
-
-
-  $sailsSocket.subscribe('content', function(msg){
-    console.log(msg);
-    switch(msg.verb) {
-      case 'updated':
-        switch(msg.id) {
-          case 'about':
-            $rootScope.pop('success', '"Wir über uns" wurde aktualisiert', "");
-          break;
-          case 'goals':
-            $rootScope.pop('success', '"Unsere Ziele" wurde aktualisiert', "");
-          break;
-          case 'links':
-            $rootScope.pop('success', '"Links" wurde aktualisiert', "");
-          break;
-          case 'imprint':
-            $rootScope.pop('success', '"Impressum" wurde aktualisiert', "");
-          break;
-        }
-      break;
-    }
-  });
-
-  $sailsSocket.subscribe('users', function(msg){
-    console.log(msg);
-  });
-
-  $sailsSocket.subscribe('admins', function(msg){
-    console.log(msg);
-  });
+  $rootScope.logout = function() {
+    $sailsSocket.post("/session/destroy", {}).success(function(data, status, headers, config) {
+      $rootScope.authenticated = false;
+      $rootScope.pop('success', 'Erfolgreich abgemeldet', "");
+    });
+  }
 
 });
 
@@ -146,26 +187,16 @@ jumplink.cms.controller('ToolbarController', function($scope) {
 
 jumplink.cms.controller('FooterController', function($scope) {
 
-
 });
 
-jumplink.cms.controller('HomeContentController', function($scope, $sailsSocket, $location, $anchorScroll, $timeout, $window) {
+jumplink.cms.controller('HomeContentController', function($scope, $sailsSocket, $location, $anchorScroll, $timeout, $window, about, goals) {
 
-  $scope.about = 'Lade..';
-  $scope.goals = 'Lade..';
+  $scope.about = about;
+  $scope.goals = goals;
 
-  $sailsSocket.post('/content/get', {name: 'about'}).success(function(data, status, headers, config){
-    console.log(data);
-    console.log(status);
-    $scope.about = data[0].content;
-    $scope.about = html_beautify($scope.about);
-  });
-
-  $sailsSocket.post('/content/get', {name: 'goals'}).success(function(data, status, headers, config){
-    console.log(data);
-    console.log(status);
-    $scope.goals = data[0].content;
-    $scope.goals = html_beautify($scope.goals);
+  // WORKAROUND wait until image is loaded to fix bs-sidebar
+  angular.element($window).imagesLoaded(function() {
+    angular.element($window).triggerHandler('resize');
   });
 
   $scope.goTo = function (hash) {
@@ -178,17 +209,31 @@ jumplink.cms.controller('HomeContentController', function($scope, $sailsSocket, 
   }
 
   $scope.save = function() {
-    $sailsSocket.put("/content/replace", {name: 'about', content: $scope.about}, function (response) {
-      if(response != null && typeof(response) !== "undefined") {
-        console.log (response);
+    // $sailsSocket.put("/content/replace", {name: 'about', content: $scope.about}, function (response) {
+    //   if(response != null && typeof(response) !== "undefined") {
+    //     console.log (response);
+    //   } else {
+    //     console.log ("Can't save site");
+    //   }
+    // });
+    $sailsSocket.put('/content/replace', {name: 'about', content: $scope.about}).success(function(data, status, headers, config) {
+      if(data != null && typeof(data) !== "undefined") {
+        console.log (data);
       } else {
         console.log ("Can't save site");
       }
     });
 
-    $sailsSocket.put("/content/replace", {name: 'goals', content: $scope.goals}, function (response) {
-      if(response != null && typeof(response) !== "undefined") {
-        console.log (response);
+    // $sailsSocket.put("/content/replace", {name: 'goals', content: $scope.goals}, function (response) {
+    //   if(response != null && typeof(response) !== "undefined") {
+    //     console.log (response);
+    //   } else {
+    //     console.log ("Can't save site");
+    //   }
+    // });
+    $sailsSocket.put('/content/replace', {name: 'goals', content: $scope.goals}).success(function(data, status, headers, config) {
+      if(data != null && typeof(data) !== "undefined") {
+        console.log (data);
       } else {
         console.log ("Can't save site");
       }
@@ -197,35 +242,15 @@ jumplink.cms.controller('HomeContentController', function($scope, $sailsSocket, 
 });
 
 
-jumplink.cms.controller('GalleryContentController', function($scope, $sailsSocket, $stateParams) {
+jumplink.cms.controller('GalleryContentController', function($scope, $sailsSocket, $stateParams, images) {
 
-  var getImages = function (callback) {
-    if(!$scope.images) {
-      $sailsSocket.get('/gallery/get').success(function(data, status, headers, config){
-        console.log(data);
-        $scope.images = data.files;
-        callback();
-      });
-    }
-  }
-
-  getImages(function() {
-
-  });
+  $scope.images = images;
 
 });
 
-jumplink.cms.controller('GallerySlideController', function($scope, $sailsSocket, $stateParams, $timeout) {
+jumplink.cms.controller('GallerySlideController', function($scope, $sailsSocket, $stateParams, $timeout, images) {
 
-  var getImages = function (callback) {
-    if(!$scope.images) {
-      $sailsSocket.get('/gallery/get').success(function(data, status, headers, config){
-        console.log(data);
-        $scope.images = data.files;
-        callback();
-      });
-    }
-  }
+  $scope.images = images;
 
   var setSlide = function () {
     if(typeof $stateParams.slideIndex !== 'undefined') {
@@ -237,13 +262,12 @@ jumplink.cms.controller('GallerySlideController', function($scope, $sailsSocket,
     }
   }
 
-  getImages(function() {
-    // workaround
-    $timeout(function() {
-      setSlide();
-    }, 1000);
+  // workaround
+  $timeout(function() {
+    setSlide();
+  }, 1000);
 
-  });
+
 
 
 });
@@ -381,15 +405,8 @@ jumplink.cms.controller('ApplicationController', function($scope, $sailsSocket) 
 
 });
 
-jumplink.cms.controller('LinksController', function($scope, $sailsSocket) {
-  $scope.links = 'Lade..';
-
-  $sailsSocket.post('/content/get', {name: 'links'}).success(function(data, status, headers, config){
-    console.log(data);
-    console.log(status);
-    $scope.links = data[0].content;
-    $scope.links = html_beautify($scope.links);
-  });
+jumplink.cms.controller('LinksController', function($scope, $sailsSocket, links) {
+  $scope.links = links;
 
   $scope.goTo = function (hash) {
     $location.hash(hash);
@@ -411,15 +428,15 @@ jumplink.cms.controller('LinksController', function($scope, $sailsSocket) {
   }
 });
 
-jumplink.cms.controller('ImprintController', function($scope, $sailsSocket) {
-  $scope.imprint = 'Lade..';
+jumplink.cms.controller('ImprintController', function($scope, $sailsSocket, imprint) {
+  $scope.imprint = imprint;
 
-  $sailsSocket.post('/content/get', {name: 'imprint'}).success(function(data, status, headers, config){
-    console.log(data);
-    console.log(status);
-    $scope.imprint = data[0].content;
-    $scope.imprint = html_beautify($scope.imprint);
-  });
+  $scope.email = {
+    from: ''
+    , name: ''
+    , subject: ''
+    , content: ''
+  }
 
   $scope.goTo = function (hash) {
     $location.hash(hash);
@@ -437,6 +454,12 @@ jumplink.cms.controller('ImprintController', function($scope, $sailsSocket) {
       } else {
         console.log ("Can't save site");
       }
+    });
+  }
+
+  $scope.sendMail = function() {
+    $sailsSocket.post('/email/send', {from: $scope.email.from, subject:'Kontaktanfrage von '+$scope.email.name+': '+$scope.email.subject, text: String($scope.email.content).replace(/<[^>]+>/gm, ''), html: $scope.email.content}).success(function(data, status, headers, config){
+      console.log(data);
     });
   }
 

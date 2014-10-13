@@ -42,9 +42,9 @@
       label(for='iban') BIC
       input#iban.form-control(type='text', placeholder='IBAN eingeben', ng-model="member.bank.bic")
     button.btn.btn-default(ng-click="upload()") Absenden
-  #odf(ng-show="authenticated")
+  #odf(ng-show="$root.authenticated")
     webodfview(data-file="/aufnahmeantrag.odt", data-invoice="member", data-upload="webodf.upload", data-refresh="webodf.refresh", data-ready="webodf.ready", data-download="webodf.download")
-nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="authenticated")
+nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="$root.authenticated")
   .container
     .navbar-left
       p.navbar-text Admininstration

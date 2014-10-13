@@ -34,6 +34,18 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   // HOME
   .state('bootstrap-layout.home', {
     url: '/home'
+    , resolve:{
+      about: function($sailsSocket) {
+        return $sailsSocket.post('/content/get', {name: 'about'}).then (function (data) {
+          return html_beautify(data.data[0].content);
+        });
+      }
+      , goals: function($sailsSocket, $timeout) {
+        return $sailsSocket.post('/content/get', {name: 'goals'}).then (function (data) {
+          return html_beautify(data.data[0].content);
+        });
+      }
+    }
     , views: {
       'content' : {
         templateUrl: 'bootstrap/home/content'
@@ -52,6 +64,13 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   // gallery
   .state('bootstrap-layout.gallery', {
     url: '/gallery'
+    , resolve:{
+      images: function($sailsSocket) {
+        return $sailsSocket.get('/gallery/get').then (function (data) {
+          return data.data.files;
+        });
+      }
+    }
     , views: {
       'content' : {
         templateUrl: 'bootstrap/gallery/view'
@@ -70,6 +89,13 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   // gallery slideshow
   .state('bootstrap-layout.gallery-slider', {
     url: '/slider/:slideIndex'
+    , resolve:{
+      images: function($sailsSocket) {
+        return $sailsSocket.get('/gallery/get').then (function (data) {
+          return data.data.files;
+        });
+      }
+    }
     , views: {
       'content' : {
         templateUrl: 'bootstrap/gallery/slider'
@@ -141,6 +167,13 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   // imprint
   .state('bootstrap-layout.imprint', {
     url: '/imprint'
+    , resolve:{
+      imprint: function($sailsSocket) {
+        return $sailsSocket.post('/content/get', {name: 'imprint'}).then (function (data) {
+          return html_beautify(data.data[0].content);
+        });
+      }
+    }
     , views: {
       'content' : {
         templateUrl: 'bootstrap/imprint/content'
@@ -159,6 +192,13 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   // links
   .state('bootstrap-layout.links', {
     url: '/links'
+    , resolve:{
+      links: function($sailsSocket) {
+        return $sailsSocket.post('/content/get', {name: 'links'}).then (function (data) {
+          return html_beautify(data.data[0].content);
+        });
+      }
+    }
     , views: {
       'content' : {
         templateUrl: 'bootstrap/links/content'

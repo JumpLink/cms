@@ -1,5 +1,5 @@
 doctype html
-html(lang="en", ng-app="jumplink.cms", ng-controller="AppController", ng-init="authenticated = #{authenticated}")
+html(lang="en", ng-app="jumplink.cms", ng-controller="AppController", ng-init="$root.authenticated = #{authenticated}")
   head
     base(href="/bootstrap")
     title Nautischer Verein Cuxhaven
@@ -37,7 +37,7 @@ html(lang="en", ng-app="jumplink.cms", ng-controller="AppController", ng-init="a
     script(type="text/ng-template", id="bootstrap/administration/settings"): include angular-templates/bootstrap/administration/settings.jade
     script(type="text/ng-template", id="bootstrap/administration/users"): include angular-templates/bootstrap/administration/users.jade
     script(type="text/ng-template", id="bootstrap/administration/user"): include angular-templates/bootstrap/administration/user.jade
-  body(class="{{bodyclass}}")
+  body(ng-class="bodyclass")
     span(ui-view)
     // angular-masonry
     script(type="text/javascript", src="/third-party/jquery/dist/jquery.js")
@@ -68,7 +68,7 @@ html(lang="en", ng-app="jumplink.cms", ng-controller="AppController", ng-init="a
     script(type="text/javascript", src="/third-party/angular-carousel/dist/angular-carousel.js")
     script(type="text/javascript", src="/third-party/angular-fullscreen/src/angular-fullscreen.js")
 
-    // textAngular
+    //- textAngular
     //- script(type="text/javascript", src="/third-party/textAngular/dist/textAngular.min.js")
 
     // angular-medium-editor

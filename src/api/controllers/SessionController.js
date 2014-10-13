@@ -16,7 +16,7 @@ module.exports = {
     if(req.session.authenticated) {
       sails.log.info("authenticated");
       sails.sockets.join(req.socket, 'admins');
-      // subscribe all contents
+      // subscribe all contents changes
       Content.subscribe(req.socket, ['about', 'goals', 'imprint', 'links']);
     } else {
       sails.sockets.join(req.socket, 'guests');
@@ -109,6 +109,7 @@ module.exports = {
   },
 
   destroy: function(req, res, next) {
+    sails.log.debug("logout");
 
     if (typeof(req.params.id) === "undefined")
       var id = req.session.User.id;
@@ -118,20 +119,24 @@ module.exports = {
     User.findOne(id, function foundUser(error, user) {
 
       // var userId = req.session.User.id;
-      if (error) return next(error);
+      if (error) {
+        sails.log.error(error);
+        return next(error);
+      }
       else if (user) {
+        sails.log.debug(user);
         // Wipe out the session (log out)
         //req.session.destroy(); Uncomment to not destroy socket session
         req.session.authenticated = false;
         delete req.session.User;
-        res.json({authenticated:false});
+        return res.json({authenticated:false});
       } else {
 
         // Wipe out the session (log out)
         //req.session.destroy(); Uncomment to not destroy socket session
         req.session.authenticated = false;
         delete req.session.User;
-        res.json({authenticated:false});
+        return res.json({authenticated:false});
       }
     });
   },
