@@ -55,7 +55,9 @@ module.exports.policies = {
   },
 
   MemberController: {
-    'get': true
+    '*': true
+    , 'create': 'sessionAuth'
+    , 'destroy': 'sessionAuth'
   },
 
   TimelineController: {
