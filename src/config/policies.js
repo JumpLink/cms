@@ -59,7 +59,9 @@ module.exports.policies = {
   },
 
   TimelineController: {
-    'get': true
+    '*': true
+    , 'create': 'sessionAuth'
+    , 'destroy': 'sessionAuth'
   },
 
 

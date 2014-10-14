@@ -24,6 +24,14 @@ module.exports = {
       else
         res.json(result);
     });
-
   }
+  // , get: function (req, res, next) {
+  //   Member.find({}).exec(function found(err, result) {
+  //     // console.log(err);
+  //     // console.log(result);
+  //     if(typeof result === 'undefined')
+  //       return res.notFound();
+  //     return res.json(result);
+  //   });
+  // }
 }
