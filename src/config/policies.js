@@ -54,7 +54,7 @@ module.exports.policies = {
     'get': true
   },
 
-  GalleryController: {
+  TimelineController: {
     'get': true
   },
 

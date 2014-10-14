@@ -10,16 +10,26 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
     toaster.pop(type, title, body, timeout, bodyOutputType, clickHandler);
   };
 
+  var generalSubscribes = function () {
+    // react to subscripe from server: http://sailsjs.org/#/documentation/reference/websockets/sails.io.js/io.socket.on.html
+    $sailsSocket.subscribe('connect', function(msg){
+      console.log('socket.io is connected');
+    });
 
-  var subscribes = function() {
+    $sailsSocket.subscribe('disconnect', function(msg){
+      $rootScope.pop('error', 'Verbindung zum Server verloren', "");
+    });
+
+
+    $sailsSocket.subscribe('reconnect', function(msg){
+      $rootScope.pop('info', 'Sie sind wieder mit dem Server verbunden', "");
+    });
+  }
+
+  var adminSubscribes = function() {
     // subscripe on server
     $sailsSocket.post('/session/subscribe', {}).success(function(data, status, headers, config){
       console.log("subscribe content");
-
-      // react to subscripe from server: http://sailsjs.org/#/documentation/reference/websockets/sails.io.js/io.socket.on.html
-      $sailsSocket.subscribe('connect', function(msg){
-        console.log('socket.io is connected');
-      });
 
       // called on content changes
       $sailsSocket.subscribe('content', function(msg){
@@ -78,11 +88,12 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
     if($rootScope.authenticated) {
       $rootScope.mainStyle = {'padding-bottom':'50px'};
       $rootScope.toasterPositionClass = 'toast-bottom-right-with-toolbar';
-      subscribes();
+      adminSubscribes();
     } else {
       $rootScope.mainStyle = {'padding-bottom':'0px'};
       $rootScope.toasterPositionClass = 'toast-bottom-right';
     }
+    generalSubscribes();
   });
 
   $rootScope.isFullscreen = false;
@@ -209,13 +220,6 @@ jumplink.cms.controller('HomeContentController', function($scope, $sailsSocket, 
   }
 
   $scope.save = function() {
-    // $sailsSocket.put("/content/replace", {name: 'about', content: $scope.about}, function (response) {
-    //   if(response != null && typeof(response) !== "undefined") {
-    //     console.log (response);
-    //   } else {
-    //     console.log ("Can't save site");
-    //   }
-    // });
     $sailsSocket.put('/content/replace', {name: 'about', content: $scope.about}).success(function(data, status, headers, config) {
       if(data != null && typeof(data) !== "undefined") {
         console.log (data);
@@ -224,13 +228,6 @@ jumplink.cms.controller('HomeContentController', function($scope, $sailsSocket, 
       }
     });
 
-    // $sailsSocket.put("/content/replace", {name: 'goals', content: $scope.goals}, function (response) {
-    //   if(response != null && typeof(response) !== "undefined") {
-    //     console.log (response);
-    //   } else {
-    //     console.log ("Can't save site");
-    //   }
-    // });
     $sailsSocket.put('/content/replace', {name: 'goals', content: $scope.goals}).success(function(data, status, headers, config) {
       if(data != null && typeof(data) !== "undefined") {
         console.log (data);
@@ -275,7 +272,37 @@ jumplink.cms.controller('GallerySlideController', function($scope, $sailsSocket,
 jumplink.cms.controller('TimelineController', function($scope) {
 });
 
-jumplink.cms.controller('MembersController', function($scope) {
+jumplink.cms.controller('MembersController', function($scope, members, $sailsSocket) {
+
+  var removeFromClient = function (member) {
+    var index = $scope.members.indexOf(member);
+    if (index > -1) {
+      $scope.members.splice(index, 1);
+    }
+  }
+
+  $scope.members = members;
+  $scope.remove = function(member) {
+    if($scope.members.length > 2) {
+      if(member.id) {
+        console.log(member);
+        $sailsSocket.delete('/member', member).success(function(users, status, headers, config) {
+          removeFromClient(member);
+        });
+      } else {
+        removeFromClient(member);
+      }
+    }
+  }
+  $scope.add = function() {
+    if($scope.members.length > 0) {
+      var newMember = angular.copy($scope.members[$scope.members.length - 1]);
+      delete newMember.id;
+      $scope.members.push(newMember);
+    } else {
+      $scope.members.push({position: 1, name:"Hier Name eingeben", job: "Hier Beruf eingeben", image: 'photo.png'});
+    }
+  }
 });
 
 jumplink.cms.controller('AdminController', function($scope) {

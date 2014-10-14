@@ -128,6 +128,13 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   // members
   .state('bootstrap-layout.members', {
     url: '/members'
+    , resolve:{
+      members: function($sailsSocket) {
+        return $sailsSocket.get('/member').then (function (data) {
+          return data.data;
+        });
+      }
+    }
     , views: {
       'content' : {
         templateUrl: 'bootstrap/members/content'
