@@ -21,6 +21,16 @@
 @import "./../third-party/bootstrap/less/variables.less";
 @import "./../third-party/bootstrap/less/mixins.less";
 
+.form-group-validation(@border-color: #ccc; @background-color: #f5f5f5) {
+  border-color: @border-color;
+  .box-shadow(inset 0 1px 1px rgba(0,0,0,.075)); // Redeclare so transitions work
+  &:focus {
+    border-color: darken(@border-color, 10%);
+    @shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 6px lighten(@border-color, 20%);
+    .box-shadow(@shadow);
+  }
+}
+
 // Reset and dependencies
 @import "./../third-party/bootstrap/less/normalize.less";
 @import "./../third-party/bootstrap/less/print.less";
@@ -33,6 +43,36 @@
 @import "./../third-party/bootstrap/less/grid.less";
 @import "./../third-party/bootstrap/less/tables.less";
 @import "./../third-party/bootstrap/less/forms.less";
+
+.form-group input.form-control.ng-invalid.ng-dirty {
+  .form-group-validation(@state-danger-text; @state-danger-bg);
+}
+
+.form-group input.form-control.ng-valid.ng-dirty {
+  .form-group-validation(@state-success-text; @state-success-bg);
+}
+
+label {
+  &.validation {
+    margin-top: 5px;
+    margin-bottom: 0;
+  }
+  &.danger {
+
+    color: @state-danger-text;
+  }
+
+  &.warning {
+    margin-top: 5px;
+    color: @state-warning-text;
+  }
+
+  &.success {
+    margin-top: 5px;
+    color: @state-success-text;
+  }
+}
+
 @import "./../third-party/bootstrap/less/buttons.less";
 
 // Components

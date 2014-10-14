@@ -298,6 +298,7 @@ jumplink.cms.controller('MembersController', function($scope, members, $sailsSoc
     if($scope.members.length > 0) {
       var newMember = angular.copy($scope.members[$scope.members.length - 1]);
       delete newMember.id;
+      delete newMember.position++;
       $scope.members.push(newMember);
     } else {
       $scope.members.push({position: 1, name:"Hier Name eingeben", job: "Hier Beruf eingeben", image: 'photo.png'});
@@ -362,24 +363,24 @@ jumplink.cms.controller('ApplicationController', function($scope, $sailsSocket) 
     }
   }
 
-  $scope.member = {
-    datum: ''
-    , name: 'Garber'
-    , vorname: 'Pascal'
-    , geburtstag: '15.09.86'
-    , geburtsort: 'Cuxhaven'
-    , email: 'pascal@jumplink.eu'
-    , telefon: '123456'
-    , beruf: 'Softwareentwickler'
-    , strasse: 'Bei der Kirche 12'
-    , plz: '27476'
-    , ort: 'Cuxhaven'
-    , bank: {
-      name: 'Volskank'
-      , iban: '1234'
-      , bic: '124'
-    }
-  }
+  // $scope.member = {
+  //   datum: ''
+  //   , name: 'Garber'
+  //   , vorname: 'Pascal'
+  //   , geburtstag: '15.09.86'
+  //   , geburtsort: 'Cuxhaven'
+  //   , email: 'pascal@jumplink.eu'
+  //   , telefon: '123456'
+  //   , beruf: 'Softwareentwickler'
+  //   , strasse: 'Bei der Kirche 12'
+  //   , plz: '27476'
+  //   , ort: 'Cuxhaven'
+  //   , bank: {
+  //     name: 'Volskank'
+  //     , iban: '1234'
+  //     , bic: '124'
+  //   }
+  // }
 
   // $scope.$watch('invoice.date', function(newVal) {
   //   $scope.invoice.dateHuman = $filter('amDateFormat')(newVal, 'dddd, Do MMMM YYYY');

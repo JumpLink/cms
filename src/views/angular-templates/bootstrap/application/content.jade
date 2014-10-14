@@ -2,47 +2,75 @@
   .page-header
     h1 Aufnahmeantrag
   form(role='form')
+  form(role='form', name="form", novalidate, ng-submit="upload()")
     .form-group
       label(for='name') Name
-      input#name.form-control(type='text', placeholder='Name eingeben', ng-model="member.name")
+      input#name.form-control(type='text', name="name", placeholder='Name eingeben', required, ng-model="member.name")
+      label.validation.danger(ng-show="form.name.$error.required") Bitte geben Sie hier Ihren Namen ein.
+      label.validation.success(ng-hide="form.name.$error.required"): i.fa.fa-check
     .form-group
       label(for='vorname') Vorname
-      input#vorname.form-control(type='text', placeholder='Vorname eingeben', ng-model="member.vorname")
+      input#vorname.form-control(type='text', name="vorname", placeholder='Vorname eingeben', required, ng-model="member.vorname")
+      label.validation.danger(ng-show="form.vorname.$error.required") Bitte geben Sie hier Ihren Vorname ein.
+      label.validation.success(ng-hide="form.vorname.$error.required"): i.fa.fa-check
     .form-group
       label(for='geburtstag') Geburtstag
-      input#geburtstag.form-control(type='text', placeholder='Geburtstag eingeben', ng-model="member.geburtstag")
+      input#geburtstag.form-control(type='text', name="geburtstag", placeholder='Geburtstag eingeben', required, ng-model="member.geburtstag")
+      label.validation.danger(ng-show="form.geburtstag.$error.required") Bitte geben Sie hier Ihren Geburtstag ein.
+      label.validation.success(ng-hide="form.geburtstag.$error.required"): i.fa.fa-check
     .form-group
       label(for='geburtsort') Geburtsort
-      input#geburtsort.form-control(type='text', placeholder='Geburtsort eingeben', ng-model="member.geburtsort")
+      input#geburtsort.form-control(type='text', name="geburtsort", placeholder='Geburtsort eingeben', required, ng-model="member.geburtsort")
+      label.validation.danger(ng-show="form.geburtsort.$error.required") Bitte geben Sie hier Ihren Geburtsort ein.
+      label.validation.success(ng-hide="form.geburtsort.$error.required"): i.fa.fa-check
     .form-group
       label(for='email') E-Mail
-      input#email.form-control(type='email', placeholder='E-Mail eingeben', ng-model="member.email")
+      input#email.form-control(type='email', name="email", placeholder='E-Mail eingeben', required, ng-model="member.email")
+      label.validation.danger(ng-show="form.email.$error.required") Bitte geben Sie hier Ihre E-Mail-Adresse ein.
+      label.validation.danger(ng-show="form.email.$error.email") Dies ist keine korrekte E-Mail-Adresse.
+      label.validation.success(ng-hide="form.email.$error.required || form.email.$error.email"): i.fa.fa-check
     .form-group
       label(for='telefon') Telefon
-      input#telefon.form-control(type='text', placeholder='Telefon eingeben', ng-model="member.telefon")
+      input#telefon.form-control(type='text', name="telefon", placeholder='Telefon eingeben', required, ng-model="member.telefon")
+      label.validation.danger(ng-show="form.telefon.$error.required") Bitte geben Sie hier Ihren Telefonnummer ein.
+      label.validation.success(ng-hide="form.telefon.$error.required"): i.fa.fa-check
     .form-group
       label(for='beruf') Beruf
-      input#beruf.form-control(type='text', placeholder='Beruf eingeben', ng-model="member.beruf")
+      input#beruf.form-control(type='text', name="beruf", placeholder='Beruf eingeben', required, ng-model="member.beruf")
+      label.validation.danger(ng-show="form.beruf.$error.required") Bitte geben Sie hier Ihren Beruf ein.
+      label.validation.success(ng-hide="form.beruf.$error.required"): i.fa.fa-check
     .form-group
       label(for='strasse') Straße
-      input#strasse.form-control(type='text', placeholder='Beruf eingeben', ng-model="member.strasse")
+      input#strasse.form-control(type='text', name="strasse", placeholder='Straße eingeben', required, ng-model="member.strasse")
+      label.validation.danger(ng-show="form.strasse.$error.required") Bitte geben Sie hier Ihre Straße ein.
+      label.validation.success(ng-hide="form.strasse.$error.required"): i.fa.fa-check
     .form-group
       label(for='plz') Postleitzahl
-      input#plz.form-control(type='text', placeholder='Postleitzahl eingeben', ng-model="member.plz")
+      input#plz.form-control(type='text', name="plz", placeholder='Postleitzahl eingeben', required, ng-model="member.plz")
+      label.validation.danger(ng-show="form.plz.$error.required") Bitte geben Sie hier Ihre Postleitzahl ein.
+      label.validation.success(ng-hide="form.plz.$error.required"): i.fa.fa-check
     .form-group
-      label(for='plz') Ort
-      input#ort.form-control(type='text', placeholder='Ort eingeben', ng-model="member.ort")
+      label(for='ort') Wohnort
+      input#ort.form-control(type='text', name="ort", placeholder='Ort eingeben', required, ng-model="member.ort")
+      label.validation.danger(ng-show="form.ort.$error.required") Bitte geben Sie hier Ihren Wohnort ein.
+      label.validation.success(ng-hide="form.ort.$error.required"): i.fa.fa-check
     .form-group
       label(for='bankname') Bankname
-      input#bankname.form-control(type='text', placeholder='Bankname eingeben', ng-model="member.bank.name")
+      input#bankname.form-control(type='text', name="bankname", placeholder='Bankname eingeben', required, ng-model="member.bank.name")
+      label.validation.danger(ng-show="form.bankname.$error.required") Bitte geben Sie hier Ihren Banknamen ein.
+      label.validation.success(ng-hide="form.bankname.$error.required"): i.fa.fa-check
     .form-group
       label(for='iban') IBAN
-      input#iban.form-control(type='text', placeholder='IBAN eingeben', ng-model="member.bank.iban")
+      input#iban.form-control(type='text', name="iban", placeholder='IBAN eingeben', required, ng-model="member.bank.iban")
+      label.validation.danger(ng-show="form.iban.$error.required") Bitte geben Sie hier Ihre IBAN ein.
+      label.validation.success(ng-hide="form.iban.$error.required"): i.fa.fa-check
     .form-group
-      label(for='iban') BIC
-      input#iban.form-control(type='text', placeholder='IBAN eingeben', ng-model="member.bank.bic")
-    button.btn.btn-default(ng-click="upload()") Absenden
-  #odf(ng-show="$root.authenticated")
+      label(for='bic') BIC
+      input#bic.form-control(type='text', name="bic", placeholder='BIC eingeben', required, ng-model="member.bank.bic")
+      label.validation.danger(ng-show="form.bic.$error.required") Bitte geben Sie hier Ihre BIC ein.
+      label.validation.success(ng-hide="form.bic.$error.required"): i.fa.fa-check
+    button.btn.btn-primary(type="submit", ng-disabled="form.$invalid") Absenden
+  #odf(ng-show="false")
     webodfview(data-file="/aufnahmeantrag.odt", data-invoice="member", data-upload="webodf.upload", data-refresh="webodf.refresh", data-ready="webodf.ready", data-download="webodf.download")
 nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="$root.authenticated")
   .container

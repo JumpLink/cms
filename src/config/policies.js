@@ -55,11 +55,13 @@ module.exports.policies = {
   },
 
   MemberController: {
-    'get': true
+   'get': true
+    , 'find': true
   },
 
   TimelineController: {
-    'get': true
+   'get': true
+    , 'find': true
   },
 
 
