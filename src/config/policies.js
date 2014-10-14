@@ -54,6 +54,10 @@ module.exports.policies = {
     'get': true
   },
 
+  MemberController: {
+    'get': true
+  },
+
   TimelineController: {
     'get': true
   },
