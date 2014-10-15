@@ -61,7 +61,7 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
         var body = ''
           +'<dl>'
             +'<dt>Absender</dt>'
-            +'<dd>'+email.from+'</dd>'
+            +'<dd><a href="mailto:'+email.from+'">'+email.from+'</a></dd>'
             +'<dt>Betreff</dt>'
             +'<dd>'+email.subject+'</dd>';
             if(email.attachments) {
@@ -409,10 +409,12 @@ jumplink.cms.controller('UserController', function($scope, $sailsSocket, $stateP
 });
 
 // Aufnahmeantrag
-jumplink.cms.controller('ApplicationController', function($scope, $sailsSocket) {
+jumplink.cms.controller('ApplicationController', function($rootScope, $scope, $sailsSocket, moment, $filter) {
+
+  var date = moment(); // now
 
   $scope.member = {
-    datum: ''
+    datum: $filter('amDateFormat')(date, 'dddd, Do MMMM YYYY')
     , name: ''
     , vorname: ''
     , geburtstag: ''
@@ -440,22 +442,45 @@ jumplink.cms.controller('ApplicationController', function($scope, $sailsSocket) 
 
 
   $scope.upload = function() {
-    $scope.webodf.upload(function(error, response ) {
-      if(error) console.log(error);
-      console.log(response);
-      var odtFilename = response.files[0].uploadedAs;
-      var odtPath = response.files[0].fd;
-      $sailsSocket.put("/document/convert/", {filename: odtFilename, extension: 'pdf'}).success(function(data, status, headers, config){
-        console.log(data);
-         var pdfPath = data.target;
-        $sailsSocket.put("/document/convert/", {filename: odtFilename, extension: 'html'}).success(function(data, status, headers, config){
+    $rootScope.pop('info', 'Aufnahmeantrag wird bearbeitet');
+    $scope.webodf.refresh(function() {
+      $scope.webodf.upload(function(error, response ) {
+        if(error) console.log(error);
+        console.log(response);
+        var odtFilename = response.files[0].uploadedAs;
+        var odtPath = response.files[0].fd;
+        $sailsSocket.put("/document/convert/", {filename: odtFilename, extension: 'pdf'}).success(function(data, status, headers, config){
           console.log(data);
-           var htmlPath = data.target;
-          // callback(null, resInfo, data, status, headers, config);
-          var attachmentFilename = 'aufnahmeantrag_'+$scope.member.vorname+'_'+$scope.member.name;
-          attachmentFilename = attachmentFilename.toLowerCase();
-          $sailsSocket.post('/email/send', {from: $scope.member.email, subject:'Aufnahmeantrag von '+$scope.member.vorname+' '+$scope.member.name, text: '', htmlPath: htmlPath, attachments: [{filename: attachmentFilename+".pdf", path:pdfPath}, {filename: attachmentFilename+".html", path:htmlPath}, {filename: attachmentFilename+".odt", path:odtPath}]}).success(function(data, status, headers, config){
-            console.log(data);
+           var pdfPath = data.target;
+          $sailsSocket.put("/document/convert/", {filename: odtFilename, extension: 'html'}).success(function(data, status, headers, config){
+            // console.log(data);
+            $rootScope.pop('success', 'Aufnahmeantrag erfolgreich erzeugt');
+             var htmlPath = data.target;
+            // callback(null, resInfo, data, status, headers, config);
+            var attachmentFilename = 'aufnahmeantrag_'+$scope.member.vorname+'_'+$scope.member.name;
+            attachmentFilename = attachmentFilename.toLowerCase();
+
+            var to = $scope.member.email+',pascal@jumplink.eu';
+            var subject = 'Aufnahmeantrag von '+$scope.member.vorname+' '+$scope.member.name;
+            var from = $scope.member.email;
+
+            var html = ''
+            +'<dl>'
+              +'<dt>Absender</dt>'
+              +'<dd><a href="mailto:'+from+'">'+from+'</a></dd>'
+              +'<dt>Betreff</dt>'
+              +'<dd>'+subject+'</dd>'
+            +'</dl>'
+            +'<br>'
+            +'Bitte drucken Sie den Aufnahmeantrag aus und schicken Sie ihn an den Nautischen Verein Cuxhaven e.V.';
+
+            var text = String(html).replace(/<[^>]+>/gm, '');
+
+            $sailsSocket.post('/email/send', {from: from, to: to, subject: subject, text: text, html: html, attachments: [{filename: attachmentFilename+".pdf", path:pdfPath}, {filename: attachmentFilename+".html", path:htmlPath}, {filename: attachmentFilename+".odt", path:odtPath}]}).success(function(data, status, headers, config){
+              if(!$rootScope.authenticated) {
+                $rootScope.pop('success', 'E-Mail wurde versendet.');
+              }
+            });
           });
         });
       });
@@ -463,16 +488,19 @@ jumplink.cms.controller('ApplicationController', function($scope, $sailsSocket) 
   }
 
   $scope.download = function() {
-    $scope.webodf.download();
+    $scope.webodf.refresh(function() {
+      $scope.webodf.download("Aufnahmeantrag.odt");
+    });
   }
 
   $scope.refresh = function() {
-    $scope.webodf.refresh();
+    $scope.webodf.refresh(function() {
+      $rootScope.pop('success', 'Aufnahmeantrag wurde aktualisiert');
+    });
   }
 
   var onWebODFReady = function() {
     console.log("ready");
-    $scope.refresh();
   }
 
   $scope.webodf = {
@@ -504,7 +532,7 @@ jumplink.cms.controller('LinksController', function($scope, $sailsSocket, links,
   }
 });
 
-jumplink.cms.controller('ImprintController', function($scope, $sailsSocket, imprint, $location, $anchorScroll) {
+jumplink.cms.controller('ImprintController', function($rootScope, $scope, $sailsSocket, imprint, $location, $anchorScroll) {
   $scope.imprint = imprint;
 
   $scope.email = {
@@ -534,7 +562,23 @@ jumplink.cms.controller('ImprintController', function($scope, $sailsSocket, impr
   }
 
   $scope.sendMail = function() {
-    $sailsSocket.post('/email/send', {from: $scope.email.from, subject:'Kontaktanfrage von '+$scope.email.name+': '+$scope.email.subject, text: String($scope.email.content).replace(/<[^>]+>/gm, ''), html: $scope.email.content}).success(function(data, status, headers, config){
+
+    var html = ''
+    +'<dl>'
+      +'<dt>Absender</dt>'
+      +'<dd><a href="mailto:'+$scope.email.from+'">'+$scope.email.from+'</a></dd>'
+      +'<dt>Betreff</dt>'
+      +'<dd>'+$scope.email.subject+'</dd>'
+    +'</dl>'
+    +'<br>'
+    +$scope.email.content;
+
+    var text = String(html).replace(/<[^>]+>/gm, '');
+
+    $sailsSocket.post('/email/send', {from: $scope.email.from, to: $scope.email.from+',pascal@jumplink.eu', subject:'Kontaktanfrage von '+$scope.email.name+': '+$scope.email.subject, text: text, html: html}).success(function(data, status, headers, config){
+      if(!$rootScope.authenticated) {
+        $rootScope.pop('success', 'E-Mail wurde versendet.');
+      }
       console.log(data);
     });
   }

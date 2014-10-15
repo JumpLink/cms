@@ -1,5 +1,5 @@
 angular.module('webodf', [])
-  .directive('webodfview', function ($compile, $window, $sailsSocket) {
+  .directive('webodfview', function ($compile, $window, $sailsSocket, $async) {
 
     var createBlob = function (type, data, callback) {
       if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -32,7 +32,6 @@ angular.module('webodf', [])
       var url;
       createBlob(type, data, function(error, blob) {
         if(error) {
-          console.logerror
           callback(error);
         } else {
           window.saveAs(blob, filename);
@@ -58,8 +57,6 @@ angular.module('webodf', [])
           req.send(formData);
           req.onload = function(res) {
             resInfo = JSON.parse(req.responseText);
-            // console.log(resInfo);
-            // convert to pdf
             callback(null, resInfo);
           }
         }
@@ -234,26 +231,27 @@ angular.module('webodf', [])
       odfCanvas.fitSmart(innerWidth); // set width to 100% of parent element
     }
 
-    var updateDocument = function(odfContentNodeElement, data) {
+    var updateDocument = function(odfContentNodeElement, data, callback) {
       var userFieldNodeElements = getUserFieldElements(odfContentNodeElement);
       if(data) {
-        for(var key in data) {
+        $async.objectMap(data, function(data, callback) {
+          var key = Object.keys(data)[0];
           switch(key) {
             case 'bank':
-              // update all data fields
-              for(var subkey in data.bank) {
-                updateUserFieldElement(userFieldNodeElements, key+'.'+subkey, data.bank[subkey], function(error) {
-                  if(error) console.log(error);
+              $async.objectMap(data.bank, function(data, callback) {
+                var subkey = Object.keys(data)[0];
+                updateUserFieldElement(userFieldNodeElements, key+'.'+subkey, data[subkey], function(error) {
+                  callback(error, data);
                 });
-              }
+              }, callback);
             break;
             default:
               updateUserFieldElement(userFieldNodeElements, key, data[key], function(error) {
-                if(error) console.log(error);
+                callback(error, data);
               });
             break;
           }
-        }
+        }, callback);
       }
     }
 
@@ -276,20 +274,17 @@ angular.module('webodf', [])
         odfCanvas.load($scope.file);
 
         $scope.upload = function (callback) {
-          console.log("upload");
           uploadAs(odfContainer, "/document/upload", "new.odt", callback);
         }
 
-        $scope.download = function () {
-          console.log("download");
-          downloadAs(odfContainer, "new.odt", function(error) {
+        $scope.download = function (name) {
+          downloadAs(odfContainer, name, function(error) {
             if(error) console.log(error);
           });
         }
 
-        $scope.refresh = function () {
-          console.log("refresh");
-          updateDocument(odfContentNodeElement, $scope.invoice);
+        $scope.refresh = function (callback) {
+          updateDocument(odfContentNodeElement, $scope.invoice, callback);
         }
 
         angular.element($window).bind('resize', function() {

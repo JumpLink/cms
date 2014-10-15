@@ -1,6 +1,6 @@
 var nodemailer = require('nodemailer');
 
-var send = function (from, subject, text, html, attachments, callback) {
+var send = function (from, to, subject, text, html, attachments, callback) {
   // console.log(sails.config.email);
   // create reusable transporter object using SMTP transport
   var transporter = nodemailer.createTransport({
@@ -14,7 +14,7 @@ var send = function (from, subject, text, html, attachments, callback) {
   // setup e-mail data with unicode symbols
   var mailOptions = {
       from: from //'Fred Foo ✔ <foo@blurdybloop.com>', // sender address
-      , to: 'pascal@jumplink.eu' // list of receivers
+      , to: to //'pascal@jumplink.eu' // list of receivers
       , subject: subject//'Aufnahmeantrag', // Subject line
       , text: text // 'Hello world', // plaintext body
       , html: html//'<b>Hello world</b>' // html body

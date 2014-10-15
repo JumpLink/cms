@@ -1,8 +1,11 @@
 .container(style="min-height: 200px;")
   .page-header
     h1 Aufnahmeantrag
-  form(role='form')
   form(role='form', name="form", novalidate, ng-submit="upload()")
+    p
+      | Ich bitte um die Aufnahme in den Nautischen Verein Cuxhaven e.V.
+    p
+      | Der Mitgliedsbeitrag beträgt jährlich 30.- € und für korporative Mitglieder 80.- €.
     .form-group
       label(for='name') Name
       input#name.form-control(type='text', name="name", placeholder='Name eingeben', required, ng-model="member.name")
@@ -70,16 +73,22 @@
       label.validation.danger(ng-show="form.bic.$error.required") Bitte geben Sie hier Ihre BIC ein.
       label.validation.success(ng-hide="form.bic.$error.required"): i.fa.fa-check
     button.btn.btn-primary(type="submit", ng-disabled="form.$invalid") Absenden
-  #odf(ng-show="false")
-    webodfview(data-file="/aufnahmeantrag.odt", data-invoice="member", data-upload="webodf.upload", data-refresh="webodf.refresh", data-ready="webodf.ready", data-download="webodf.download")
+  div(ng-show="$root.authenticated")
+    h2 Vorschau (nur für Administratoren sichtbar)
+    #odf
+      webodfview(data-file="/aufnahmeantrag.odt", data-invoice="member", data-upload="webodf.upload", data-refresh="webodf.refresh", data-ready="webodf.ready", data-download="webodf.download")
 nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="$root.authenticated")
   .container
     .navbar-left
       p.navbar-text Admininstration
     form.navbar-from.navbar-right
-      button.btn.btn-default.navbar-btn(ng-show="toogleHtml", ng-click="toogleHtml()")
+      button.btn.btn-default.navbar-btn(ng-show="download", title="Herunterladen", ng-click="download()")
+        i.fa.fa-download
+      button.btn.btn-default.navbar-btn(ng-show="refresh", title="Aktualisieren", ng-click="refresh()")
+        i.fa.fa-refresh
+      button.btn.btn-default.navbar-btn(ng-show="toogleHtml", title="HTML-Modus umschalten", ng-click="toogleHtml()")
         | HTML
-      button.btn.btn-default.navbar-btn(ng-show="save", ng-click="save()")
+      button.btn.btn-default.navbar-btn(ng-show="save", title="Speichern", ng-click="save()")
         i.fa.fa-floppy-o
-      button.btn.btn-default.navbar-btn(ui-sref='bootstrap-layout.administration')
+      button.btn.btn-default.navbar-btn(title="Einstellungen", ui-sref='bootstrap-layout.administration')
         i.fa.fa-cog
