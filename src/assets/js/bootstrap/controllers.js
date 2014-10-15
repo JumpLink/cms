@@ -287,12 +287,11 @@ jumplink.cms.controller('GallerySlideController', function($scope, $sailsSocket,
     setSlide();
   }, 1000);
 
-
-
-
 });
 
-jumplink.cms.controller('TimelineController', function($scope) {
+jumplink.cms.controller('TimelineController', function($scope, events) {
+  $scope.events = events;
+
 });
 
 jumplink.cms.controller('MembersController', function($scope, members, $sailsSocket, $filter) {

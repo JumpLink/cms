@@ -1,3 +1,5 @@
+var moment = require('moment');
+
 module.exports = {
   users: function (cb) {
     cb(null, {email:"admin@admin.org", name: "admin", color: "#000000", password: "cms-admin"});
@@ -18,6 +20,59 @@ module.exports = {
         , {position: 11, name:"Dr. Hans-Joachim Stietzel", job: "Kommunale Kontakte", image: 'photo.png'}
         , {position: 12, name:"Erich Baumann", job: "Öffentlichkeitsarbeit", image: 'photo.png'}
         , {position: 13, name:"Kapt. Wolfgang Gewiese", job: "Fischerei", image: 'photo.png'}
+      ]
+    );
+  }
+  , timeline: function (cb) {
+    cb(null,
+      [
+          {
+              type: 'lecture'
+            , person: 'Prof. Lange'
+            , title: 'Meeresverschmutzung und Auswirkung auf den Fisch'
+            // , from: 'Am 20.10.14 um 20:00 Uhr'
+            , from: moment('2014-10-20 20:00')['_d']
+            , place: 'Captain Ahabs Culture Club Cuxhaven'
+          }
+        , {
+              type: 'lecture'
+            , person: 'Doktorandin Jenny Byl der Universität Rostock'
+            , title: 'Probleme durch Schall im Meer'
+            // , from: 'Am 17.11.14 um 20:00 Uhr'
+            , from: moment('2014-11-17 20:00')['_d']
+            , place: 'Captain Ahabs Culture Club Cuxhaven'
+          }
+        , {
+              type: 'lecture'
+            , person: 'Pistol, Polizeidirektor a.D.'
+            , title: 'Ein Besuch auf Pitcairn'
+            // , from: 'Am 08.12.14 um 20:00 Uhr'
+            , from: moment('2014-12-08 20:00')['_d']
+            , place: 'Captain Ahabs Culture Club Cuxhaven'
+          }
+        , {
+              type: 'lecture'
+            , person: 'P.Bussler'
+            , title: 'Cuxhavener Gastronomie im Hafen im 19.Jahrhundert'
+            // , from: 'Am 19.01.19 um 20:00 Uhr'
+            , from: moment('2015-01-19 20:00')['_d']
+            , place: 'Captain Ahabs Culture Club Cuxhaven'
+          }
+        , {
+              type: 'panel discussion'
+            , title: 'Podiumsdiskussion - Situation der Deutschen Schifffahrt und Beschäftigungssituation Deutscher Seeleute'
+            // , from: 'Am 16.02.15 um 20:00 Uhr'
+            , from: moment('2015-02-16 20:00')['_d']
+            , place: 'Captain Ahabs Culture Club Cuxhaven'
+          }
+        , {
+              type: 'travel'
+            , title: 'Ostseereise nach Polen, Russland (Königsberg und Pillau), Litauen.'
+            // , from: 'AVom 03.6.15 bis 11.6.15'
+            , from: moment('2015-06-03')['_d']
+            , to: moment('2015-06-15')['_d']
+            , download: 'Ostseereise%203.6.-11.6.15.pdf'
+          }
       ]
     );
   }

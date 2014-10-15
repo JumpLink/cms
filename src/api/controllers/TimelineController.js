@@ -3,19 +3,19 @@ module.exports = {
     async.waterfall([
       function destroyAll(callback){
         sails.log.debug("destroyAll");
-        Member.destroy({}, function (error, destroyed) {
+        Timeline.destroy({}, function (error, destroyed) {
           sails.log.debug(destroyed);
           callback(error);
         });
       },
       function getNewSetup (callback){
         sails.log.debug("getNewSetup Member");
-        SetupService.members(callback);
+        SetupService.timeline(callback);
       },
       function createNewSetup (newValues, callback){
         sails.log.debug("createNewSetup");
         // https://github.com/caolan/async#map
-        async.map(newValues, Member.create, callback);
+        async.map(newValues, Timeline.create, callback);
       },
     ], function (err, result) {
       sails.log.debug("done");

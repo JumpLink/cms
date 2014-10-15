@@ -110,6 +110,32 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   // events timeline
   .state('bootstrap-layout.timeline', {
     url: '/events'
+    , resolve:{
+      events: function($sailsSocket, moment) {
+        return $sailsSocket.get('/timeline').then (function (data) {
+          var unknown, before, after = [];
+          for (var i = 0; i < data.data.length; i++) {
+
+            if(angular.isDefined(data.data[i].to)) {
+              data.data[i].to = moment(data.data[i].to);
+            }
+
+            if(angular.isDefined(data.data[i].from)) {
+              data.data[i].from = moment(data.data[i].from);
+              if(data.data[i].from.isAfter())
+                after.push(data.data[i]);
+              else
+                befor.push(data.data[i]);
+            } else {
+              unknown.push(data.data[i]);
+            }
+
+          };
+
+          return {unknown:unknown, before:before, after:after};
+        });
+      }
+    }
     , views: {
       'content' : {
         templateUrl: 'bootstrap/events/timeline'

@@ -2,120 +2,57 @@
   .page-header
     h1 Anstehende Veranstaltungen
   ul.timeline
-    li
-      .timeline-badge.success
+    li(ng-repeat="event in events.after | orderBy:'from'", ng-class="{'timeline-inverted':$index%2}")
+      .timeline-badge.success(ng-show="event.type == 'lecture'")
         i.fa.fa-graduation-cap
-      .timeline-panel
-        .timeline-heading
-          h4.timeline-title Meeresverschmutzung und Auswirkung auf den Fisch
-          p.text-muted
-            i.fa.fa-user
-            | Prof. Lange
-            br
-            i.fa.fa-clock-o
-            | Am 20.10.14 um 20:00 Uhr
-            br
-            i.fa.fa-home
-            | Captain Ahabs Culture Club Cuxhaven
-        .timeline-body
-          //- p
-          //-   | Mussum ipsum cacilds, vidis litro abertis. Consetis adipiscings elitis. Pra lá , depois divoltis porris, paradis.
-    li.timeline-inverted
-      .timeline-badge.success
-        i.fa.fa-graduation-cap
-      .timeline-panel
-        .timeline-heading
-          h4.timeline-title Probleme durch Schall im Meer
-          p.text-muted
-            i.fa.fa-user
-            | Doktorandin Jenny Byl der Universität Rostock
-            br
-            i.fa.fa-clock-o
-            | Am 17.11.14 um 20:00 Uhr
-            br
-            i.fa.fa-home
-            | Captain Ahabs Culture Club Cuxhaven
-        .timeline-body
-          //- p
-          //-   | Mussum ipsum cacilds, vidis litro abertis. Consetis adipiscings elitis. Pra lá , depois divoltis porris, paradis.
-    li
-      .timeline-badge.success
-        i.fa.fa-graduation-cap
-      .timeline-panel
-        .timeline-heading
-          h4.timeline-title Ein Besuch auf Pitcairn
-          p.text-muted
-            i.fa.fa-user
-            | Pistol, Polizeidirektor a.D.
-            br
-            i.fa.fa-clock-o
-            | Am 08.12.14 um 20:00 Uhr
-            br
-            i.fa.fa-home
-            | Captain Ahabs Culture Club Cuxhaven
-        .timeline-body
-          //- p
-          //-   | Mussum ipsum cacilds, vidis litro abertis. Consetis adipiscings elitis. Pra lá , depois divoltis porris, paradis.
-    li.timeline-inverted
-      .timeline-badge.success
-        i.fa.fa-graduation-cap
-      .timeline-panel
-        .timeline-heading
-          h4.timeline-title Cuxhavener Gastronomie im Hafen im 19.Jahrhundert
-          p.text-muted
-            i.fa.fa-user
-            | P.Bussler
-            br
-            i.fa.fa-clock-o
-            | Am 19.01.15 um 20:00 Uhr
-            br
-            i.fa.fa-home
-            | Captain Ahabs Culture Club Cuxhaven
-        .timeline-body
-          //- p
-          //-   | Mussum ipsum cacilds, vidis litro abertis. Consetis adipiscings elitis. Pra lá , depois divoltis porris, paradis.
-    li
-      .timeline-badge.warning
+      .timeline-badge.warning(ng-show="event.type == 'panel discussion'")
         i.fa.fa-users
-      .timeline-panel
-        .timeline-heading
-          h4.timeline-title Podiumsdiskussion - Situation der Deutschen Schifffahrt und Beschäftigungssituation Deutscher Seeleute
-          p.text-muted
-            i.fa.fa-clock-o
-            | Am 16.02.15 um 20:00 Uhr
-            br
-            i.fa.fa-home
-            | Captain Ahabs Culture Club Cuxhaven
-        .timeline-body
-          //- p
-          //-   | Mussum ipsum cacilds, vidis litro abertis.
-    li.timeline-inverted
-      .timeline-badge.info
+      .timeline-badge.info(ng-show="event.type == 'travel'")
         img(src="/images/ship_white.svg")
       .timeline-panel
         .timeline-heading
-          h4.timeline-title Ostseereise nach Polen, Russland (Königsberg und Pillau), Litauen.
-          p.text-muted
+          h4.timeline-title(ng-show="event.title", ng-bind-html="event.title")
+          p.text-muted(ng-show="event.person")
+            i.fa.fa-user
+            span(ng-bind-html="event.person")
+          p.text-muted(ng-show="event.from", title="{{event.from | amDateFormat:'dddd Do MMMM YYYY, HH:mm'}} Uhr")
             i.fa.fa-clock-o
-            | Vom 03.6.15 bis 11.6.15
-            //- br
-            //- i.fa.fa-home
-            //- | Captain Ahabs Culture Club Cuxhaven
+            | {{event.from | amCalendar}}
+            span(ng-show="event.to")
+              |  bis {{event.to | amCalendar}}
+          p.text-muted(ng-show="event.place")
+            i.fa.fa-home
+            span(ng-bind-html="event.place")
         .timeline-body
-          p
-            a(href="/Ostseereise%203.6.-11.6.15.pdf").btn.btn-info: | Weitere Informationen
-  //- .page-header
-  //-   h1 Archiv
-  //- ul.timeline
-  //-   li
-  //-     .timeline-badge.success
-  //-       i.glyphicon.glyphicon-thumbs-up
-  //-     .timeline-panel
-  //-       .timeline-heading
-  //-         h4.timeline-title Mussum ipsum cacilds
-  //-       .timeline-body
-  //-         p
-  //-           | Mussum ipsum cacilds, vidis litro abertis. Consetis adipiscings elitis. Pra lá , depois divoltis porris, paradis. Paisis, filhis, espiritis santis. Mé faiz elementum girarzis, nisi eros vermeio, in elementis mé pra quem é amistosis quis leo. Manduma pindureta quium dia nois paga. Sapien in monti palavris qui num significa nadis i pareci latim. Interessantiss quisso pudia ce receita de bolis, mais bolis eu num gostis.
+          p(ng-show="event.download")
+            a(href="/{{event.download}}").btn.btn-info: | Weitere Informationen
+  .page-header(ng-show="events.before.length > 0")
+    h1 Archiv
+  ul.timeline(ng-show="events.before.length > 0")
+    li(ng-repeat="event in events.before | orderBy:'from':true", ng-class="{'timeline-inverted':$index%2}")
+      .timeline-badge.success(ng-show="event.type == 'lecture'")
+        i.fa.fa-graduation-cap
+      .timeline-badge.warning(ng-show="event.type == 'panel discussion'")
+        i.fa.fa-users
+      .timeline-badge.info(ng-show="event.type == 'travel'")
+        img(src="/images/ship_white.svg")
+      .timeline-panel
+        .timeline-heading
+          h4.timeline-title(ng-show="event.title", ng-bind-html="event.title")
+          p.text-muted(ng-show="event.person")
+            i.fa.fa-user
+            span(ng-bind-html="event.person")
+          p.text-muted(ng-show="event.from", title="{{event.from | amDateFormat:'dddd Do MMMM YYYY, HH:mm'}} Uhr")
+            i.fa.fa-clock-o
+            | {{event.from | amCalendar}}
+            span(ng-show="event.to")
+              |  bis {{event.to | amCalendar}}
+          p.text-muted(ng-show="event.place")
+            i.fa.fa-home
+            span(ng-bind-html="event.place")
+        .timeline-body
+          p(ng-show="event.download")
+            a(href="/{{event.download}}").btn.btn-info: | Weitere Informationen
 nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="$root.authenticated")
   .container
     .navbar-left
