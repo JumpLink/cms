@@ -18,6 +18,7 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
 
     $sailsSocket.subscribe('disconnect', function(msg){
       $rootScope.pop('error', 'Verbindung zum Server verloren', "");
+      $rootScope.authenticated = false;
     });
 
 
@@ -72,6 +73,28 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
           +'</dl>';
 
         $rootScope.pop('info', 'Eine E-Mail wurde versendet.', body, null, 'trustedHtml');
+      });
+
+      $sailsSocket.subscribe('member', function(msg){
+        console.log(msg);
+
+        switch(msg.verb) {
+          case 'updated':
+            $rootScope.pop('success', msg.data.name+' wurde aktualisiert', "");
+          break;
+          case 'created':
+            $rootScope.pop('success', msg.data.name+' wurde erstellt', "");
+          break;
+          case 'removedFrom':
+            $rootScope.pop('success', msg.data.name+' wurde entfernt', "");
+          break;
+          case 'destroyed':
+            $rootScope.pop('success', msg.data.name+' wurde gelöscht', "");
+          break;
+          case 'addedTo':
+            $rootScope.pop('success', msg.data.name+' wurde hinzugefügt', "");
+          break;
+        }
       });
 
       // admin room
@@ -272,7 +295,7 @@ jumplink.cms.controller('GallerySlideController', function($scope, $sailsSocket,
 jumplink.cms.controller('TimelineController', function($scope) {
 });
 
-jumplink.cms.controller('MembersController', function($scope, members, $sailsSocket) {
+jumplink.cms.controller('MembersController', function($scope, members, $sailsSocket, $filter) {
 
   var removeFromClient = function (member) {
     var index = $scope.members.indexOf(member);
@@ -286,7 +309,7 @@ jumplink.cms.controller('MembersController', function($scope, members, $sailsSoc
     if($scope.members.length > 2) {
       if(member.id) {
         console.log(member);
-        $sailsSocket.delete('/member', member).success(function(users, status, headers, config) {
+        $sailsSocket.delete('/member/'+member.id).success(function(users, status, headers, config) {
           removeFromClient(member);
         });
       } else {
@@ -304,6 +327,50 @@ jumplink.cms.controller('MembersController', function($scope, members, $sailsSoc
       $scope.members.push({position: 1, name:"Hier Name eingeben", job: "Hier Beruf eingeben", image: 'photo.png'});
     }
   }
+  $scope.save = function() {
+    angular.forEach($scope.members, function(member, index) {
+      if(angular.isUndefined(member.id)) {
+        // create member
+        $sailsSocket.post('/member', member).success(function(data, status, headers, config) {
+          // console.log(data);
+        });
+      } else {
+        // update member
+        $sailsSocket.put('/member/'+member.id, member).success(function(data, status, headers, config) {
+          // console.log(data);
+        });
+      }
+
+    });
+  }
+
+  $scope.moveForward = function(member) {
+    var index = $scope.members.indexOf(member);
+    if(index < $scope.members.length && angular.isDefined($scope.members[index+1])) {
+      var newPosition = $scope.members[index+1].position;
+      var oldPosition = $scope.members[index].position;
+      console.log(newPosition+" <-> "+oldPosition);
+      $scope.members[index].position = newPosition;
+      $scope.members[index+1].position = oldPosition;
+      $scope.members = $filter('orderBy')($scope.members, 'position');
+    } else {
+      $rootScope.pop('error', member.name, "Kann nicht verschoben werden.");
+    }
+  }
+  $scope.moveBackward = function(member) {
+    var index = $scope.members.indexOf(member);
+    if(index > 0 && angular.isDefined($scope.members[index-1])) {
+      var newPosition = $scope.members[index-1].position;
+      var oldPosition = $scope.members[index].position;
+      console.log(newPosition+" <-> "+oldPosition);
+      $scope.members[index].position = newPosition;
+      $scope.members[index-1].position = oldPosition;
+      $scope.members = $filter('orderBy')($scope.members, 'position');
+    } else {
+      $rootScope.pop('error', member.name, "Kann nicht verschoben werden.");
+    }
+  }
+
 });
 
 jumplink.cms.controller('AdminController', function($scope) {
@@ -363,25 +430,6 @@ jumplink.cms.controller('ApplicationController', function($scope, $sailsSocket) 
     }
   }
 
-  // $scope.member = {
-  //   datum: ''
-  //   , name: 'Garber'
-  //   , vorname: 'Pascal'
-  //   , geburtstag: '15.09.86'
-  //   , geburtsort: 'Cuxhaven'
-  //   , email: 'pascal@jumplink.eu'
-  //   , telefon: '123456'
-  //   , beruf: 'Softwareentwickler'
-  //   , strasse: 'Bei der Kirche 12'
-  //   , plz: '27476'
-  //   , ort: 'Cuxhaven'
-  //   , bank: {
-  //     name: 'Volskank'
-  //     , iban: '1234'
-  //     , bic: '124'
-  //   }
-  // }
-
   // $scope.$watch('invoice.date', function(newVal) {
   //   $scope.invoice.dateHuman = $filter('amDateFormat')(newVal, 'dddd, Do MMMM YYYY');
   // });
@@ -433,7 +481,7 @@ jumplink.cms.controller('ApplicationController', function($scope, $sailsSocket) 
 
 });
 
-jumplink.cms.controller('LinksController', function($scope, $sailsSocket, links) {
+jumplink.cms.controller('LinksController', function($scope, $sailsSocket, links, $location, $anchorScroll) {
   $scope.links = links;
 
   $scope.goTo = function (hash) {
@@ -456,7 +504,7 @@ jumplink.cms.controller('LinksController', function($scope, $sailsSocket, links)
   }
 });
 
-jumplink.cms.controller('ImprintController', function($scope, $sailsSocket, imprint) {
+jumplink.cms.controller('ImprintController', function($scope, $sailsSocket, imprint, $location, $anchorScroll) {
   $scope.imprint = imprint;
 
   $scope.email = {

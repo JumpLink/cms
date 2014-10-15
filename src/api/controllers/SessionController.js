@@ -18,6 +18,15 @@ module.exports = {
       sails.sockets.join(req.socket, 'admins');
       // subscribe all contents changes
       Content.subscribe(req.socket, ['about', 'goals', 'imprint', 'links']);
+      // http://sailsjs.org/#/documentation/reference/websockets/resourceful-pubsub/publishUpdate.html
+      Member.find({}).exec(function(err, members) {
+        Member.subscribe(req.socket, members);
+        // members.forEach(function(member) {
+        //   sails.log.debug(member);
+        //   Member.subscribe(req.socket, member.id);
+        // });
+        return res.ok();
+      });
     } else {
       sails.sockets.join(req.socket, 'guests');
     }

@@ -2,19 +2,17 @@
   .page-header
     h1 Vorstand / Beirat
   .row(style='text-align: center;')
-    .col-lg-3.col-md-4.col-sm-6.member(ng-repeat="member in members | orderBy:member.position")
+    .col-lg-3.col-md-4.col-sm-6.member(ng-repeat="member in members")
       img.img-circle(alt='{{member.name}}', ng-src='images/{{member.image}}', style='width: 140px; height: 140px;')
       h2
         div(ng-show="$root.authenticated", medium-editor, ng-model="member.name", options='{"placeholder": "Name eingeben", "disableToolbar": true, "forcePlainText": true, "disableReturn": true}')
         div(ng-hide="$root.authenticated") {{member.name}}
         small(ng-show="$root.authenticated", medium-editor, ng-model="member.job", options='{"placeholder": "Job eingeben", "disableToolbar": true, "forcePlainText": true, "disableReturn": true}')
         small(ng-hide="$root.authenticated") {{member.job}}
-      //- p
-      //-   | Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Praesent commodo cursus magna.
       p.btn-group(ng-show="authenticated")
-        button.btn.btn-warning(ng-click="moveForward(member)") Vor
+        button.btn.btn-warning(ng-disabled="$index <= 0", ng-click="moveBackward(member)") Zurück
         button.btn.btn-danger(ng-click="remove(member)") Löschen
-        button.btn.btn-warning(ng-click="moveBackward(member)") Zurück
+        button.btn.btn-warning(ng-disabled="$index >= members.length - 1", ng-click="moveForward(member)") Vor
 nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="authenticated")
   .container
     .navbar-left

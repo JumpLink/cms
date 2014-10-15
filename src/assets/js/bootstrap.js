@@ -129,9 +129,9 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   .state('bootstrap-layout.members', {
     url: '/members'
     , resolve:{
-      members: function($sailsSocket) {
+      members: function($sailsSocket, $filter) {
         return $sailsSocket.get('/member').then (function (data) {
-          return data.data;
+          return $filter('orderBy')(data.data, 'position');
         });
       }
     }

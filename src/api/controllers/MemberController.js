@@ -25,13 +25,12 @@ module.exports = {
         res.json(result);
     });
   }
-  // , get: function (req, res, next) {
-  //   Member.find({}).exec(function found(err, result) {
-  //     // console.log(err);
-  //     // console.log(result);
-  //     if(typeof result === 'undefined')
-  //       return res.notFound();
-  //     return res.json(result);
-  //   });
-  // }
+  , update: function (req, res, next) {
+      var id = req.param('id');
+      var data = req.params.all();
+      Member.update({id:id},data).exec(function update(err,updated){
+        Member.publishUpdate(updated[0].id, updated[0]);
+        res.json(updated);
+      });
+  }
 }
