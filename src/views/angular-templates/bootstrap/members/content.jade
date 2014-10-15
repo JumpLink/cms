@@ -6,9 +6,9 @@
       img.img-circle(alt='{{member.name}}', ng-src='images/{{member.image}}', style='width: 140px; height: 140px;')
       h2
         div(ng-show="$root.authenticated", medium-editor, ng-model="member.name", options='{"placeholder": "Name eingeben", "disableToolbar": true, "forcePlainText": true, "disableReturn": true}')
-        div(ng-hide="$root.authenticated") {{member.name}}
+        div(ng-hide="$root.authenticated", ng-bind-html="member.name")
         small(ng-show="$root.authenticated", medium-editor, ng-model="member.job", options='{"placeholder": "Job eingeben", "disableToolbar": true, "forcePlainText": true, "disableReturn": true}')
-        small(ng-hide="$root.authenticated") {{member.job}}
+        small(ng-hide="$root.authenticated", ng-bind-html="member.job")
       p.btn-group(ng-show="authenticated")
         button.btn.btn-warning(ng-disabled="$index <= 0", ng-click="moveBackward(member)") Zurück
         button.btn.btn-danger(ng-click="remove(member)") Löschen
