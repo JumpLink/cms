@@ -17,6 +17,8 @@ html(lang="en", ng-app="jumplink.cms", ng-controller="AppController", ng-init="$
     script(type="text/ng-template", id="bootstrap/footer"): include angular-templates/bootstrap/footer.jade
     script(type="text/ng-template", id="bootstrap/sidebar"): include angular-templates/bootstrap/sidebar.jade
     script(type="text/ng-template", id="bootstrap/adminbar"): include angular-templates/bootstrap/adminbar.jade
+    script(type="text/ng-template", id="bootstrap/datepicker"): include angular-templates/bootstrap/datepicker.jade
+    script(type="text/ng-template", id="bootstrap/timepicker"): include angular-templates/bootstrap/timepicker.jade
     // home
     script(type="text/ng-template", id="bootstrap/home/content"): include angular-templates/bootstrap/home/content.jade
     // gallery
@@ -25,6 +27,8 @@ html(lang="en", ng-app="jumplink.cms", ng-controller="AppController", ng-init="$
     script(type="text/ng-template", id="bootstrap/gallery/toolbar"): include angular-templates/bootstrap/gallery/toolbar.jade
     // events
     script(type="text/ng-template", id="bootstrap/events/timeline"): include angular-templates/bootstrap/events/timeline.jade
+    script(type="text/ng-template", id="bootstrap/events/typechoosermodal"): include angular-templates/bootstrap/events/typechoosermodal.jade
+    script(type="text/ng-template", id="bootstrap/events/editeventmodal"): include angular-templates/bootstrap/events/editeventmodal.jade
     // members
     script(type="text/ng-template", id="bootstrap/members/content"): include angular-templates/bootstrap/members/content.jade
     // application
@@ -55,6 +59,7 @@ html(lang="en", ng-app="jumplink.cms", ng-controller="AppController", ng-init="$
 
     // angular
     script(type="text/javascript", src="/third-party/angular/angular.js")
+    script(type="text/javascript", src="/third-party/angular-i18n/angular-locale_de.js")
     script(type="text/javascript", src="/third-party/moment/moment.js")
     script(type="text/javascript", src="/third-party/angular-moment/angular-moment.js")
     script(type="text/javascript", src="/third-party/moment/locale/de.js")

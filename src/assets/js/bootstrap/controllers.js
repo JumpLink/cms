@@ -289,8 +289,105 @@ jumplink.cms.controller('GallerySlideController', function($scope, $sailsSocket,
 
 });
 
-jumplink.cms.controller('TimelineController', function($scope, events) {
+jumplink.cms.controller('TimelineController', function($rootScope, $scope, events, moment, $sailsSocket, $modal, $datepicker, eventService) {
   $scope.events = events;
+  var typeChooserModal = $modal({scope: $scope, title: 'Typ wählen', template: 'bootstrap/events/typechoosermodal', show: false});
+  var editEventModal = $modal({scope: $scope, title: 'Ereignis bearbeiten', template: 'bootstrap/events/editeventmodal', show: false});
+  var types = ['lecture', 'panel discussion', 'travel', 'info', 'food', 'other'];
+
+  var saveEvent = function (event) {
+    if(angular.isUndefined(event.id)) {
+      $sailsSocket.post('/timeline', event).success(function(data, status, headers, config) {
+        console.log("event created");
+        console.log(data);
+      });
+    } else {
+      $sailsSocket.put('/timeline/'+event.id, event).success(function(data, status, headers, config) {
+        console.log("event updated");
+        console.log(data);
+      });
+    }
+  }
+
+  $scope.save = function(event) {
+    // save just this event if defined
+    if(angular.isDefined(event)) {
+      saveEvent(event);
+    } else { // save all events
+      angular.forEach(['after', 'before', 'unknown'], function(eventPart, index) {
+        angular.forEach($scope.events[eventPart], function(event, index) {
+          saveEvent(event);
+        });
+      });
+    }
+  }
+
+  $scope.add = function() {
+    if($scope.events.after.length > 0) {
+      var newEvent = angular.copy($scope.events.after[0]);
+      newEvent.from = moment();
+      newEvent.from.add(1, 'hours');
+      newEvent.from.minutes(0);
+      delete newEvent.to;
+      delete newEvent.id;
+      $scope.events.after.push(newEvent);
+      $scope.edit(newEvent);
+    } else {
+      console.log("Es gibt keine anstehenden Veranstaltungen zum duplizieren: ");
+      console.log($scope.events.after);
+    }
+  }
+
+  var removeFromClient = function (event, eventName) {
+    var index = $scope.events[eventName].indexOf(event);
+    if (index > -1) {
+      $scope.events[eventName].splice(index, 1);
+    }
+  }
+
+  $scope.remove = function(event, eventName) {
+    if(eventName == "after" && $scope.events[eventName].length > 2) {
+      if(event.id) {
+        console.log(event);
+        $sailsSocket.delete('/timeline/'+event.id).success(function(users, status, headers, config) {
+          removeFromClient(event, eventName);
+        });
+      } else {
+        removeFromClient(event, eventName);
+      }
+    } else {
+      console.log("Das letzte noch anstehende Ereignis kann nicht gelöscht werden.");
+    }
+  }
+
+  $scope.refresh = function() {
+    var allEvents = eventService.merge(events.unknown, events.before, events.after);
+    $scope.events = eventService.split(allEvents);
+    delete allEvents;
+    console.log("refreshed");
+  }
+
+  $scope.edit = function(event) {
+    if($rootScope.authenticated) {
+      editEventModal.$scope.event = event;
+      //- Show when some event occurs (use $promise property to ensure the template has been loaded)
+      editEventModal.$promise.then(editEventModal.show);
+    }
+  }
+
+  $scope.openTypeChooserModal = function(event) {
+    if($rootScope.authenticated) {
+      typeChooserModal.$scope.event = event;
+      //- Show when some event occurs (use $promise property to ensure the template has been loaded)
+      typeChooserModal.$promise.then(typeChooserModal.show);
+    }
+  }
+
+  $scope.chooseType = function(event, type, hide) {
+    event.type = type;
+    hide();
+  }
+
 
 });
 
@@ -316,6 +413,7 @@ jumplink.cms.controller('MembersController', function($scope, members, $sailsSoc
       }
     }
   }
+
   $scope.add = function() {
     if($scope.members.length > 0) {
       var newMember = angular.copy($scope.members[$scope.members.length - 1]);
@@ -326,6 +424,7 @@ jumplink.cms.controller('MembersController', function($scope, members, $sailsSoc
       $scope.members.push({position: 1, name:"Hier Name eingeben", job: "Hier Beruf eingeben", image: 'photo.png'});
     }
   }
+
   $scope.save = function() {
     angular.forEach($scope.members, function(member, index) {
       if(angular.isUndefined(member.id)) {

@@ -1,66 +1,110 @@
 .container(style="min-height: 200px;")
-  .page-header
-    h1 Anstehende Veranstaltungen
-  ul.timeline
-    li(ng-repeat="event in events.after | orderBy:'from'", ng-class="{'timeline-inverted':$index%2}")
-      .timeline-badge.success(ng-show="event.type == 'lecture'")
-        i.fa.fa-graduation-cap
-      .timeline-badge.warning(ng-show="event.type == 'panel discussion'")
-        i.fa.fa-users
-      .timeline-badge.info(ng-show="event.type == 'travel'")
-        img(src="/images/ship_white.svg")
-      .timeline-panel
-        .timeline-heading
-          h4.timeline-title(ng-show="event.title", ng-bind-html="event.title")
-          p.text-muted(ng-show="event.person")
-            i.fa.fa-user
-            span(ng-bind-html="event.person")
-          p.text-muted(ng-show="event.from", title="{{event.from | amDateFormat:'dddd Do MMMM YYYY, HH:mm'}} Uhr")
-            i.fa.fa-clock-o
-            | {{event.from | amCalendar}}
-            span(ng-show="event.to")
-              |  bis {{event.to | amCalendar}}
-          p.text-muted(ng-show="event.place")
-            i.fa.fa-home
-            span(ng-bind-html="event.place")
-        .timeline-body
-          p(ng-show="event.download")
-            a(href="/{{event.download}}").btn.btn-info: | Weitere Informationen
-  .page-header(ng-show="events.before.length > 0")
-    h1 Archiv
-  ul.timeline(ng-show="events.before.length > 0")
-    li(ng-repeat="event in events.before | orderBy:'from':true", ng-class="{'timeline-inverted':$index%2}")
-      .timeline-badge.success(ng-show="event.type == 'lecture'")
-        i.fa.fa-graduation-cap
-      .timeline-badge.warning(ng-show="event.type == 'panel discussion'")
-        i.fa.fa-users
-      .timeline-badge.info(ng-show="event.type == 'travel'")
-        img(src="/images/ship_white.svg")
-      .timeline-panel
-        .timeline-heading
-          h4.timeline-title(ng-show="event.title", ng-bind-html="event.title")
-          p.text-muted(ng-show="event.person")
-            i.fa.fa-user
-            span(ng-bind-html="event.person")
-          p.text-muted(ng-show="event.from", title="{{event.from | amDateFormat:'dddd Do MMMM YYYY, HH:mm'}} Uhr")
-            i.fa.fa-clock-o
-            | {{event.from | amCalendar}}
-            span(ng-show="event.to")
-              |  bis {{event.to | amCalendar}}
-          p.text-muted(ng-show="event.place")
-            i.fa.fa-home
-            span(ng-bind-html="event.place")
-        .timeline-body
-          p(ng-show="event.download")
-            a(href="/{{event.download}}").btn.btn-info: | Weitere Informationen
+  span(ng-repeat="eventName in ['after', 'before', 'unknown']")
+    .page-header(ng-show="events.before.length > 0 && eventName == 'before'")
+      h1 Archiv
+    .page-header(ng-show="events.after.length > 0 && eventName == 'after'")
+      h1 Anstehende Veranstaltungen
+    .page-header(ng-show="events.unknown.length > 0 && eventName == 'unknown'")
+      h1 Weiteres
+    ul.timeline
+      li(ng-repeat="event in events[eventName] | orderBy:'from'", ng-class="{'timeline-inverted':$index%2}", ng-switch, on="event.type")
+        //- Timerline type
+        //- Vortrag
+        .timeline-badge.success(ng-switch-when="lecture", ng-click="openTypeChooserModal(event)")
+          i.fa.fa-graduation-cap
+        //- Poliumsdisskusion
+        .timeline-badge.warning(ng-switch-when="panel discussion", ng-click="openTypeChooserModal(event)")
+          i.fa.fa-users
+        //- Reise
+        .timeline-badge.primary(ng-switch-when="travel", ng-click="openTypeChooserModal(event)")
+          img(src="/images/ship_white.svg")
+        //- Information
+        .timeline-badge.info(ng-switch-when="info", ng-click="openTypeChooserModal(event)")
+          i.fa.fa-info
+        //- Schifffahrtsessen
+        .timeline-badge.danger(ng-switch-when="food", ng-click="openTypeChooserModal(event)")
+          i.fa.fa-cutlery
+        //- Anderes
+        .timeline-badge(ng-switch-default, ng-click="openTypeChooserModal(event)")
+          i.fa.fa-check-square
+        .timeline-panel
+          .timeline-heading
+            h4.timeline-title(ng-show="$root.authenticated", medium-editor, ng-model="event.title", options='{"placeholder": "Kein Titel angegeben", "disableToolbar": true, "forcePlainText": true, "disableReturn": true}')
+            h4.timeline-title(ng-show="!$root.authenticated && event.title", ng-bind-html="event.title")
+            p.text-muted
+              i.fa.fa-user(ng-show="$root.authenticated || event.person")
+              //- Person (Admin)
+              span(ng-show="$root.authenticated", medium-editor, ng-model="event.person", options='{"placeholder": "Keine Person angegeben", "disableToolbar": true, "forcePlainText": true, "disableReturn": true}')
+              //- Person (User)
+              span(ng-show="!$root.authenticated && event.person", ng-bind-html="event.person")
+            //- Von bis (User)
+            p.text-muted(ng-show="event.from", title="{{event.from | amDateFormat:'dddd Do MMMM YYYY, HH:mm'}} Uhr", ng-click="chooseFromDate(event)")
+              i.fa.fa-clock-o
+              | {{event.from | amCalendar}}
+              span(ng-show="event.to")
+                |  bis {{event.to | amCalendar}}
+              form(role="form", ng-show="$root.authenticated")
+                .form-group
+                  label.control-label(for="fromdate{{$index}}") Von
+                  .input-group
+                    .input-group-addon
+                      i.fa.fa-calendar
+                    input.form-control(id="fromdate{{$index}}", title="Von Datum", type='text', ng-model='event.from', data-max-date='{{event.to}}', placeholder='Datum', data-template="bootstrap/datepicker", bs-datepicker='bs-datepicker')
+                    span.input-group-btn
+                      button.btn.btn-danger(type="button", title="löschen", ng-click="event.from = ''")
+                        i.fa.fa-trash
+                .form-group
+                  .input-group
+                    .input-group-addon
+                      i.fa.fa-clock-o
+                    input.form-control(id="fromtime{{$index}}", title="Von Uhrzeit", type='text', ng-model='event.from', placeholder='Uhrzeit', data-template="bootstrap/timepicker", bs-timepicker='bs-timepicker')
+                    span.input-group-btn
+                      button.btn.btn-danger(type="button", title="löschen", ng-click="event.from = ''")
+                        i.fa.fa-trash
+                .form-group
+                  label.control-label(for="todate") Bis
+                  .input-group
+                    .input-group-addon
+                      i.fa.fa-calendar
+                    input.form-control(id="todate{{$index}}", title="Bis Datum", type='text', ng-model='event.to', data-min-date='{{event.from}}', placeholder='Datum', data-template="bootstrap/datepicker", bs-datepicker='bs-datepicker')
+                    span.input-group-btn
+                      button.btn.btn-danger(type="button", title="löschen", ng-click="event.to = ''")
+                        i.fa.fa-trash
+                .form-group
+                  .input-group
+                    .input-group-addon
+                      i.fa.fa-clock-o
+                    input.form-control(id="totime{{$index}}", title="Bis Uhrzeit", type='text', ng-model='event.to', placeholder='Uhrzeit', data-template="bootstrap/timepicker", bs-timepicker='bs-timepicker')
+                    span.input-group-btn
+                      button.btn.btn-danger(type="button", title="löschen", ng-click="event.to = ''")
+                        i.fa.fa-trash
+            p.text-muted(ng-show="$root.authenticated")
+              i.fa.fa-home
+              span(medium-editor, ng-model="event.place", options='{"placeholder": "Kein Ort angegeben", "disableToolbar": true, "forcePlainText": true, "disableReturn": true}')
+            p.text-muted(ng-hide="$root.authenticated", ng-show="event.place")
+              i.fa.fa-home(ng-show="event.place")
+              span(ng-hide="$root.authenticated", ng-bind-html="event.place")
+          .timeline-body
+            p(ng-show="event.download")
+              a(href="/{{event.download}}").btn.btn-info: | Weitere Informationen
+            p.btn-group(ng-show="$root.authenticated")
+              button.btn.btn-danger(type="button", title="Ereignis löschen", ng-click="remove(event, eventName)"): i.fa.fa-trash
+              button.btn.btn-warning(type="button", title="Ereignis bearbeiten", ng-click="edit(event)"): i.fa.fa-edit
+              button.btn.btn-primary(type="button", title="Ereignis speichern", ng-click="save(event)"): i.fa.fa-floppy-o
 nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="$root.authenticated")
   .container
     .navbar-left
       p.navbar-text Admininstration
     form.navbar-from.navbar-right
-      button.btn.btn-default.navbar-btn(ng-show="toogleHtml", ng-click="toogleHtml()")
+      button.btn.btn-default.navbar-btn(ng-show="add", title="Hinzufügen", ng-click="add()")
+        i.fa.fa-plus
+      button.btn.btn-default.navbar-btn(ng-show="download", title="Herunterladen", ng-click="download()")
+        i.fa.fa-download
+      button.btn.btn-default.navbar-btn(ng-show="refresh", title="Aktualisieren", ng-click="refresh()")
+        i.fa.fa-refresh
+      button.btn.btn-default.navbar-btn(ng-show="toogleHtml", title="HTML-Modus umschalten", ng-click="toogleHtml()")
         | HTML
-      button.btn.btn-default.navbar-btn(ng-show="save", ng-click="save()")
+      button.btn.btn-default.navbar-btn(ng-show="save", title="Speichern", ng-click="save()")
         i.fa.fa-floppy-o
-      button.btn.btn-default.navbar-btn(ui-sref='bootstrap-layout.administration')
+      button.btn.btn-default.navbar-btn(title="Einstellungen", ui-sref='bootstrap-layout.administration')
         i.fa.fa-cog

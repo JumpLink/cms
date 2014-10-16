@@ -161,6 +161,11 @@ label {
     font-style: normal;
   }
 }
+.timeline {
+  .medium-editor-placeholder:after {
+    position: static;
+  }
+}
 
 
 // bootstrapAdditions
@@ -468,6 +473,33 @@ body {
 /* rewritten bootstrap 3 responsive timeline css for less
  * source: http://bootsnipp.com/snippets/featured/timeline-responsive
  */
+
+.timeline-badge() {
+  color: #fff;
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  font-size: 1.4em;
+  text-align: center;
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  margin-left: -25px;
+  background-color: #999999;
+  z-index: 100;
+  border-top-right-radius: 50%;
+  border-top-left-radius: 50%;
+  border-bottom-right-radius: 50%;
+  border-bottom-left-radius: 50%;
+  img {
+    width: 33px;
+    border-top-right-radius: 50%;
+    border-top-left-radius: 50%;
+    border-bottom-right-radius: 50%;
+    border-bottom-left-radius: 50%;
+  }
+}
+
 .timeline {
   list-style: none;
   padding: 20px 0 20px;
@@ -511,65 +543,46 @@ body {
     }
 
     & > .timeline-panel {
-        width: 46%;
-        float: left;
-        border: 1px solid #d4d4d4;
-        border-radius: 2px;
-        padding: 20px;
-        position: relative;
-        -webkit-box-shadow: 0 1px 6px rgba(0, 0, 0, 0.175);
-        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.175);
+      width: 46%;
+      float: left;
+      border: 1px solid #d4d4d4;
+      border-radius: 2px;
+      padding: 20px;
+      position: relative;
+      -webkit-box-shadow: 0 1px 6px rgba(0, 0, 0, 0.175);
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.175);
 
-        &:before {
-          position: absolute;
-          top: 26px;
-          right: -15px;
-          display: inline-block;
-          border-top: 15px solid transparent;
-          border-left: 15px solid #ccc;
-          border-right: 0 solid #ccc;
-          border-bottom: 15px solid transparent;
-          content: " ";
-        }
-
-        &:after {
-          position: absolute;
-          top: 27px;
-          right: -14px;
-          display: inline-block;
-          border-top: 14px solid transparent;
-          border-left: 14px solid #fff;
-          border-right: 0 solid #fff;
-          border-bottom: 14px solid transparent;
-          content: " ";
-        }
-      }
-      > .timeline-badge {
-        color: #fff;
-        width: 50px;
-        height: 50px;
-        line-height: 50px;
-        font-size: 1.4em;
-        text-align: center;
+      &:before {
         position: absolute;
-        top: 16px;
-        left: 50%;
-        margin-left: -25px;
-        background-color: #999999;
-        z-index: 100;
-        border-top-right-radius: 50%;
-        border-top-left-radius: 50%;
-        border-bottom-right-radius: 50%;
-        border-bottom-left-radius: 50%;
-        img {
-          width: 33px;
-          border-top-right-radius: 50%;
-          border-top-left-radius: 50%;
-          border-bottom-right-radius: 50%;
-          border-bottom-left-radius: 50%;
-        }
+        top: 26px;
+        right: -15px;
+        display: inline-block;
+        border-top: 15px solid transparent;
+        border-left: 15px solid #ccc;
+        border-right: 0 solid #ccc;
+        border-bottom: 15px solid transparent;
+        content: " ";
       }
-      &.timeline-inverted > .timeline-panel {
+
+      &:after {
+        position: absolute;
+        top: 27px;
+        right: -14px;
+        display: inline-block;
+        border-top: 14px solid transparent;
+        border-left: 14px solid #fff;
+        border-right: 0 solid #fff;
+        border-bottom: 14px solid transparent;
+        content: " ";
+      }
+    }
+
+    > .timeline-badge {
+      .timeline-badge();
+    }
+
+    &.timeline-inverted {
+      > .timeline-panel {
         float: right;
         &:before {
           border-left-width: 0;
@@ -584,9 +597,33 @@ body {
           left: -14px;
           right: auto;
         }
+        .btn {
+          // float: right
+        }
       }
+    }
   }
 }
+
+.modal-body {
+  .timeline-badge {
+    .timeline-badge();
+    position: static;
+    float: left;
+    margin: 0;
+    top: auto;
+    left: auto;
+  }
+}
+
+.timeline {
+  .form-horizontal {
+    .form-group {
+      margin: 0;
+    }
+  }
+}
+
 
 .timeline-badge {
   &.primary {
