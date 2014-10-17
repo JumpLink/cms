@@ -289,11 +289,25 @@ jumplink.cms.controller('GallerySlideController', function($scope, $sailsSocket,
 
 });
 
-jumplink.cms.controller('TimelineController', function($rootScope, $scope, events, moment, $sailsSocket, $modal, $datepicker, eventService) {
+jumplink.cms.controller('TimelineController', function($rootScope, $scope, events, moment, $sailsSocket, $modal, $datepicker, eventService, FileUploader) {
   $scope.events = events;
+  $scope.uploader = new FileUploader({url: 'timeline/upload', removeAfterUpload: true});
   var typeChooserModal = $modal({scope: $scope, title: 'Typ wählen', template: 'bootstrap/events/typechoosermodal', show: false});
-  var editEventModal = $modal({scope: $scope, title: 'Ereignis bearbeiten', template: 'bootstrap/events/editeventmodal', show: false});
+  var editEventModal = $modal({scope: $scope, title: 'Ereignis bearbeiten', uploader: $scope.uploader, template: 'bootstrap/events/editeventmodal', show: false});
   var types = ['lecture', 'panel discussion', 'travel', 'info', 'food', 'other'];
+
+  $scope.uploader.onCompleteItem = function(fileItem, response, status, headers) {
+    fileItem.event.download = response.files[0].uploadedAs;
+  };
+
+  $scope.uploader.onProgressItem = function(fileItem, progress) {
+    console.info('onProgressItem', fileItem, progress);
+  };
+
+  $scope.upload = function(fileItem, event) {
+    fileItem.event = event;
+    fileItem.upload();
+  }
 
   var saveEvent = function (event) {
     if(angular.isUndefined(event.id)) {

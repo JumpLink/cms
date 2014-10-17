@@ -51,7 +51,7 @@
               span(ng-hide="$root.authenticated", ng-bind-html="event.place")
           .timeline-body
             p(ng-show="event.download")
-              a(href="/{{event.download}}").btn.btn-info: | Weitere Informationen
+              a(href="/files/timeline/{{event.download}}").btn.btn-info: | Weitere Informationen
             p.btn-group(ng-show="$root.authenticated")
               button.btn.btn-danger(type="button", title="Ereignis löschen", ng-click="remove(event, eventName)"): i.fa.fa-trash
               button.btn.btn-warning(type="button", title="Ereignis bearbeiten", ng-click="edit(event)"): i.fa.fa-edit

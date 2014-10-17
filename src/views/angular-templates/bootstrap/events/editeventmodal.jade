@@ -49,7 +49,25 @@
               span.input-group-btn
                 button.btn.btn-danger(type="button", title="löschen", ng-click="event.to = ''")
                   i.fa.fa-trash
-          button.btn.btn-lg.btn-primary(type='button', ng-click="openTypeChooserModal(event)")
-            | Ereignistyp auswählen
+          .form-group
+            button.btn.btn-lg.btn-primary(type='button', ng-click="openTypeChooserModal(event)")
+              | Ereignistyp auswählen
+          .form-group
+            label.control-label(for="fromdate") Anhang
+            //- https://github.com/nervgh/angular-file-upload
+            .input-group
+              span.input-group-btn
+                //- hide the browsers ugly upload button http://www.abeautifulsite.net/whipping-file-inputs-into-shape-with-bootstrap-3/
+                span.btn.btn-success.btn-file(title="Datei auswählen")
+                  i.fa.fa-paperclip
+                  input(type="file", nv-file-select, uploader="uploader")
+              //- just upload last selected file
+              input#attachment.form-control(type="text", title="Anhang", readonly, ng-if="uploader.queue[uploader.queue.length-1].file.name", placeholder='Kein Anhang', ng-model="uploader.queue[uploader.queue.length-1].file.name")
+              input#attachment.form-control(type="text", title="Anhang", readonly, ng-if="!uploader.queue[uploader.queue.length-1].file.name", placeholder='Kein Anhang', ng-model="event.download")
+              span.input-group-btn
+                button.btn.btn-primary(ng-click="upload(uploader.queue[uploader.queue.length-1], event)", ng-disabled="!uploader.queue[uploader.queue.length-1].file.name", title="Hochladen")
+                  i.fa.fa-upload
+            .progress(ng-show="uploader.queue[uploader.queue.length-1].file")
+              .progress-bar.progress-bar-success(role='progressbar', ng-model="uploader.queue[uploader.queue.length-1].progress", aria-valuenow='{{uploader.queue[uploader.queue.length-1].progress}}', aria-valuemin='0', aria-valuemax='100', ng-style="{ 'width': uploader.queue[uploader.queue.length-1].progress + '%' }")
       .modal-footer
         button.btn.btn-default(type='button', ng-click='$hide()') Schließen

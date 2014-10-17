@@ -43,6 +43,9 @@ html(lang="en", ng-app="jumplink.cms", ng-controller="AppController", ng-init="$
     script(type="text/ng-template", id="bootstrap/administration/user"): include angular-templates/bootstrap/administration/user.jade
   body(ng-class="bodyclass")
     span(ui-view)
+    // es5-shim: ECMAScript 5 compatibility shims for legacy JavaScript engines: https://github.com/es-shims/es5-shim
+    script(type="text/javascript", src="/third-party/es5-shim/es5-shim.js")
+    script(type="text/javascript", src="/third-party/es5-shim/es5-sham.js")
     // angular-masonry
     script(type="text/javascript", src="/third-party/jquery/dist/jquery.js")
     script(type="text/javascript", src="/third-party/jquery-bridget/jquery.bridget.js")
@@ -102,6 +105,9 @@ html(lang="en", ng-app="jumplink.cms", ng-controller="AppController", ng-init="$
 
     // async: https://github.com/caolan/async
     script(type="text/javascript", src="/third-party/async/lib/async.js")
+
+    // angular-file-upload: https://github.com/nervgh/angular-file-upload
+    script(type="text/javascript", src="/third-party/angular-file-upload/angular-file-upload.js")
 
     //- Bring in the socket.io client
     script(type="text/javascript", src="/js/dependencies/socket.io.js")
