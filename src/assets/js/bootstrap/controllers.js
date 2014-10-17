@@ -411,7 +411,19 @@ jumplink.cms.controller('TimelineController', function($rootScope, $scope, event
 
 });
 
-jumplink.cms.controller('MembersController', function($rootScope, $scope, members, $sailsSocket, $filter) {
+jumplink.cms.controller('MembersController', function($rootScope, $scope, members, $sailsSocket, $filter, $modal, FileUploader) {
+  $scope.uploader = new FileUploader({url: 'member/upload', removeAfterUpload: true});
+  var editMemberModal = $modal({scope: $scope, title: 'Person bearbeiten', uploader: $scope.uploader, template: 'bootstrap/members/editmembermodal', show: false});
+
+  $scope.upload = function(fileItem, member) {
+    fileItem.member = member;
+    fileItem.upload();
+  }
+
+  $scope.uploader.onCompleteItem = function(fileItem, response, status, headers) {
+    fileItem.member.image = response.files[0].uploadedAs;
+  };
+
 
   var removeFromClient = function (member) {
     var index = $scope.members.indexOf(member);
@@ -472,6 +484,14 @@ jumplink.cms.controller('MembersController', function($rootScope, $scope, member
       } else { // save just this member
         saveMember(member);
       }
+    }
+  }
+
+  $scope.edit = function(member) {
+    if($rootScope.authenticated) {
+      editMemberModal.$scope.member = member;
+      //- Show when some event occurs (use $promise property to ensure the template has been loaded)
+      editMemberModal.$promise.then(editMemberModal.show);
     }
   }
 

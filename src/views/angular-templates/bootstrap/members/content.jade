@@ -3,7 +3,7 @@
     h1 Vorstand / Beirat
   .row(style='text-align: center;')
     .col-lg-3.col-md-4.col-sm-6.member(ng-repeat="member in members")
-      img.img-circle(alt='{{member.name}}', ng-src='images/{{member.image}}', style='width: 140px; height: 140px;')
+      img.img-circle(alt='{{member.name}}', ng-src='images/members/{{member.image}}', style='width: 140px; height: 140px;')
       h2
         div(ng-show="$root.authenticated", medium-editor, ng-model="member.name", options='{"placeholder": "Name eingeben", "disableToolbar": true, "forcePlainText": true, "disableReturn": true}')
         div(ng-hide="$root.authenticated", ng-bind-html="member.name")
@@ -12,6 +12,7 @@
       p.btn-group(ng-show="authenticated")
         button.btn.btn-warning(ng-disabled="$index <= 0", ng-click="moveBackward(member)"): i.fa.fa-backward
         button.btn.btn-danger(ng-click="remove(member)"): i.fa.fa-trash
+        button.btn.btn-warning(ng-click="edit(member)"): i.fa.fa-edit
         button.btn.btn-primary(ng-click="save(member)"): i.fa.fa-floppy-o
         button.btn.btn-warning(ng-disabled="$index >= members.length - 1", ng-click="moveForward(member)"): i.fa.fa-forward
 nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="$root.authenticated")

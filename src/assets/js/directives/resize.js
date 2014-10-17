@@ -20,6 +20,5 @@ jumplink.cms.directive('resize', function ($rootScope, $window, $timeout) {
         scope.$apply();
       });
     }, true);
-
   }
-})
+});
