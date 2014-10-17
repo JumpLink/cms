@@ -65,6 +65,8 @@
               input#attachment.form-control(type="text", title="Anhang", readonly, ng-if="uploader.queue[uploader.queue.length-1].file.name", placeholder='Kein Anhang', ng-model="uploader.queue[uploader.queue.length-1].file.name")
               input#attachment.form-control(type="text", title="Anhang", readonly, ng-if="!uploader.queue[uploader.queue.length-1].file.name", placeholder='Kein Anhang', ng-model="event.download")
               span.input-group-btn
+                button.btn.btn-danger(ng-click="event.download = null", ng-disabled="!event.download", title="Anhang entfernen")
+                  i.fa.fa-trash
                 button.btn.btn-primary(ng-click="upload(uploader.queue[uploader.queue.length-1], event)", ng-disabled="!uploader.queue[uploader.queue.length-1].file.name", title="Hochladen")
                   i.fa.fa-upload
             .progress(ng-show="uploader.queue[uploader.queue.length-1].file")
