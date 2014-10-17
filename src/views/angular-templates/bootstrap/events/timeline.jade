@@ -38,46 +38,11 @@
               //- Person (User)
               span(ng-show="!$root.authenticated && event.person", ng-bind-html="event.person")
             //- Von bis (User)
-            p.text-muted(ng-show="event.from", title="{{event.from | amDateFormat:'dddd Do MMMM YYYY, HH:mm'}} Uhr", ng-click="chooseFromDate(event)")
+            p.text-muted(ng-show="event.from", title="{{event.from | amDateFormat:'dddd Do MMMM YYYY, HH:mm'}} Uhr", ng-click="edit(event)")
               i.fa.fa-clock-o
               | {{event.from | amCalendar}}
               span(ng-show="event.to")
                 |  bis {{event.to | amCalendar}}
-              form(role="form", ng-show="$root.authenticated")
-                .form-group
-                  label.control-label(for="fromdate{{$index}}") Von
-                  .input-group
-                    .input-group-addon
-                      i.fa.fa-calendar
-                    input.form-control(id="fromdate{{$index}}", title="Von Datum", type='text', ng-model='event.from', data-max-date='{{event.to}}', placeholder='Datum', data-template="bootstrap/datepicker", bs-datepicker='bs-datepicker')
-                    span.input-group-btn
-                      button.btn.btn-danger(type="button", title="löschen", ng-click="event.from = ''")
-                        i.fa.fa-trash
-                .form-group
-                  .input-group
-                    .input-group-addon
-                      i.fa.fa-clock-o
-                    input.form-control(id="fromtime{{$index}}", title="Von Uhrzeit", type='text', ng-model='event.from', placeholder='Uhrzeit', data-template="bootstrap/timepicker", bs-timepicker='bs-timepicker')
-                    span.input-group-btn
-                      button.btn.btn-danger(type="button", title="löschen", ng-click="event.from = ''")
-                        i.fa.fa-trash
-                .form-group
-                  label.control-label(for="todate") Bis
-                  .input-group
-                    .input-group-addon
-                      i.fa.fa-calendar
-                    input.form-control(id="todate{{$index}}", title="Bis Datum", type='text', ng-model='event.to', data-min-date='{{event.from}}', placeholder='Datum', data-template="bootstrap/datepicker", bs-datepicker='bs-datepicker')
-                    span.input-group-btn
-                      button.btn.btn-danger(type="button", title="löschen", ng-click="event.to = ''")
-                        i.fa.fa-trash
-                .form-group
-                  .input-group
-                    .input-group-addon
-                      i.fa.fa-clock-o
-                    input.form-control(id="totime{{$index}}", title="Bis Uhrzeit", type='text', ng-model='event.to', placeholder='Uhrzeit', data-template="bootstrap/timepicker", bs-timepicker='bs-timepicker')
-                    span.input-group-btn
-                      button.btn.btn-danger(type="button", title="löschen", ng-click="event.to = ''")
-                        i.fa.fa-trash
             p.text-muted(ng-show="$root.authenticated")
               i.fa.fa-home
               span(medium-editor, ng-model="event.place", options='{"placeholder": "Kein Ort angegeben", "disableToolbar": true, "forcePlainText": true, "disableReturn": true}')
@@ -96,15 +61,16 @@ nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="$r
     .navbar-left
       p.navbar-text Admininstration
     form.navbar-from.navbar-right
-      button.btn.btn-default.navbar-btn(ng-show="add", title="Hinzufügen", ng-click="add()")
-        i.fa.fa-plus
-      button.btn.btn-default.navbar-btn(ng-show="download", title="Herunterladen", ng-click="download()")
-        i.fa.fa-download
-      button.btn.btn-default.navbar-btn(ng-show="refresh", title="Aktualisieren", ng-click="refresh()")
-        i.fa.fa-refresh
-      button.btn.btn-default.navbar-btn(ng-show="toogleHtml", title="HTML-Modus umschalten", ng-click="toogleHtml()")
-        | HTML
-      button.btn.btn-default.navbar-btn(ng-show="save", title="Speichern", ng-click="save()")
-        i.fa.fa-floppy-o
+      .btn-group
+        button.btn.btn-warning.navbar-btn(ng-show="add", title="Hinzufügen", ng-click="add()")
+          i.fa.fa-plus
+        button.btn.btn-success.navbar-btn(ng-show="download", title="Herunterladen", ng-click="download()")
+          i.fa.fa-download
+        button.btn.btn-success.navbar-btn(ng-show="refresh", title="Aktualisieren", ng-click="refresh()")
+          i.fa.fa-refresh
+        button.btn.btn-default.navbar-btn(ng-show="toogleHtml", title="HTML-Modus umschalten", ng-click="toogleHtml()")
+          | HTML
+        button.btn.btn-primary.navbar-btn(ng-show="save", title="Speichern", ng-click="save()")
+          i.fa.fa-floppy-o
       button.btn.btn-default.navbar-btn(title="Einstellungen", ui-sref='bootstrap-layout.administration')
         i.fa.fa-cog

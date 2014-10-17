@@ -310,31 +310,35 @@ jumplink.cms.controller('TimelineController', function($rootScope, $scope, event
   }
 
   $scope.save = function(event) {
-    // save just this event if defined
-    if(angular.isDefined(event)) {
-      saveEvent(event);
-    } else { // save all events
-      angular.forEach(['after', 'before', 'unknown'], function(eventPart, index) {
-        angular.forEach($scope.events[eventPart], function(event, index) {
-          saveEvent(event);
+    if($rootScope.authenticated) {
+      // save just this event if defined
+      if(angular.isDefined(event)) {
+        saveEvent(event);
+      } else { // save all events
+        angular.forEach(['after', 'before', 'unknown'], function(eventPart, index) {
+          angular.forEach($scope.events[eventPart], function(event, index) {
+            saveEvent(event);
+          });
         });
-      });
+      }
     }
   }
 
   $scope.add = function() {
-    if($scope.events.after.length > 0) {
-      var newEvent = angular.copy($scope.events.after[0]);
-      newEvent.from = moment();
-      newEvent.from.add(1, 'hours');
-      newEvent.from.minutes(0);
-      delete newEvent.to;
-      delete newEvent.id;
-      $scope.events.after.push(newEvent);
-      $scope.edit(newEvent);
-    } else {
-      console.log("Es gibt keine anstehenden Veranstaltungen zum duplizieren: ");
-      console.log($scope.events.after);
+    if($rootScope.authenticated) {
+      if($scope.events.after.length > 0) {
+        var newEvent = angular.copy($scope.events.after[0]);
+        newEvent.from = moment();
+        newEvent.from.add(1, 'hours');
+        newEvent.from.minutes(0);
+        delete newEvent.to;
+        delete newEvent.id;
+        $scope.events.after.push(newEvent);
+        $scope.edit(newEvent);
+      } else {
+        console.log("Es gibt keine anstehenden Veranstaltungen zum duplizieren: ");
+        console.log($scope.events.after);
+      }
     }
   }
 
@@ -346,17 +350,19 @@ jumplink.cms.controller('TimelineController', function($rootScope, $scope, event
   }
 
   $scope.remove = function(event, eventName) {
-    if(eventName == "after" && $scope.events[eventName].length > 2) {
-      if(event.id) {
-        console.log(event);
-        $sailsSocket.delete('/timeline/'+event.id).success(function(users, status, headers, config) {
+    if($rootScope.authenticated) {
+      if(eventName == "after" && $scope.events[eventName].length > 2) {
+        if(event.id) {
+          console.log(event);
+          $sailsSocket.delete('/timeline/'+event.id).success(function(users, status, headers, config) {
+            removeFromClient(event, eventName);
+          });
+        } else {
           removeFromClient(event, eventName);
-        });
+        }
       } else {
-        removeFromClient(event, eventName);
+        console.log("Das letzte noch anstehende Ereignis kann nicht gelöscht werden.");
       }
-    } else {
-      console.log("Das letzte noch anstehende Ereignis kann nicht gelöscht werden.");
     }
   }
 
@@ -391,7 +397,7 @@ jumplink.cms.controller('TimelineController', function($rootScope, $scope, event
 
 });
 
-jumplink.cms.controller('MembersController', function($scope, members, $sailsSocket, $filter) {
+jumplink.cms.controller('MembersController', function($rootScope, $scope, members, $sailsSocket, $filter) {
 
   var removeFromClient = function (member) {
     var index = $scope.members.indexOf(member);
@@ -402,70 +408,87 @@ jumplink.cms.controller('MembersController', function($scope, members, $sailsSoc
 
   $scope.members = members;
   $scope.remove = function(member) {
-    if($scope.members.length > 2) {
-      if(member.id) {
-        console.log(member);
-        $sailsSocket.delete('/member/'+member.id).success(function(users, status, headers, config) {
+    if($rootScope.authenticated) {
+      if($scope.members.length > 2) {
+        if(member.id) {
+          console.log(member);
+          $sailsSocket.delete('/member/'+member.id).success(function(users, status, headers, config) {
+            removeFromClient(member);
+          });
+        } else {
           removeFromClient(member);
-        });
-      } else {
-        removeFromClient(member);
+        }
       }
     }
   }
 
   $scope.add = function() {
-    if($scope.members.length > 0) {
-      var newMember = angular.copy($scope.members[$scope.members.length - 1]);
-      delete newMember.id;
-      delete newMember.position++;
-      $scope.members.push(newMember);
-    } else {
-      $scope.members.push({position: 1, name:"Hier Name eingeben", job: "Hier Beruf eingeben", image: 'photo.png'});
+    if($rootScope.authenticated) {
+      if($scope.members.length > 0) {
+        var newMember = angular.copy($scope.members[$scope.members.length - 1]);
+        delete newMember.id;
+        delete newMember.position++;
+        $scope.members.push(newMember);
+      } else {
+        $scope.members.push({position: 1, name:"Hier Name eingeben", job: "Hier Beruf eingeben", image: 'photo.png'});
+      }
     }
   }
 
-  $scope.save = function() {
-    angular.forEach($scope.members, function(member, index) {
-      if(angular.isUndefined(member.id)) {
-        // create member
-        $sailsSocket.post('/member', member).success(function(data, status, headers, config) {
-          // console.log(data);
-        });
-      } else {
-        // update member
-        $sailsSocket.put('/member/'+member.id, member).success(function(data, status, headers, config) {
-          // console.log(data);
-        });
-      }
+  var saveMember = function (member) {
+    if(angular.isUndefined(member.id)) {
+      // create member
+      $sailsSocket.post('/member', member).success(function(data, status, headers, config) {
+        // console.log(data);
+      });
+    } else {
+      // update member
+      $sailsSocket.put('/member/'+member.id, member).success(function(data, status, headers, config) {
+        // console.log(data);
+      });
+    }
+  }
 
-    });
+  $scope.save = function(member) {
+    if($rootScope.authenticated) {
+      if(angular.isUndefined(member)) {  // save all members
+        angular.forEach($scope.members, function(member, index) {
+          saveMember(member);
+        });
+      } else { // save just this member
+        saveMember(member);
+      }
+    }
   }
 
   $scope.moveForward = function(member) {
-    var index = $scope.members.indexOf(member);
-    if(index < $scope.members.length && angular.isDefined($scope.members[index+1])) {
-      var newPosition = $scope.members[index+1].position;
-      var oldPosition = $scope.members[index].position;
-      console.log(newPosition+" <-> "+oldPosition);
-      $scope.members[index].position = newPosition;
-      $scope.members[index+1].position = oldPosition;
-      $scope.members = $filter('orderBy')($scope.members, 'position');
-    } else {
-      $rootScope.pop('error', member.name, "Kann nicht verschoben werden.");
+    if($rootScope.authenticated) {
+      var index = $scope.members.indexOf(member);
+      if(index < $scope.members.length && angular.isDefined($scope.members[index+1])) {
+        var newPosition = $scope.members[index+1].position;
+        var oldPosition = $scope.members[index].position;
+        console.log(newPosition+" <-> "+oldPosition);
+        $scope.members[index].position = newPosition;
+        $scope.members[index+1].position = oldPosition;
+        $scope.members = $filter('orderBy')($scope.members, 'position');
+      } else {
+        $rootScope.pop('error', member.name, "Kann nicht verschoben werden.");
+      }
     }
   }
   $scope.moveBackward = function(member) {
-    var index = $scope.members.indexOf(member);
-    if(index > 0 && angular.isDefined($scope.members[index-1])) {
-      var newPosition = $scope.members[index-1].position;
-      var oldPosition = $scope.members[index].position;
-      console.log(newPosition+" <-> "+oldPosition);
-      $scope.members[index].position = newPosition;
-      $scope.members[index-1].position = oldPosition;
-      $scope.members = $filter('orderBy')($scope.members, 'position');
-    } else {
-      $rootScope.pop('error', member.name, "Kann nicht verschoben werden.");
+    if($rootScope.authenticated) {
+      var index = $scope.members.indexOf(member);
+      if(index > 0 && angular.isDefined($scope.members[index-1])) {
+        var newPosition = $scope.members[index-1].position;
+        var oldPosition = $scope.members[index].position;
+        console.log(newPosition+" <-> "+oldPosition);
+        $scope.members[index].position = newPosition;
+        $scope.members[index-1].position = oldPosition;
+        $scope.members = $filter('orderBy')($scope.members, 'position');
+      } else {
+        $rootScope.pop('error', member.name, "Kann nicht verschoben werden.");
+      }
     }
   }
 
