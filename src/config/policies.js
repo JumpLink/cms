@@ -29,8 +29,9 @@ module.exports.policies = {
   '*': 'sessionAuth',
 
   ViewController: {
-    'signin': true,
-    'singlePageBootstrap': true
+    // express-useragent is a simple ExpressJS user-agent middleware exposing user-agent details to your application and views: https://github.com/biggora/express-useragent
+    'signin': "useragent",
+    'singlePageBootstrap': "useragent"
   },
 
   SessionController: {

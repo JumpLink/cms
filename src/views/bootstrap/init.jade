@@ -12,36 +12,36 @@ html(lang="en", ng-app="jumplink.cms", ng-controller="AppController", ng-init="$
 
     // Templates
     // general
-    script(type="text/ng-template", id="bootstrap/layout"): include angular-templates/bootstrap/layout.jade
-    script(type="text/ng-template", id="bootstrap/toolbar"): include angular-templates/bootstrap/toolbar.jade
-    script(type="text/ng-template", id="bootstrap/footer"): include angular-templates/bootstrap/footer.jade
-    script(type="text/ng-template", id="bootstrap/sidebar"): include angular-templates/bootstrap/sidebar.jade
-    script(type="text/ng-template", id="bootstrap/adminbar"): include angular-templates/bootstrap/adminbar.jade
-    script(type="text/ng-template", id="bootstrap/datepicker"): include angular-templates/bootstrap/datepicker.jade
-    script(type="text/ng-template", id="bootstrap/timepicker"): include angular-templates/bootstrap/timepicker.jade
+    script(type="text/ng-template", id="bootstrap/layout"): include ./templates/layout.jade
+    script(type="text/ng-template", id="bootstrap/toolbar"): include ./templates/toolbar.jade
+    script(type="text/ng-template", id="bootstrap/footer"): include ./templates/footer.jade
+    script(type="text/ng-template", id="bootstrap/sidebar"): include ./templates/sidebar.jade
+    script(type="text/ng-template", id="bootstrap/adminbar"): include ./templates/adminbar.jade
+    script(type="text/ng-template", id="bootstrap/datepicker"): include ./templates/datepicker.jade
+    script(type="text/ng-template", id="bootstrap/timepicker"): include ./templates/timepicker.jade
     // home
-    script(type="text/ng-template", id="bootstrap/home/content"): include angular-templates/bootstrap/home/content.jade
+    script(type="text/ng-template", id="bootstrap/home/content"): include ./templates/home/content.jade
     // gallery
-    script(type="text/ng-template", id="bootstrap/gallery/view"): include angular-templates/bootstrap/gallery/view.jade
-    script(type="text/ng-template", id="bootstrap/gallery/slider"): include angular-templates/bootstrap/gallery/slider.jade
-    script(type="text/ng-template", id="bootstrap/gallery/toolbar"): include angular-templates/bootstrap/gallery/toolbar.jade
+    script(type="text/ng-template", id="bootstrap/gallery/view"): include ./templates/gallery/view.jade
+    script(type="text/ng-template", id="bootstrap/gallery/slider"): include ./templates/gallery/slider.jade
+    script(type="text/ng-template", id="bootstrap/gallery/toolbar"): include ./templates/gallery/toolbar.jade
     // events
-    script(type="text/ng-template", id="bootstrap/events/timeline"): include angular-templates/bootstrap/events/timeline.jade
-    script(type="text/ng-template", id="bootstrap/events/typechoosermodal"): include angular-templates/bootstrap/events/typechoosermodal.jade
-    script(type="text/ng-template", id="bootstrap/events/editeventmodal"): include angular-templates/bootstrap/events/editeventmodal.jade
+    script(type="text/ng-template", id="bootstrap/events/timeline"): include ./templates/events/timeline.jade
+    script(type="text/ng-template", id="bootstrap/events/typechoosermodal"): include ./templates/events/typechoosermodal.jade
+    script(type="text/ng-template", id="bootstrap/events/editeventmodal"): include ./templates/events/editeventmodal.jade
     // members
-    script(type="text/ng-template", id="bootstrap/members/content"): include angular-templates/bootstrap/members/content.jade
-    script(type="text/ng-template", id="bootstrap/members/editmembermodal"): include angular-templates/bootstrap/members/editmembermodal.jade
+    script(type="text/ng-template", id="bootstrap/members/content"): include ./templates/members/content.jade
+    script(type="text/ng-template", id="bootstrap/members/editmembermodal"): include ./templates/members/editmembermodal.jade
     // application
-    script(type="text/ng-template", id="bootstrap/application/content"): include angular-templates/bootstrap/application/content.jade
+    script(type="text/ng-template", id="bootstrap/application/content"): include ./templates/application/content.jade
     // imprint
-    script(type="text/ng-template", id="bootstrap/imprint/content"): include angular-templates/bootstrap/imprint/content.jade
+    script(type="text/ng-template", id="bootstrap/imprint/content"): include ./templates/imprint/content.jade
     // links
-    script(type="text/ng-template", id="bootstrap/links/content"): include angular-templates/bootstrap/links/content.jade
+    script(type="text/ng-template", id="bootstrap/links/content"): include ./templates/links/content.jade
     // admin
-    script(type="text/ng-template", id="bootstrap/administration/settings"): include angular-templates/bootstrap/administration/settings.jade
-    script(type="text/ng-template", id="bootstrap/administration/users"): include angular-templates/bootstrap/administration/users.jade
-    script(type="text/ng-template", id="bootstrap/administration/user"): include angular-templates/bootstrap/administration/user.jade
+    script(type="text/ng-template", id="bootstrap/administration/settings"): include ./templates/administration/settings.jade
+    script(type="text/ng-template", id="bootstrap/administration/users"): include ./templates/administration/users.jade
+    script(type="text/ng-template", id="bootstrap/administration/user"): include ./templates/administration/user.jade
   body(ng-class="bodyclass")
     span(ui-view)
     // es5-shim: ECMAScript 5 compatibility shims for legacy JavaScript engines: https://github.com/es-shims/es5-shim
