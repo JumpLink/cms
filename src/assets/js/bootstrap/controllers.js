@@ -458,6 +458,7 @@ jumplink.cms.controller('MembersController', function($rootScope, $scope, member
       } else {
         $scope.members.push({position: 1, name:"Hier Name eingeben", job: "Hier Beruf eingeben", image: 'photo.png'});
       }
+      $scope.edit(newMember);
     }
   }
 

@@ -13,6 +13,9 @@
             label(for='job') Zuständigkeit
             input#job.form-control(type='text', ng-model="member.job", placeholder='Zuständigkeit eingeben')
           .form-group
+            label(for='position') Position
+            input#position.form-control(type='number', ng-model="member.position", placeholder='Position eingeben')
+          .form-group
             label.control-label(for="image") Profilbild
             //- https://github.com/nervgh/angular-file-upload
             .input-group
