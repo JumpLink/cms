@@ -15,6 +15,7 @@ jumplink.cms = angular.module('jumplink.cms', [
   , 'leaflet-directive'       // AngularJS directive to embed an interact with maps managed by Leaflet library: https://github.com/tombatossals/angular-leaflet-directive
   , 'toaster'                 // AngularJS Toaster is a customized version of "toastr" non-blocking notification javascript library: https://github.com/jirikavi/AngularJS-Toaster
   , 'angularFileUpload'       // Angular File Upload is a module for the AngularJS framework: https://github.com/nervgh/angular-file-upload
+  , 'angular-filters'         // Useful filters for AngularJS: https://github.com/niemyjski/angular-filters
 ]);
 
 jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvider) {
@@ -37,12 +38,12 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
     url: '/home'
     , resolve:{
       about: function($sailsSocket) {
-        return $sailsSocket.post('/content/get', {name: 'about'}).then (function (data) {
+        return $sailsSocket.get('/content?name=about', {name: 'about'}).then (function (data) {
           return html_beautify(data.data[0].content);
         });
       }
       , goals: function($sailsSocket, $timeout) {
-        return $sailsSocket.post('/content/get', {name: 'goals'}).then (function (data) {
+        return $sailsSocket.get('/content?name=goals', {name: 'goals'}).then (function (data) {
           return html_beautify(data.data[0].content);
         });
       }
@@ -67,14 +68,14 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
     url: '/gallery'
     , resolve:{
       images: function($sailsSocket) {
-        return $sailsSocket.get('/gallery/get').then (function (data) {
-          return data.data.files;
+        return $sailsSocket.get('/gallery').then (function (data) {
+          return data.data;
         });
       }
     }
     , views: {
       'content' : {
-        templateUrl: 'bootstrap/gallery/view'
+        templateUrl: 'bootstrap/gallery/content'
         , controller: 'GalleryContentController'
       }
       , 'toolbar' : {
@@ -92,8 +93,8 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
     url: '/slider/:slideIndex'
     , resolve:{
       images: function($sailsSocket) {
-        return $sailsSocket.get('/gallery/get').then (function (data) {
-          return data.data.files;
+        return $sailsSocket.get('/gallery').then (function (data) {
+          return data.data;
         });
       }
     }
@@ -184,7 +185,7 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
     url: '/imprint'
     , resolve:{
       imprint: function($sailsSocket) {
-        return $sailsSocket.post('/content/get', {name: 'imprint'}).then (function (data) {
+        return $sailsSocket.get('/content?name=imprint', {name: 'imprint'}).then (function (data) {
           return html_beautify(data.data[0].content);
         });
       }
@@ -209,7 +210,7 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
     url: '/links'
     , resolve:{
       links: function($sailsSocket) {
-        return $sailsSocket.post('/content/get', {name: 'links'}).then (function (data) {
+        return $sailsSocket.post('/content?name=links', {name: 'links'}).then (function (data) {
           return html_beautify(data.data[0].content);
         });
       }

@@ -29,17 +29,17 @@ module.exports = {
   //   });
   // }
 
-  get: function (req, res, next) {
-    var name = req.param('name');
-    // console.log(name);
-    Content.find({name:name}).exec(function found(err, result) {
-      // console.log(err);
-      // console.log(result);
-      if(typeof result === 'undefined')
-        return res.notFound();
-      return res.json(result);
-    });
-  }
+  // find: function (req, res, next) {
+  //   var name = req.param('name') ? req.param('name') : req.param('id');
+  //   // console.log(name);
+  //   Content.find({name:name}).exec(function found(err, result) {
+  //     // console.log(err);
+  //     // console.log(result);
+  //     if(typeof result === 'undefined')
+  //       return res.notFound();
+  //     return res.json(result);
+  //   });
+  // }
 
 
   // , create: function (req, res, next) {
@@ -52,7 +52,7 @@ module.exports = {
 
 
   // warn this creates each time a new id
-  , replace: function (req, res, next) {
+  replace: function (req, res, next) {
 
     // Locate and validate name parameter
     var name = req.param('name');

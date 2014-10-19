@@ -43,13 +43,16 @@ nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="$r
     .navbar-left
       p.navbar-text Admininstration
     form.navbar-from.navbar-right
-      button.btn.btn-default.navbar-btn(ng-show="download", title="Herunterladen", ng-click="download()")
-        i.fa.fa-download
-      button.btn.btn-default.navbar-btn(ng-show="refresh", title="Aktualisieren", ng-click="refresh()")
-        i.fa.fa-refresh
-      button.btn.btn-default.navbar-btn(ng-show="toogleHtml", title="HTML-Modus umschalten", ng-click="toogleHtml()")
-        | HTML
-      button.btn.btn-default.navbar-btn(ng-show="save", title="Speichern", ng-click="save()")
-        i.fa.fa-floppy-o
+      .btn-group
+        button.btn.btn-warning.navbar-btn(ng-if="add", title="Hinzufügen", ng-click="add()")
+          i.fa.fa-plus
+        button.btn.btn-success.navbar-btn(ng-if="download", title="Herunterladen", ng-click="download()")
+          i.fa.fa-download
+        button.btn.btn-success.navbar-btn(ng-if="refresh", title="Aktualisieren", ng-click="refresh()")
+          i.fa.fa-refresh
+        button.btn.btn-default.navbar-btn(ng-if="toogleHtml", title="HTML-Modus umschalten", ng-click="toogleHtml()")
+          | HTML
+        button.btn.btn-primary.navbar-btn(ng-if="save", title="Speichern", ng-click="save()")
+          i.fa.fa-floppy-o
       button.btn.btn-default.navbar-btn(title="Einstellungen", ui-sref='bootstrap-layout.administration')
         i.fa.fa-cog

@@ -12,7 +12,7 @@ var supported = function (req) {
 
   req.useragent.PrimaryVersion = getPrimaryVersion(req);
 
-  sails.log.debug(req.useragent);
+  // sails.log.debug(req.useragent);
 
   if(req.useragent.isChrome && req.useragent.PrimaryVersion >= 33)
     return true;

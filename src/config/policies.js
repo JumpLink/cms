@@ -39,7 +39,7 @@ module.exports.policies = {
   },
 
   ContentController: {
-    'get': true
+    'find': true
   },
 
   DocumentController: {
@@ -52,17 +52,15 @@ module.exports.policies = {
   },
 
   GalleryController: {
-    'get': true
+    'find': true
   },
 
   MemberController: {
-   'get': true
-    , 'find': true
+    'find': true
   },
 
   TimelineController: {
-   'get': true
-    , 'find': true
+    'find': true
   },
 
 

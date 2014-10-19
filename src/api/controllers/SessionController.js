@@ -9,6 +9,15 @@ var bcrypt = require('bcrypt');
 
 module.exports = {
 
+  // unsubscribe: function (req, res, next) {
+  //   sails.log.debug("unsubscribe");
+  //   if(req.session.authenticated) {
+  //     sails.sockets.left(req.socket, 'guests');
+  //   } else {
+  //     Content.unsubscribe(req.socket, ['about', 'goals', 'imprint', 'links']);
+  //   }
+  // }
+
   subscribe: function (req, res, next) {
 
     sails.log.debug("join");
@@ -21,17 +30,19 @@ module.exports = {
       // http://sailsjs.org/#/documentation/reference/websockets/resourceful-pubsub/publishUpdate.html
       Member.find({}).exec(function(err, members) {
         Member.subscribe(req.socket, members);
-        // members.forEach(function(member) {
-        //   sails.log.debug(member);
-        //   Member.subscribe(req.socket, member.id);
-        // });
-        return res.ok();
       });
+
+
+      Gallery.find({}).exec(function(err, images) {
+        Gallery.subscribe(req.socket, images);
+      });
+
+      res.ok();
     } else {
       sails.sockets.join(req.socket, 'guests');
     }
 
-    return res.ok();
+    res.ok();
 
   }
 

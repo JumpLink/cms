@@ -6,116 +6,84 @@
  */
 
 var path = require('path');
-var fs = require('fs-extra');
-var easyimg = require('easyimage');
-
-var TMP_UPLOADPATH =  path.normalize(__dirname+'/../../.tmp/uploads');
-var TMP_PUBLICPATH =  path.normalize(__dirname+'/../../.tmp/public');
-var PUBLICPATH =  path.normalize(__dirname+'/../../assets');
-var HTML_THUMBPATH = "/images/gallery/thumbs"                           // path to use in html src attribute
-var TMP_THUMBPATH = TMP_PUBLICPATH + HTML_THUMBPATH                     // full path on tmp file system
-var THUMBPATH = PUBLICPATH + HTML_THUMBPATH                             // full path on developer source file system
-var HTML_IMAGEPATH = "/images/gallery/full"                             // path to use in html src attribute
-var TMP_IMAGEPATH = TMP_PUBLICPATH + HTML_IMAGEPATH                     // full path on tmp file system
-var IMAGEPATH = PUBLICPATH + HTML_IMAGEPATH                             // full path on developer source file system
 
 module.exports = {
-  /**
-   * `OdfController.create()`
-   */
   upload: function (req, res) {
-    req.file("documents").upload(function (err, files) {
-      if (err) {
-        sails.log.error(err);
-        return res.serverError(err);
-      }
+    sails.log.debug(req.file);
 
-      for (var i = 0; i < files.length; i++) {
-        files[i].uploadedAs = path.basename(files[i].fd);
-      };
-
-      return res.json({
-        message: files.length + ' file(s) uploaded successfully!',
-        files: files
-      });
-    });
-  },
-
-  generateThumbnails: function(req, res) {
-
-    fs.mkdirs(TMP_IMAGEPATH, function (err) {
-      fs.mkdirs(TMP_THUMBPATH, function (err) {
-        start();
-      });
-    });
-
-    var generateThumb = function (file, callback) {
-      // var src = TMP_IMAGEPATH + "/" + file;
-      var tmp_dst = TMP_THUMBPATH + "/" + file;
-      var src = IMAGEPATH + "/" + file;
-      var dst = THUMBPATH + "/" + file;
-      // console.log("src"+src);
-      // console.log("dst"+dst);
-      // sails.log.info(easyimg.info(src));
-      easyimg.thumbnail({
-        src: src,
-        dst: dst,
-        width: 240
-      }).then( function(image) {
-        // copy files to public tmp folder
-        fs.copy(dst, tmp_dst, function(err){
-          if (err) callback(err);
-          else callback();
-        });
-      });
+    // WORKAROUND for BUG https://github.com/balderdashy/skipper/issues/36
+    if(req._fileparser.form.bytesExpected > 10000000) {
+      sails.log.error('File exceeds maxSize. Aborting.');
+      req.connection.destroy();
+      return res.end('File exceeds maxSize. Aborting.'); // This doesn't actually get sent, so you can skip this line.
     }
 
-    var start = function () {
-      fs.readdir(TMP_IMAGEPATH, function(error, files) {
-        sails.log.info(files);
-        async.eachSeries(files, generateThumb, function(err){
-          return res.json({
-            message: 'All files have been processed successfully'
+    req.file("file").upload(function (error, files) {
+      if (error) {
+        sails.log.error(error);
+        return res.serverError(error);
+      } else {
+        GalleryService.saveFilesFromUpload(files, function (error, files) {
+          if(error) return res.serverError(error);
+          sails.log.debug(files);
+          Gallery.create(files, function(error, files) {
+            if(error) return res.serverError(error);
+            var result = {
+              message: files.length + ' file(s) uploaded successfully!',
+              files: files
+            };
+            files.forEach(function(file, index) {
+              console.log("Gallery.publishCreate(file);", file, index, files.length);
+              Gallery.publishCreate(file);
+            });
+            sails.log.debug(result);
+            res.json(result);
           });
         });
-      });
-    }
-
+      }
+    });
   },
 
-  get: function(req, res) {
-    fs.readdir(TMP_THUMBPATH, function(error, files) {
-      var iterator = function (file, callback) {
-        var thumbPath = HTML_THUMBPATH + "/" + file;
-        var originalPath = HTML_IMAGEPATH + "/" + file;
-        var tmpThumbPath = TMP_THUMBPATH + "/" + file;
-        var tmpOriginalPath = TMP_IMAGEPATH + "/" + file;
+  setup: function(req, res) {
+    GalleryService.generateThumbnailsFromFilesystem(function(error, message) {
+      if(error) return res.json(error);
+      async.waterfall([
+        function destroyAll(callback){
+          sails.log.debug("destroyAll");
+          Gallery.destroy({}, function (error, destroyed) {
+            sails.log.debug(destroyed);
+            callback(error);
+          });
+        },
+        function getNewSetup (callback){
+          GalleryService.getFilesFromFilesystem(callback);
+        },
+        function createNewSetup (newValues, callback){
+          sails.log.debug("createNewSetup");
+          // https://github.com/caolan/async#map
+          async.map(newValues, Gallery.create, callback);
+        },
+      ], function (err, result) {
+        sails.log.debug("done");
+        if(err) return res.json(err);
+        else res.json(result);
+      });
+    });
+  },
 
-        // get information about thumb
-        easyimg.info(tmpThumbPath).then(
-          function(thumbInfo) {
-            thumbInfo.path = thumbPath;
-
-            // get information about original
-            easyimg.info(tmpOriginalPath).then(
-              function(originalInfo) {
-                originalInfo.path = originalPath;
-                callback(null, {original:originalInfo, thumb:thumbInfo});
-              }, function (err) {
-                callback(err);
-              }
-            );
-          }, function (err) {
-            callback(err);
-          }
-        );
-      }
-      async.map(files, iterator, function(err, transformedFiles){
-        return res.json({
-          error: error,
-          files: transformedFiles
-        });
+  destroy: function(req, res) {
+    var id = req.param('id');
+    var filename = req.param('filename');
+    console.log("delete image", id, filename);
+    GalleryService.removeFromFilesystem(filename, true, function(error) {
+      if(error) return res.serverError(error);
+      Gallery.destroy(id, function (error, destroyed) {
+        Gallery.publishDestroy(id);
+        if(error) return res.serverError(error);
+        sails.log.debug(destroyed);
+        res.ok();
       });
     });
   }
+
 };

@@ -21,10 +21,10 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
       $rootScope.authenticated = false;
     });
 
-
     $sailsSocket.subscribe('reconnect', function(msg){
       $rootScope.pop('info', 'Sie sind wieder mit dem Server verbunden', "");
     });
+
   }
 
   var adminSubscribes = function() {
@@ -116,8 +116,8 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
       $rootScope.mainStyle = {'padding-bottom':'0px'};
       $rootScope.toasterPositionClass = 'toast-bottom-right';
     }
-    generalSubscribes();
   });
+  generalSubscribes();
 
   $rootScope.isFullscreen = false;
   Fullscreen.$on('FBFullscreen.change', function(evt, isFullscreenEnabled){
@@ -160,7 +160,7 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
   });
 
   $rootScope.getWindowDimensions = function () {
-    return { 'h': angular.element($window).height(), 'w': angular.element($window).width() };
+    return { 'height': angular.element($window).height(), 'width': angular.element($window).width() };
   };
 
   angular.element($window).bind('resize', function () {
@@ -193,8 +193,8 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
   });
 
   $rootScope.$watch($rootScope.getWindowDimensions, function (newValue, oldValue) {
-    $rootScope.windowHeight = newValue.h;
-    $rootScope.windowWidth = newValue.w;
+    $rootScope.windowHeight = newValue.height;
+    $rootScope.windowWidth = newValue.width;
     $timeout(function(){
       $rootScope.$apply();
     });
@@ -262,9 +262,149 @@ jumplink.cms.controller('HomeContentController', function($scope, $sailsSocket, 
 });
 
 
-jumplink.cms.controller('GalleryContentController', function($scope, $sailsSocket, $stateParams, images) {
-
+jumplink.cms.controller('GalleryContentController', function($rootScope, $scope, Fullscreen, $sailsSocket, $stateParams, images, FileUploader, $modal) {
   $scope.images = images;
+  console.log(images[0]);
+  $scope.uploader = new FileUploader({url: 'gallery/upload', removeAfterUpload: true});
+  $scope.uploader.filters.push({
+    name: 'imageFilter',
+    fn: function(item /*{File|FileLikeObject}*/, options) {
+      var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
+      return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
+    }
+  });
+  var uploadImagesModal = $modal({scope: $scope, title: 'Bilder hinzufügen', uploader: $scope.uploader, template: 'bootstrap/gallery/uploadimagesmodal', show: false});
+  var editImageModal = $modal({scope: $scope, title: 'Bild bearbeiten', template: 'bootstrap/gallery/editimagemodal', show: false});
+
+  $scope.aspect = function (image, width)  {
+    if($scope.isFullScreen(image)) {
+      // customised jQuery Method of http://css-tricks.com/perfect-full-page-background-image/
+      var aspectRatio = image.original.width / image.original.height;
+      var win = $rootScope.getWindowDimensions();
+      if(win.width / win.height < aspectRatio) {
+        var width = "100%";
+        var height = "auto";
+      } else {
+        var width = "auto";
+        var height = "100%";
+      }
+      return {width: width, height: height};
+    } else {
+      var scale = image.original.width / width;
+      var height =  image.original.height / scale;
+      return {width: width+'px', height: height+'px'};
+    }
+  }
+
+  $scope.toggleFullScreen = function(image) {
+    $scope.fullscreenImage = image;
+  }
+
+  Fullscreen.$on('FBFullscreen.change', function(evt, isFullscreenEnabled){
+    if(!isFullscreenEnabled) {
+      delete $scope.fullscreenImage;
+    }
+    $scope.$apply();
+  });
+
+  $scope.isFullScreen = function(image) {
+    if(angular.isDefined($scope.fullscreenImage) && angular.isDefined($scope.fullscreenImage.original) && angular.isDefined($scope.fullscreenImage.original.name) && $scope.fullscreenImage.original.name == image.original.name) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  $scope.edit = function(image) {
+    console.log("edit", image);
+    if($rootScope.authenticated) {
+      editImageModal.$scope.image = image;
+      //- Show when some event occurs (use $promise property to ensure the template has been loaded)
+      editImageModal.$promise.then(editImageModal.show);
+    }
+  }
+
+  $sailsSocket.subscribe('gallery', function(msg){
+    console.log(msg);
+
+    switch(msg.verb) {
+      case 'updated':
+        if($rootScope.authenticated)
+          $rootScope.pop('success', 'Ein Bild wurde aktualisiert', msg.data.original.name);
+      break;
+      case 'created':
+        if($rootScope.authenticated)
+          $rootScope.pop('success', 'Ein Bild wurde hochgeladen', msg.data.original.name);
+        $scope.images.push(msg.data);
+      break;
+      case 'removedFrom':
+        if($rootScope.authenticated)
+          $rootScope.pop('success', 'Ein Bild wurde entfernt', "");
+        console.log(msg.data);
+      break;
+      case 'destroyed':
+        if($rootScope.authenticated)
+          $rootScope.pop('success', 'Ein Bild wurde gelöscht', "");
+        console.log(msg.data);
+      break;
+      case 'addedTo':
+        if($rootScope.authenticated)
+          $rootScope.pop('success', 'Ein Bild wurde hinzugefügt', "");
+        console.log(msg.data);
+      break;
+    }
+  });
+
+  var removeFromClient = function (image) {
+    var index = $scope.images.indexOf(image);
+    console.log("removeFromClient", image, index);
+    if (index > -1) {
+      $scope.images.splice(index, 1);
+    }
+  }
+
+  $scope.remove = function(image) {
+    if($rootScope.authenticated) {
+      removeFromClient(image);
+      if(image.id) {
+        console.log(image);
+        // WORKAROUND
+        image.original.name = image.original.name.replace("Undefined ", "");
+        $sailsSocket.delete('/gallery/'+image.id+"?filename="+image.original.name, {id:image.id, filename:image.original.name}).success(function(data, status, headers, config) {
+          console.log(data);
+        });
+      }
+    } else {
+      console.log("Das letzte noch anstehende Ereignis kann nicht gelöscht werden.");
+    }
+  }
+
+  $scope.add = function() {
+    console.log("add");
+    uploadImagesModal.$promise.then(uploadImagesModal.show);
+  }
+
+  $scope.upload = function(fileItem, image) {
+    fileItem.image = image;
+    fileItem.upload();
+  }
+
+
+  $scope.uploader.onCompleteItem = function(fileItem, response, status, headers) {
+    // fileItem.member.image = response.files[0].uploadedAs;
+  };
+
+  // image is set in ng-repeat, this is working :)
+  $scope.dropdown = [
+    {
+      "text": "<i class=\"fa fa-edit\"></i>&nbsp;Bearbeiten",
+      "click": "edit(image)"
+    },
+    {
+      "text": "<i class=\"fa fa-trash\"></i>&nbsp;Löschen",
+      "click": "remove(image)"
+    },
+  ];
 
 });
 
@@ -413,6 +553,13 @@ jumplink.cms.controller('TimelineController', function($rootScope, $scope, event
 
 jumplink.cms.controller('MembersController', function($rootScope, $scope, members, $sailsSocket, $filter, $modal, FileUploader) {
   $scope.uploader = new FileUploader({url: 'member/upload', removeAfterUpload: true});
+  $scope.uploader.filters.push({
+    name: 'imageFilter',
+    fn: function(item /*{File|FileLikeObject}*/, options) {
+      var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
+      return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
+    }
+  });
   var editMemberModal = $modal({scope: $scope, title: 'Person bearbeiten', uploader: $scope.uploader, template: 'bootstrap/members/editmembermodal', show: false});
 
   $scope.upload = function(fileItem, member) {
