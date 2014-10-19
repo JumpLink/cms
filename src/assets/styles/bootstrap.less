@@ -39,38 +39,48 @@
 // Core CSS
 @import "./../third-party/bootstrap/less/scaffolding.less";
 
-// fullscreen
-.img-cover {
-  &:-webkit-full-screen {
-    width: 100% !Important;
-    height: 100% !Important;
-  }
-
-  &:-moz-full-screen {
-    width: 100% !Important;
-    height: 100% !Important;
-  }
-
-  &:-ms-full-screen {
-    width: 100% !Important;
-    height: 100% !Important;
-  }
-
-  &:-o-full-screen {
-    width: 100% !Important;
-    height: 100% !Important;
-  }
-
-  &:full-screen {
-    width: 100% !Important;
-    height: 100% !Important;
+// image fullscreen
+.fullscreen-wrapper {
+  background-color: black;
+  .fullscreen-info {
+    color: white;
+    text-align: center;
+    opacity: 0.5;
+    .fullscreen-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: auto;
+      min-height: 60px;
+      background-color: black;
+      margin: 0;
+      padding: 15px;
+    }
+    .fullscreen-footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: auto;
+      background-color: black;
+      padding: 15px;
+    }
+    .fullscreen-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 30px;
+    }
   }
 }
 
-.img-cover {
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: 50% 50%;
+i.fa.img-dropdown {
+
+  cursor: pointer;
+  &:hover {
+    color: @state-success-text;
+  }
 }
 
 .img-circle {
@@ -260,7 +270,7 @@ i.fa.img-dropdown {
   }
 }
 
-a[ng-click] {
+*[ng-click] {
   cursor:pointer;
 }
 

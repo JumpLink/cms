@@ -16,4 +16,4 @@
             label(for='description') Bildbeschreibung
             .textarea#description(medium-editor, ng-model="image.description", options='{"placeholder": "Bildbeschreibung eingeben","buttons": ["bold", "italic", "underline", "anchor", "header1" , "header2", "quote", "orderedlist", "unorderedlist"]}', bind-options="mediumBindOptions")
       .modal-footer
-        button.btn.btn-default(type='button', ng-click='$hide()') Schließen
+        button.btn.btn-primary(type='button', ng-click='save(image);$hide()') Speichern

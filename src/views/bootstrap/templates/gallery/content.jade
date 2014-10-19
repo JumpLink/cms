@@ -7,10 +7,16 @@
     .masonry-brick(ng-repeat="image in images")
       //- a(ui-sref="bootstrap-layout.gallery-slider({slideIndex: $index})")
       //- .img.img-cover(fullscreen, ng-style="aspect(image, 100)", style="background-image:url('..{{ image.original.path }}')")
-      img.img-responsive(ng-src="{{ image.original.path }}", title="image.name" fullscreen="isFullScreen(image)", ng-click="toggleFullScreen(image)", ng-style="aspect(image, 100)")
-      i.fa.fa-ellipsis-v.img-dropdown(ng-if="$root.authenticated", bs-dropdown="dropdown", data-template="bootstrap/dropdown", data-placement="bottom", data-html="true")
-  .fullscreen-image(ng-show="fullscreenImage")
-    img(ng-src="{{ fullscreenImage.original.path }}", width="100px")
+      .fullscreen-wrapper(ng-style="aspect(image, 100)", title="image.name", fullscreen="isFullScreen(image)", ng-click="setFullScreen(image)")
+        img.img-responsive(ng-src="{{ image.original.path }}", width="100%", height="100%")
+        i.fa.fa-ellipsis-v.img-dropdown(ng-if="$root.authenticated", bs-dropdown="dropdown", ng-click="$event.stopPropagation();" data-template="bootstrap/dropdown", data-placement="bottom", data-html="true")
+        .fullscreen-info(ng-show="isFullScreen(image)")
+          h1.fullscreen-header.container-fluid
+            | {{image.name}}
+          .fullscreen-footer.container-fluid
+            p(ng-bind-html="image.description")
+          .fullscreen-close(ng-click="closeFullScreen()", title="Schließen")
+            i.fa.fa-close
 nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="$root.authenticated")
   .container
     .navbar-left

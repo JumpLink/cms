@@ -278,27 +278,39 @@ jumplink.cms.controller('GalleryContentController', function($rootScope, $scope,
   var editImageModal = $modal({scope: $scope, title: 'Bild bearbeiten', template: 'bootstrap/gallery/editimagemodal', show: false});
 
   $scope.aspect = function (image, width)  {
+    var height, scale, aspectRatio, win, paddingTopBottom = 0, paddingLeftRight = 0;
     if($scope.isFullScreen(image)) {
       // customised jQuery Method of http://css-tricks.com/perfect-full-page-background-image/
-      var aspectRatio = image.original.width / image.original.height;
-      var win = $rootScope.getWindowDimensions();
+      aspectRatio = image.original.width / image.original.height;
+      win = $rootScope.getWindowDimensions();
       if(win.width / win.height < aspectRatio) {
-        var width = "100%";
-        var height = "auto";
+        width = win.width; // width 100%
+        scale = image.original.width / width;
+        height = image.original.height / scale;
+        paddingTopBottom = (win.height - height) / 2;
+        height = win.height;
       } else {
-        var width = "auto";
-        var height = "100%";
+        height = win.height;  // height 100%
+        scale = image.original.height / height;
+        width = image.original.width / scale;
+        paddingLeftRight = (win.width - width) / 2;
+        width = win.width;
       }
-      return {width: width, height: height};
+      return {width: width+'px', height: height+'px', 'padding-right': paddingLeftRight+"px", 'padding-left': paddingLeftRight+"px", 'padding-top': paddingTopBottom+"px", 'padding-bottom': paddingTopBottom+"px" };
     } else {
-      var scale = image.original.width / width;
-      var height =  image.original.height / scale;
+      scale = image.original.width / width;
+      height =  image.original.height / scale;
       return {width: width+'px', height: height+'px'};
     }
   }
 
-  $scope.toggleFullScreen = function(image) {
+  $scope.setFullScreen = function(image) {
+    // http://stackoverflow.com/questions/21702375/angularjs-ng-click-over-ng-click
     $scope.fullscreenImage = image;
+  }
+
+  $scope.closeFullScreen = function(image) {
+    Fullscreen.cancel();
   }
 
   Fullscreen.$on('FBFullscreen.change', function(evt, isFullscreenEnabled){
@@ -385,9 +397,36 @@ jumplink.cms.controller('GalleryContentController', function($rootScope, $scope,
     uploadImagesModal.$promise.then(uploadImagesModal.show);
   }
 
+  var saveImage = function(image) {
+    $sailsSocket.put('/gallery/'+image.id, image).success(function(data, status, headers, config) {
+      if(data != null && typeof(data) !== "undefined") {
+        console.log (data);
+      } else {
+        console.log ("Can't save image");
+      }
+    });
+  }
+
+  $scope.save = function(image) {
+    if($rootScope.authenticated) {
+      if(angular.isUndefined(image)) {  // save all image
+        angular.forEach($scope.images, function(image, index) {
+          saveImage(image);
+        });
+      } else { // save just this member
+        saveImage(image);
+      }
+    }
+  }
+
   $scope.upload = function(fileItem, image) {
     fileItem.image = image;
     fileItem.upload();
+  }
+
+  // http://stackoverflow.com/questions/21702375/angularjs-ng-click-over-ng-click
+  $scope.stopPropagation = function (event) {
+     event.stopPropagation();
   }
 
 
@@ -405,6 +444,10 @@ jumplink.cms.controller('GalleryContentController', function($rootScope, $scope,
       "text": "<i class=\"fa fa-trash\"></i>&nbsp;Löschen",
       "click": "remove(image)"
     },
+    {
+      "text": "<i class=\"fa fa-floppy-o\"></i>&nbsp;Speichern",
+      "click": "save(image)"
+    }
   ];
 
 });

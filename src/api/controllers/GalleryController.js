@@ -44,6 +44,15 @@ module.exports = {
     });
   },
 
+  update: function (req, res, next) {
+    var id = req.param('id');
+    var data = req.params.all();
+    Gallery.update({id:id},data).exec(function update(err,updated){
+      Gallery.publishUpdate(updated[0].id, updated[0]);
+      res.json(updated);
+    });
+  },
+
   setup: function(req, res) {
     GalleryService.generateThumbnailsFromFilesystem(function(error, message) {
       if(error) return res.json(error);
