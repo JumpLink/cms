@@ -9,8 +9,11 @@
           .form-group
             label(for='name') Name
             input#name.form-control(type='text', ng-model="image.name", placeholder='Bildname eingeben')
+          //- .form-group
+          //-   label(for='description') Bildbeschreibung
+          //-   input#description.form-control(type='text', ng-model="image.description", placeholder='Bildbeschreibung eingeben')
           .form-group
             label(for='description') Bildbeschreibung
-            input#description.form-control(type='text', ng-model="image.description", placeholder='Bildbeschreibung eingeben')
+            .textarea#description(medium-editor, ng-model="image.description", options='{"placeholder": "Bildbeschreibung eingeben","buttons": ["bold", "italic", "underline", "anchor", "header1" , "header2", "quote", "orderedlist", "unorderedlist"]}', bind-options="mediumBindOptions")
       .modal-footer
         button.btn.btn-default(type='button', ng-click='$hide()') Schließen

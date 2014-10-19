@@ -23,6 +23,6 @@
       li(data-match-route='/*imprint*')
         a(ui-sref='bootstrap-layout.imprint') Impressum
     .navbar-right
-      button.btn.btn-primary.navbar-btn(ng-click="toggleFullscreen()", style="font-size: 14px; margin-left: 15px;")
+      button.btn.btn-primary.navbar-btn(ng-if="$root.fullscreenIsSupported", ng-click="toggleFullscreen()", style="font-size: 14px; margin-left: 15px;")
         i.fa.fa-expand(ng-hide="isFullscreen", title="Vollbild")
         i.fa.fa-compress(ng-show="isFullscreen", title="Vollbild verlassen")

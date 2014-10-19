@@ -119,6 +119,7 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
   });
   generalSubscribes();
 
+  $rootScope.fullscreenIsSupported = Fullscreen.isSupported();
   $rootScope.isFullscreen = false;
   Fullscreen.$on('FBFullscreen.change', function(evt, isFullscreenEnabled){
     $rootScope.isFullscreen = isFullscreenEnabled == true;
@@ -167,7 +168,7 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
     // $timeout(function(){
     //   $rootScope.$apply();
     // });
-    $rootScope.$apply();
+    // $rootScope.$apply();
   });
 
   // http://stackoverflow.com/questions/641857/javascript-window-resize-event

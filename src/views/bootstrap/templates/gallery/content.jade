@@ -7,7 +7,7 @@
     .masonry-brick(ng-repeat="image in images")
       //- a(ui-sref="bootstrap-layout.gallery-slider({slideIndex: $index})")
       //- .img.img-cover(fullscreen, ng-style="aspect(image, 100)", style="background-image:url('..{{ image.original.path }}')")
-      img.img-responsive(ng-src="{{ image.original.path }}", fullscreen="isFullScreen(image)", ng-click="toggleFullScreen(image)", ng-style="aspect(image, 100)")
+      img.img-responsive(ng-src="{{ image.original.path }}", title="image.name" fullscreen="isFullScreen(image)", ng-click="toggleFullScreen(image)", ng-style="aspect(image, 100)")
       i.fa.fa-ellipsis-v.img-dropdown(ng-if="$root.authenticated", bs-dropdown="dropdown", data-template="bootstrap/dropdown", data-placement="bottom", data-html="true")
   .fullscreen-image(ng-show="fullscreenImage")
     img(ng-src="{{ fullscreenImage.original.path }}", width="100px")

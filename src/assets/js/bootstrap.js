@@ -210,7 +210,7 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
     url: '/links'
     , resolve:{
       links: function($sailsSocket) {
-        return $sailsSocket.post('/content?name=links', {name: 'links'}).then (function (data) {
+        return $sailsSocket.get('/content?name=links', {name: 'links'}).then (function (data) {
           return html_beautify(data.data[0].content);
         });
       }

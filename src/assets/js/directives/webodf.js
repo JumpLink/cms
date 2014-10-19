@@ -289,7 +289,7 @@ angular.module('webodf', [])
 
         angular.element($window).bind('resize', function() {
           initializeWidth(odfCanvas, $element);
-          $scope.$apply();
+          // $scope.$apply();
         });
 
         // Callback fired after odf document is ready
