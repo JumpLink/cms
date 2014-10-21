@@ -762,22 +762,32 @@ jumplink.cms.controller('ApplicationController', function($rootScope, $scope, $s
 
   $scope.member = {
     datum: $filter('amDateFormat')(date, 'dddd, Do MMMM YYYY')
-    , name: ''
-    , vorname: ''
-    , geburtstag: ''
-    , geburtsort: ''
-    , email: ''
-    , telefon: ''
-    , beruf: ''
-    , strasse: ''
-    , plz: ''
-    , ort: ''
+    , name: null
+    , vorname: null
+    , geburtstag: null
+    , geburtsort: null
+    , email: null
+    , telefon: null
+    , beruf: null
+    , strasse: null
+    , plz: null
+    , ort: null
     , bank: {
-      name: ''
-      , iban: ''
-      , bic: ''
+      name: null
+      , iban: null
+      , bic: null
     }
   }
+  $scope.minYearsOld = 10;
+  $scope.minBirthdayDate = moment().subtract($scope.minYearsOld, 'years');
+  console.log("$scope.minBirthdayDate", $scope.minBirthdayDate);
+  $scope.maxYearsOld = 100;
+  $scope.maxBirthdayDate = moment().subtract($scope.maxYearsOld, 'years');
+  console.log("$scope.maxBirthdayDate)", $scope.maxBirthdayDate);
+
+  $scope.$watchCollection('form.geburtstag', function(newVal) {
+    console.log('form.geburtstag', newVal);
+  });
 
   // $scope.$watch('invoice.date', function(newVal) {
   //   $scope.invoice.dateHuman = $filter('amDateFormat')(newVal, 'dddd, Do MMMM YYYY');

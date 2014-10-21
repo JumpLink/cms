@@ -22,18 +22,27 @@
       form(role='form', name="form", novalidate, ng-submit="sendMail()")
         .form-group
           label(for='name') Name
-          input#name.form-control(type='text', name="name", required, placeholder='Ihren Namen eingeben', ng-model="email.name")
+          .input-group
+            .input-group-addon
+              i.fa.fa-user
+            input#name.form-control(type='text', name="name", required, placeholder='Ihren Namen eingeben', ng-model="email.name")
           label.validation.danger(ng-show="form.name.$error.required") Bitte geben Sie hier Ihren Namen ein.
           label.validation.success(ng-hide="form.name.$error.required"): i.fa.fa-check
         .form-group
           label(for='from') E-Mail
-          input#from.form-control(type='email', name="email", required, placeholder='Ihre E-Mail-Adresse eingeben', ng-model="email.from")
+          .input-group
+            .input-group-addon
+              i.fa.fa-envelope
+            input#from.form-control(type='email', name="email", required, placeholder='Ihre E-Mail-Adresse eingeben', ng-model="email.from")
           label.validation.danger(ng-show="form.email.$error.required") Bitte geben Sie hier Ihre E-Mail-Adresse ein.
           label.validation.danger(ng-show="form.email.$error.email") Dies ist keine korrekte E-Mail-Adresse.
           label.validation.success(ng-hide="form.email.$error.required || form.email.$error.email"): i.fa.fa-check
         .form-group
           label(for='subject') Betreff
-          input#subject.form-control(type='text', name="subject", required, placeholder='Betreff eingeben', ng-model="email.subject")
+          .input-group
+            .input-group-addon
+              i.fa.fa-info
+            input#subject.form-control(type='text', name="subject", required, placeholder='Betreff eingeben', ng-model="email.subject")
           label.validation.danger(ng-show="form.subject.$error.required") Bitte geben Sie hier Ihren Betreff ein.
           label.validation.success(ng-hide="form.subject.$error.required"): i.fa.fa-check
         .form-group
