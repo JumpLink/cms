@@ -780,23 +780,10 @@ jumplink.cms.controller('ApplicationController', function($rootScope, $scope, $s
   }
   $scope.minYearsOld = 10;
   $scope.minBirthdayDate = moment().subtract($scope.minYearsOld, 'years');
-  console.log("$scope.minBirthdayDate", $scope.minBirthdayDate);
+  // console.log("$scope.minBirthdayDate", $scope.minBirthdayDate);
   $scope.maxYearsOld = 100;
   $scope.maxBirthdayDate = moment().subtract($scope.maxYearsOld, 'years');
-  console.log("$scope.maxBirthdayDate)", $scope.maxBirthdayDate);
-
-  $scope.$watchCollection('form.geburtstag', function(newVal) {
-    console.log('form.geburtstag', newVal);
-  });
-
-  // $scope.$watch('invoice.date', function(newVal) {
-  //   $scope.invoice.dateHuman = $filter('amDateFormat')(newVal, 'dddd, Do MMMM YYYY');
-  // });
-
-  // $scope.$watch('invoice.duedate', function(newVal) {
-  //   $scope.invoice.duedateHuman = $filter('amDateFormat')(newVal, 'dddd, Do MMMM YYYY');
-  // });
-
+  // console.log("$scope.maxBirthdayDate)", $scope.maxBirthdayDate);
 
   $scope.upload = function() {
     $rootScope.pop('info', 'Aufnahmeantrag wird bearbeitet');
@@ -893,10 +880,10 @@ jumplink.cms.controller('ImprintController', function($rootScope, $scope, $sails
   $scope.imprint = imprint;
 
   $scope.email = {
-    from: ''
-    , name: ''
-    , subject: ''
-    , content: ''
+    from: null
+    , name: null
+    , subject: null
+    , content: null
   }
 
   $scope.goTo = function (hash) {

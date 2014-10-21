@@ -20,34 +20,48 @@
       .page-header
         h1 Kontakt
       form(role='form', name="form", novalidate, ng-submit="sendMail()")
-        .form-group
-          label(for='name') Name
+        //-
+        //- Name
+        //-
+        .form-group.has-feedback(ng-class="{'has-error': form.name.$invalid, 'has-success': form.name.$valid}")
+          label.control-label(for='name') Name
           .input-group
             .input-group-addon
               i.fa.fa-user
             input#name.form-control(type='text', name="name", required, placeholder='Ihren Namen eingeben', ng-model="email.name")
-          label.validation.danger(ng-show="form.name.$error.required") Bitte geben Sie hier Ihren Namen ein.
-          label.validation.success(ng-hide="form.name.$error.required"): i.fa.fa-check
-        .form-group
-          label(for='from') E-Mail
+          span.form-control-feedback(ng-hide="form.name.$error.required", title="Alles Okay!"): i.fa.fa-check
+          span.form-control-feedback(ng-show="form.name.$error.required", title="Bitte geben Sie hier Ihren Namen ein."): i.fa.fa-exclamation-triangle
+        //-
+        //- E-Mail
+        //-
+        .form-group.has-feedback(ng-class="{'has-error': form.from.$invalid, 'has-success': form.from.$valid}")
+          label.control-label(for='from') E-Mail
           .input-group
             .input-group-addon
               i.fa.fa-envelope
-            input#from.form-control(type='email', name="email", required, placeholder='Ihre E-Mail-Adresse eingeben', ng-model="email.from")
-          label.validation.danger(ng-show="form.email.$error.required") Bitte geben Sie hier Ihre E-Mail-Adresse ein.
-          label.validation.danger(ng-show="form.email.$error.email") Dies ist keine korrekte E-Mail-Adresse.
-          label.validation.success(ng-hide="form.email.$error.required || form.email.$error.email"): i.fa.fa-check
-        .form-group
-          label(for='subject') Betreff
+            input#from.form-control(type='email', name="from", required, placeholder='Ihre E-Mail-Adresse eingeben', ng-model="email.from")
+          span.form-control-feedback(ng-hide="form.from.$error.required || form.from.$error.email", title="Alles Okay!"): i.fa.fa-check
+          span.form-control-feedback(ng-show="form.from.$error.required", title="Bitte geben Sie hier Ihre E-Mail-Adresse ein."): i.fa.fa-exclamation-triangle
+          span.form-control-feedback(ng-show="form.from.$error.email", title="Dies ist keine korrekte E-Mail-Adresse."): i.fa.fa-exclamation-triangle
+        //-
+        //- Betreff
+        //-
+        .form-group.has-feedback(ng-class="{'has-error': form.subject.$invalid, 'has-success': form.subject.$valid}")
+          label.control-label(for='subject') Betreff
           .input-group
             .input-group-addon
               i.fa.fa-info
             input#subject.form-control(type='text', name="subject", required, placeholder='Betreff eingeben', ng-model="email.subject")
-          label.validation.danger(ng-show="form.subject.$error.required") Bitte geben Sie hier Ihren Betreff ein.
-          label.validation.success(ng-hide="form.subject.$error.required"): i.fa.fa-check
-        .form-group
+          span.form-control-feedback(ng-hide="form.subject.$error.required", title="Alles Okay!"): i.fa.fa-check
+          span.form-control-feedback(ng-show="form.subject.$error.required", title="Bitte geben Sie hier Ihren Betreff ein."): i.fa.fa-exclamation-triangle
+        //-
+        //- Inhalt
+        //-
+        .form-group.has-feedback(ng-class="{'has-error': form.content.$invalid, 'has-success': form.content.$valid}")
           label(for='content') Inhalt
-          .textarea#content(medium-editor, ng-model="email.content", options='{"placeholder": "Inhalt eingeben","buttons": ["bold", "italic", "underline", "anchor", "header1" , "header2", "quote", "orderedlist", "unorderedlist"]}', bind-options="mediumBindOptions")
+          .textarea.form-control#content(type='text', medium-editor, name="content", required, ng-model="email.content", options='{"placeholder": "Inhalt eingeben","buttons": ["bold", "italic", "underline", "anchor", "header1" , "header2", "quote", "orderedlist", "unorderedlist"]}', bind-options="mediumBindOptions")
+          span.form-control-feedback(ng-hide="form.content.$error.required", title="Alles Okay!"): i.fa.fa-check
+          span.form-control-feedback(ng-show="form.content.$error.required", title="Bitte geben Sie hier Ihren Inhalt ein."): i.fa.fa-exclamation-triangle
         button.btn.btn-primary(type="submit", ng-disabled="form.$invalid") Absenden
       h1.anchor-static-navbar#approach
       .page-header

@@ -65,7 +65,7 @@
         input#email.form-control(type='email', name="email", placeholder='E-Mail eingeben', required, ng-model="member.email")
       span.form-control-feedback(ng-hide="form.email.$error.required || form.email.$error.email", title="Alles Okay!"): i.fa.fa-check
       span.form-control-feedback(ng-show="form.email.$error.required", title="Bitte geben Sie hier Ihre E-Mail-Adresse ein."): i.fa.fa-exclamation-triangle
-      span.form-control-feedback(ng-show="form.email.$error.required", title="Dies ist keine korrekte E-Mail-Adresse."): i.fa.fa-exclamation-triangle
+      span.form-control-feedback(ng-show="form.email.$error.email", title="Dies ist keine korrekte E-Mail-Adresse."): i.fa.fa-exclamation-triangle
     //-
     //- Telefon
     //-
