@@ -55,13 +55,13 @@
           span.form-control-feedback(ng-hide="form.subject.$error.required", title="Alles Okay!"): i.fa.fa-check
           span.form-control-feedback(ng-show="form.subject.$error.required", title="Bitte geben Sie hier Ihren Betreff ein."): i.fa.fa-exclamation-triangle
         //-
-        //- Inhalt
+        //- Nachricht
         //-
         .form-group.has-feedback(ng-class="{'has-error': form.content.$invalid, 'has-success': form.content.$valid}")
-          label(for='content') Inhalt
+          label.control-label(for='content') Nachricht
           .textarea.form-control#content(type='text', medium-editor, name="content", required, ng-model="email.content", options='{"placeholder": "Inhalt eingeben","buttons": ["bold", "italic", "underline", "anchor", "header1" , "header2", "quote", "orderedlist", "unorderedlist"]}', bind-options="mediumBindOptions")
           span.form-control-feedback(ng-hide="form.content.$error.required", title="Alles Okay!"): i.fa.fa-check
-          span.form-control-feedback(ng-show="form.content.$error.required", title="Bitte geben Sie hier Ihren Inhalt ein."): i.fa.fa-exclamation-triangle
+          span.form-control-feedback(ng-show="form.content.$error.required", title="Bitte geben Sie hier Ihre Nachricht ein."): i.fa.fa-exclamation-triangle
         button.btn.btn-primary(type="submit", ng-disabled="form.$invalid") Absenden
       h1.anchor-static-navbar#approach
       .page-header

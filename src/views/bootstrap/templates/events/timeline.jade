@@ -54,8 +54,8 @@
               a(href="/files/timeline/{{event.download}}").btn.btn-info: | Weitere Informationen
             p.btn-group(ng-show="$root.authenticated")
               button.btn.btn-danger(type="button", title="Ereignis löschen", ng-click="remove(event, eventName)"): i.fa.fa-trash
-              button.btn.btn-warning(type="button", title="Ereignis bearbeiten", ng-click="edit(event)"): i.fa.fa-edit
-              button.btn.btn-primary(type="button", title="Ereignis speichern", ng-click="save(event)"): i.fa.fa-floppy-o
+              button.btn.btn-warning(type="button", title="Ereignis bearbeiten", ng-click="edit(event, eventName)"): i.fa.fa-edit
+              button.btn.btn-primary(type="button", title="Ereignis speichern", ng-click="save(event, eventName)"): i.fa.fa-floppy-o
 nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="$root.authenticated")
   .container
     .navbar-left
@@ -68,7 +68,7 @@ nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="$r
           i.fa.fa-download
         button.btn.btn-success.navbar-btn(ng-if="refresh", title="Aktualisieren", ng-click="refresh()")
           i.fa.fa-refresh
-        button.btn.btn-default.navbar-btn(ng-if="toogleHtml", title="HTML-Modus umschalten", ng-click="toogleHtml()")
+        button.btn.btn-success.navbar-btn(ng-if="toogleHtml", title="HTML-Modus umschalten", ng-click="toogleHtml()")
           | HTML
         button.btn.btn-primary.navbar-btn(ng-if="save", title="Speichern", ng-click="save()")
           i.fa.fa-floppy-o

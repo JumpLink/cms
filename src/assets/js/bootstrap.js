@@ -165,6 +165,16 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   // application
   .state('bootstrap-layout.application', {
     url: '/application'
+    , resolve:{
+      application: function($sailsSocket) {
+        return $sailsSocket.get('/content?name=application', {name: 'application'}).then (function (data) {
+          if(angular.isDefined(data) && angular.isDefined(data.data[0]) && angular.isDefined(data.data[0].content))
+            return html_beautify(data.data[0].content);
+          else
+            return '';
+        });
+      }
+    }
     , views: {
       'content' : {
         templateUrl: 'bootstrap/application/content'
@@ -230,7 +240,7 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
       }
     }
   })
-  // links
+  // administration
   .state('bootstrap-layout.administration', {
     url: '/admin'
     , views: {

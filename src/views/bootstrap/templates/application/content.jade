@@ -1,11 +1,10 @@
 .container(style="min-height: 200px;")
   .page-header
     h1 Aufnahmeantrag
+  div(ng-show="html && $root.authenticated", ui-ace="{mode: 'html'}", ng-model="application")
+  div(ng-show="$root.authenticated", medium-editor, ng-model="application", options='{"buttons": ["bold", "italic", "underline", "anchor", "header1" , "header2", "quote", "orderedlist", "unorderedlist"]}', bind-options="mediumBindOptions")
+  div(ng-bind-html="application", ng-hide="$root.authenticated")
   form(role='form', name="form", novalidate, ng-submit="upload()")
-    p
-      | Der Mitgliedsbeitrag beträgt jährlich 30.- € und für korporative Mitglieder 80.- €.
-      br
-      | Bitte füllen Sie dieses Formular aus und bestätigen Sie mit "Absenden", anschließend wird Ihnen eine E-Mail mit einer PDF für die Mitgliedsaufnahme zugestellt. Bitte drucken Sie die PDF aus und schicken Sie diese unterschrieben an den Nautischen Verein Cuxhaven e.V..
     //-
     //- Name
     //-
@@ -171,7 +170,7 @@ nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="$r
           i.fa.fa-download
         button.btn.btn-success.navbar-btn(ng-if="refresh", title="Aktualisieren", ng-click="refresh()")
           i.fa.fa-refresh
-        button.btn.btn-default.navbar-btn(ng-if="toogleHtml", title="HTML-Modus umschalten", ng-click="toogleHtml()")
+        button.btn.btn-success.navbar-btn(ng-if="toogleHtml", title="HTML-Modus umschalten", ng-click="toogleHtml()")
           | HTML
         button.btn.btn-primary.navbar-btn(ng-if="save", title="Speichern", ng-click="save()")
           i.fa.fa-floppy-o

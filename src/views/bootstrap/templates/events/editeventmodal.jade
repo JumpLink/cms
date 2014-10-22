@@ -72,4 +72,4 @@
             .progress(ng-show="uploader.queue[uploader.queue.length-1].file")
               .progress-bar.progress-bar-success(role='progressbar', ng-model="uploader.queue[uploader.queue.length-1].progress", aria-valuenow='{{uploader.queue[uploader.queue.length-1].progress}}', aria-valuemin='0', aria-valuemax='100', ng-style="{ 'width': uploader.queue[uploader.queue.length-1].progress + '%' }")
       .modal-footer
-        button.btn.btn-default(type='button', ng-click='$hide()') Schließen
+        button.btn.btn-primary(type='button', ng-click='save(event, eventName);$hide()') Speichern

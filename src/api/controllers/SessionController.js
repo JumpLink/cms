@@ -25,22 +25,31 @@ module.exports = {
     if(req.session.authenticated) {
       sails.log.info("authenticated");
       sails.sockets.join(req.socket, 'admins');
-      // subscribe all contents changes
-      Content.subscribe(req.socket, ['about', 'goals', 'imprint', 'links']);
-      // http://sailsjs.org/#/documentation/reference/websockets/resourceful-pubsub/publishUpdate.html
-      Member.find({}).exec(function(err, members) {
-        Member.subscribe(req.socket, members);
+
+      User.find({}).exec(function(err, users) {
+        User.subscribe(req.socket, users);
       });
 
-
-      Gallery.find({}).exec(function(err, images) {
-        Gallery.subscribe(req.socket, images);
-      });
-
-      res.ok();
     } else {
       sails.sockets.join(req.socket, 'guests');
     }
+
+    // generell subscribes
+
+    Content.subscribe(req.socket, ['about', 'goals', 'imprint', 'links', 'application']);
+
+    // http://sailsjs.org/#/documentation/reference/websockets/resourceful-pubsub/publishUpdate.html
+    Member.find({}).exec(function(err, members) {
+      Member.subscribe(req.socket, members);
+    });
+
+    Timeline.find({}).exec(function(err, events) {
+      Timeline.subscribe(req.socket, events);
+    });
+
+    Gallery.find({}).exec(function(err, images) {
+      Gallery.subscribe(req.socket, images);
+    });
 
     res.ok();
 

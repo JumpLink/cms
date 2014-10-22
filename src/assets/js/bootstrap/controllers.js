@@ -11,18 +11,23 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
   };
 
   var generalSubscribes = function () {
-    // react to subscripe from server: http://sailsjs.org/#/documentation/reference/websockets/sails.io.js/io.socket.on.html
-    $sailsSocket.subscribe('connect', function(msg){
-      console.log('socket.io is connected');
-    });
 
-    $sailsSocket.subscribe('disconnect', function(msg){
-      $rootScope.pop('error', 'Verbindung zum Server verloren', "");
-      $rootScope.authenticated = false;
-    });
+    $sailsSocket.post('/session/subscribe', {}).success(function(data, status, headers, config){
 
-    $sailsSocket.subscribe('reconnect', function(msg){
-      $rootScope.pop('info', 'Sie sind wieder mit dem Server verbunden', "");
+      // react to subscripe from server: http://sailsjs.org/#/documentation/reference/websockets/sails.io.js/io.socket.on.html
+      $sailsSocket.subscribe('connect', function(msg){
+        console.log('socket.io is connected');
+      });
+
+      $sailsSocket.subscribe('disconnect', function(msg){
+        $rootScope.pop('error', 'Verbindung zum Server verloren', "");
+        $rootScope.authenticated = false;
+      });
+
+      $sailsSocket.subscribe('reconnect', function(msg){
+        $rootScope.pop('info', 'Sie sind wieder mit dem Server verbunden', "");
+      });
+
     });
 
   }
@@ -30,30 +35,6 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
   var adminSubscribes = function() {
     // subscripe on server
     $sailsSocket.post('/session/subscribe', {}).success(function(data, status, headers, config){
-      console.log("subscribe content");
-
-      // called on content changes
-      $sailsSocket.subscribe('content', function(msg){
-        console.log(msg);
-        switch(msg.verb) {
-          case 'updated':
-            switch(msg.id) {
-              case 'about':
-                $rootScope.pop('success', '"Wir über uns" wurde aktualisiert', "");
-              break;
-              case 'goals':
-                $rootScope.pop('success', '"Unsere Ziele" wurde aktualisiert', "");
-              break;
-              case 'links':
-                $rootScope.pop('success', '"Links" wurde aktualisiert', "");
-              break;
-              case 'imprint':
-                $rootScope.pop('success', '"Impressum" wurde aktualisiert', "");
-              break;
-            }
-          break;
-        }
-      });
 
       // called on any sended email from server
       $sailsSocket.subscribe('email', function(email){
@@ -73,28 +54,6 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
           +'</dl>';
 
         $rootScope.pop('info', 'Eine E-Mail wurde versendet.', body, null, 'trustedHtml');
-      });
-
-      $sailsSocket.subscribe('member', function(msg){
-        console.log(msg);
-
-        switch(msg.verb) {
-          case 'updated':
-            $rootScope.pop('success', msg.data.name+' wurde aktualisiert', "");
-          break;
-          case 'created':
-            $rootScope.pop('success', msg.data.name+' wurde erstellt', "");
-          break;
-          case 'removedFrom':
-            $rootScope.pop('success', msg.data.name+' wurde entfernt', "");
-          break;
-          case 'destroyed':
-            $rootScope.pop('success', msg.data.name+' wurde gelöscht', "");
-          break;
-          case 'addedTo':
-            $rootScope.pop('success', msg.data.name+' wurde hinzugefügt', "");
-          break;
-        }
       });
 
       // admin room
@@ -260,6 +219,30 @@ jumplink.cms.controller('HomeContentController', function($scope, $sailsSocket, 
       }
     });
   }
+
+  // called on content changes
+  $sailsSocket.subscribe('content', function(msg){
+    console.log(msg);
+    switch(msg.verb) {
+      case 'updated':
+        switch(msg.id) {
+          case 'about':
+            $scope.about = msg.data.content;;
+            if($rootScope.authenticated) {
+              $rootScope.pop('success', '"Wir über uns" wurde aktualisiert', "");
+            }
+          break;
+          case 'goals':
+            $scope.goals = msg.data.content;;
+            if($rootScope.authenticated) {
+              $rootScope.pop('success', '"Ziele" wurde aktualisiert', "");
+            }
+          break;
+        }
+      break;
+    }
+  });
+
 });
 
 
@@ -387,8 +370,6 @@ jumplink.cms.controller('GalleryContentController', function($rootScope, $scope,
           console.log(data);
         });
       }
-    } else {
-      console.log("Das letzte noch anstehende Ereignis kann nicht gelöscht werden.");
     }
   }
 
@@ -491,36 +472,40 @@ jumplink.cms.controller('TimelineController', function($rootScope, $scope, event
   $scope.upload = function(fileItem, event) {
     fileItem.event = event;
     fileItem.upload();
-  }
+  };
 
-  var saveEvent = function (event) {
+  var saveEvent = function (event, eventName) {
     if(angular.isUndefined(event.id)) {
       $sailsSocket.post('/timeline', event).success(function(data, status, headers, config) {
-        console.log("event created");
-        console.log(data);
+        console.log("event created", event, data);
+        var index = $scope.events[eventName].indexOf(event);
+        if (index > -1) {
+          $scope.events[eventName][index] = data;
+          console.log($scope.events[eventName][index]);
+        }
       });
     } else {
       $sailsSocket.put('/timeline/'+event.id, event).success(function(data, status, headers, config) {
-        console.log("event updated");
-        console.log(data);
+        console.log("event updated", event, data);
+        event = data;
       });
     }
-  }
+  };
 
-  $scope.save = function(event) {
+  $scope.save = function(event, eventName) {
     if($rootScope.authenticated) {
       // save just this event if defined
       if(angular.isDefined(event)) {
-        saveEvent(event);
+        saveEvent(event, eventName);
       } else { // save all events
         angular.forEach(['after', 'before', 'unknown'], function(eventPart, index) {
           angular.forEach($scope.events[eventPart], function(event, index) {
-            saveEvent(event);
+            saveEvent(event, eventName);
           });
         });
       }
     }
-  }
+  };
 
   $scope.add = function() {
     if($rootScope.authenticated) {
@@ -538,18 +523,43 @@ jumplink.cms.controller('TimelineController', function($rootScope, $scope, event
         console.log($scope.events.after);
       }
     }
-  }
+  };
 
   var removeFromClient = function (event, eventName) {
+    console.log("removeFromClient", event, eventName);
     var index = $scope.events[eventName].indexOf(event);
     if (index > -1) {
       $scope.events[eventName].splice(index, 1);
+    } else {
+      console.log("not found");
     }
-  }
+  };
+
+  // TODO use async "not found"-callback is fired after value was found
+  var findEvent = function(id, callback) {
+    console.log("findEvent", id);
+    angular.forEach(['after', 'before', 'unknown'], function(eventPart, index) {
+      if(eventPart === 'unknown' && $scope.events[eventPart].length <= 0) {
+        return callback("not found");
+      }
+      angular.forEach($scope.events[eventPart], function(event, index) {
+        console.log("event.id", event.id);
+        if(event.id == id) {
+          return callback(null, event, eventPart, index);
+        }
+        if(eventPart === 'unknown' && index === $scope.events[eventPart].length - 1 &&  event.id != id) {
+          return callback("not found");
+        }
+      });
+    });
+  };
 
   $scope.remove = function(event, eventName) {
+    console.log("$scope.remove", event, eventName);
     if($rootScope.authenticated) {
-      if(eventName == "after" && $scope.events[eventName].length > 2) {
+      if(eventName == "after" && $scope.events["after"].length <= 1) {
+        console.log("Das letzte noch anstehende Ereignis kann nicht gelöscht werden.");
+      } else {
         if(event.id) {
           console.log(event);
           $sailsSocket.delete('/timeline/'+event.id).success(function(users, status, headers, config) {
@@ -558,26 +568,27 @@ jumplink.cms.controller('TimelineController', function($rootScope, $scope, event
         } else {
           removeFromClient(event, eventName);
         }
-      } else {
-        console.log("Das letzte noch anstehende Ereignis kann nicht gelöscht werden.");
       }
     }
-  }
+  };
 
   $scope.refresh = function() {
     var allEvents = eventService.merge(events.unknown, events.before, events.after);
+
+    console.log("allEvents.length", allEvents.length);
     $scope.events = eventService.split(allEvents);
     delete allEvents;
     console.log("refreshed");
-  }
+  };
 
-  $scope.edit = function(event) {
+  $scope.edit = function(event, eventName) {
     if($rootScope.authenticated) {
       editEventModal.$scope.event = event;
+      editEventModal.$scope.eventName = eventName;
       //- Show when some event occurs (use $promise property to ensure the template has been loaded)
       editEventModal.$promise.then(editEventModal.show);
     }
-  }
+  };
 
   $scope.openTypeChooserModal = function(event) {
     if($rootScope.authenticated) {
@@ -585,13 +596,59 @@ jumplink.cms.controller('TimelineController', function($rootScope, $scope, event
       //- Show when some event occurs (use $promise property to ensure the template has been loaded)
       typeChooserModal.$promise.then(typeChooserModal.show);
     }
-  }
+  };
 
   $scope.chooseType = function(event, type, hide) {
     event.type = type;
     hide();
-  }
+  };
 
+  $sailsSocket.subscribe('timeline', function(msg){
+    console.log(msg);
+
+    switch(msg.verb) {
+      case 'updated':
+        if($rootScope.authenticated) {
+          $rootScope.pop('success', 'Ein Ereignis wurde aktualisiert', msg.data.title);
+        }
+        findEvent(msg.id, function(error, event, eventPart, index) {
+          if(error) console.log(error);
+          else event = msg.data;
+          $scope.refresh();
+        });
+      break;
+      case 'created':
+        if($rootScope.authenticated) {
+          $rootScope.pop('success', 'Ein Ereignis wurde erstellt', msg.data.title);
+        }
+        $scope.events['before'].push(msg.data);
+        $scope.refresh();
+      break;
+      case 'removedFrom':
+        if($rootScope.authenticated) {
+          $rootScope.pop('success', 'Ein Ereignis wurde entfernt', msg.data.title);
+        }
+        findEvent(msg.id, function(error, event, eventPart, index) {
+          if(error) console.log(error);
+          else removeFromClient(event, eventPart);
+        });
+      break;
+      case 'destroyed':
+        if($rootScope.authenticated) {
+          $rootScope.pop('success', 'Ein Ereignis wurde gelöscht', msg.data.title);
+        }
+        findEvent(msg.id, function(error, event, eventPart, index) {
+          if(error) console.log(error);
+          else removeFromClient(event, eventPart);
+        });
+      break;
+      case 'addedTo':
+        if($rootScope.authenticated) {
+          $rootScope.pop('success', 'Ein Ereignis wurde hinzugefügt', msg.data.title);
+        }
+      break;
+    }
+  });
 
 });
 
@@ -718,6 +775,33 @@ jumplink.cms.controller('MembersController', function($rootScope, $scope, member
     }
   }
 
+  $sailsSocket.subscribe('member', function(msg){
+    console.log(msg);
+
+    switch(msg.verb) {
+      case 'updated':
+        if($rootScope.authenticated)
+          $rootScope.pop('success', 'Eine Person wurde aktualisiert', msg.data.name);
+      break;
+      case 'created':
+        if($rootScope.authenticated)
+          $rootScope.pop('success', 'Eine Person wurde erstellt', msg.data.name);
+      break;
+      case 'removedFrom':
+        if($rootScope.authenticated)
+          $rootScope.pop('success', 'Eine Person wurde entfernt', msg.id);
+      break;
+      case 'destroyed':
+        if($rootScope.authenticated)
+          $rootScope.pop('success', 'Eine Person wurde gelöscht', msg.id);
+      break;
+      case 'addedTo':
+        if($rootScope.authenticated)
+          $rootScope.pop('success', 'Eine Person wurde hinzugefügt', msg.data.name);
+      break;
+    }
+  });
+
 });
 
 jumplink.cms.controller('AdminController', function($scope) {
@@ -756,9 +840,11 @@ jumplink.cms.controller('UserController', function($scope, $sailsSocket, $stateP
 });
 
 // Aufnahmeantrag
-jumplink.cms.controller('ApplicationController', function($rootScope, $scope, $sailsSocket, moment, $filter) {
+jumplink.cms.controller('ApplicationController', function($rootScope, $scope, $sailsSocket, moment, $filter, application) {
 
   var date = moment(); // now
+  $scope.html = false;
+  $scope.application = application;
 
   $scope.member = {
     datum: $filter('amDateFormat')(date, 'dddd, Do MMMM YYYY')
@@ -844,16 +930,47 @@ jumplink.cms.controller('ApplicationController', function($rootScope, $scope, $s
   }
 
   var onWebODFReady = function() {
-    console.log("ready");
+    // console.log("ready");
   }
 
   $scope.webodf = {
     ready: onWebODFReady
   };
 
+  // called on content changes
+  $sailsSocket.subscribe('content', function(msg){
+    console.log(msg);
+    switch(msg.verb) {
+      case 'updated':
+        switch(msg.id) {
+          case 'application':
+            $scope.application = msg.data.content;
+            if($rootScope.authenticated) {
+              $rootScope.pop('success', 'Aufnahmeantrags-Text wurde aktualisiert', "");
+            }
+          break;
+        }
+      break;
+    }
+  });
+
+  $scope.toogleHtml = function() {
+    $scope.html = !$scope.html;
+  }
+
+  $scope.save = function() {
+    $sailsSocket.put("/content/replace", {name: 'application', content: $scope.application}, function (response) {
+      if(response != null && typeof(response) !== "undefined") {
+        console.log (response);
+      } else {
+        console.log ("Can't save site");
+      }
+    });
+  }
+
 });
 
-jumplink.cms.controller('LinksController', function($scope, $sailsSocket, links, $location, $anchorScroll) {
+jumplink.cms.controller('LinksController', function($rootScope, $scope, $sailsSocket, links, $location, $anchorScroll) {
   $scope.links = links;
 
   $scope.goTo = function (hash) {
@@ -874,6 +991,24 @@ jumplink.cms.controller('LinksController', function($scope, $sailsSocket, links,
       }
     });
   }
+
+  // called on content changes
+  $sailsSocket.subscribe('content', function(msg){
+    console.log(msg);
+    switch(msg.verb) {
+      case 'updated':
+        switch(msg.id) {
+          case 'links':
+            $scope.links = msg.data.content;;
+            if($rootScope.authenticated) {
+              $rootScope.pop('success', 'Links-Text wurde aktualisiert', "");
+            }
+          break;
+        }
+      break;
+    }
+  });
+
 });
 
 jumplink.cms.controller('ImprintController', function($rootScope, $scope, $sailsSocket, imprint, $location, $anchorScroll) {
@@ -948,6 +1083,23 @@ jumplink.cms.controller('ImprintController', function($rootScope, $scope, $sails
           }
         }
       }
+    }
+  });
+
+  // called on content changes
+  $sailsSocket.subscribe('content', function(msg){
+    console.log(msg);
+    switch(msg.verb) {
+      case 'updated':
+        switch(msg.id) {
+          case 'imprint':
+            $scope.imprint = msg.data.content;;
+            if($rootScope.authenticated) {
+              $rootScope.pop('success', 'Impressums-Text wurde aktualisiert', "");
+            }
+          break;
+        }
+      break;
     }
   });
 

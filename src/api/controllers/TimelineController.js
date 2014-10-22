@@ -15,7 +15,7 @@ module.exports = {
         });
       },
       function getNewSetup (callback){
-        sails.log.debug("getNewSetup Member");
+        sails.log.debug("getNewSetup Timeline");
         SetupService.timeline(callback);
       },
       function createNewSetup (newValues, callback){
@@ -31,7 +31,14 @@ module.exports = {
         res.json(result);
     });
   }
-
+  , update: function (req, res, next) {
+    var id = req.param('id');
+    var data = req.params.all();
+    Timeline.update({id:id},data).exec(function update(err,updated){
+      Timeline.publishUpdate(updated[0].id, updated[0]);
+      res.json(updated);
+    });
+  }
   , upload: function (req, res) {
     sails.log.debug(req.file);
 
