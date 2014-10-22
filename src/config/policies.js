@@ -35,7 +35,8 @@ module.exports.policies = {
   },
 
   SessionController: {
-    'create': true
+    'create': true,
+    'subscribe': true
   },
 
   ContentController: {
