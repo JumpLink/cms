@@ -252,14 +252,17 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
         templateUrl: 'bootstrap/toolbar'
         , controller: 'ToolbarController'
       }
-      // , 'footer' : {
-      //   templateUrl: 'bootstrap/footer'
-      //   , controller: 'FooterController'
-      // }
     }
   })
   .state('bootstrap-layout.users', {
     url: '/users'
+    , resolve:{
+      users: function($sailsSocket) {
+        return $sailsSocket.get('/user').then (function (data) {
+          return data.data;
+        });
+      }
+    }
     , views: {
       'content' : {
         templateUrl: 'bootstrap/administration/users'
@@ -269,14 +272,18 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
         templateUrl: 'bootstrap/toolbar'
         , controller: 'ToolbarController'
       }
-      // , 'footer' : {
-      //   templateUrl: 'bootstrap/footer'
-      //   , controller: 'FooterController'
-      // }
     }
   })
   .state('bootstrap-layout.user', {
     url: '/user/:index'
+    , resolve:{
+      user: function($sailsSocket, $stateParams) {
+        return $sailsSocket.get('/user'+'/'+$stateParams.index).then (function (data) {
+          delete data.data.password;
+          return data.data;
+        });
+      }
+    }
     , views: {
       'content' : {
         templateUrl: 'bootstrap/administration/user'
@@ -286,10 +293,19 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
         templateUrl: 'bootstrap/toolbar'
         , controller: 'ToolbarController'
       }
-      // , 'footer' : {
-      //   templateUrl: 'bootstrap/footer'
-      //   , controller: 'FooterController'
-      // }
+    }
+  })
+  .state('bootstrap-layout.new-user', {
+    url: '/new/user'
+    , views: {
+      'content' : {
+        templateUrl: 'bootstrap/administration/user'
+        , controller: 'UserNewController'
+      }
+      , 'toolbar' : {
+        templateUrl: 'bootstrap/toolbar'
+        , controller: 'ToolbarController'
+      }
     }
   })
   ;

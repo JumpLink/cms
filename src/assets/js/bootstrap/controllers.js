@@ -1,4 +1,4 @@
-jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $window, $timeout, Fullscreen, toaster, $sailsSocket, $location, $anchorScroll) {
+jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $window, $timeout, Fullscreen, toaster, $sailsSocket, $location, $anchorScroll, $log) {
 
   // fix scroll to top on route change
   $scope.$on("$stateChangeSuccess", function () {
@@ -16,7 +16,7 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
 
       // react to subscripe from server: http://sailsjs.org/#/documentation/reference/websockets/sails.io.js/io.socket.on.html
       $sailsSocket.subscribe('connect', function(msg){
-        console.log('socket.io is connected');
+        $log.debug('socket.io is connected');
       });
 
       $sailsSocket.subscribe('disconnect', function(msg){
@@ -58,7 +58,7 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
 
       // admin room
       $sailsSocket.subscribe('admins', function(msg){
-        console.log(msg);
+        $log.debug(msg);
       });
 
     });
@@ -66,7 +66,7 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
 
   // http://stackoverflow.com/questions/18608161/angularjs-variable-set-in-ng-init-undefined-in-scope
   $rootScope.$watch('authenticated', function () {
-    console.log("authenticated: "+$rootScope.authenticated);
+    $log.debug("authenticated: "+$rootScope.authenticated);
     if($rootScope.authenticated) {
       $rootScope.mainStyle = {'padding-bottom':'50px'};
       $rootScope.toasterPositionClass = 'toast-bottom-right-with-toolbar';
@@ -167,6 +167,25 @@ jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $w
     });
   }
 
+  $scope.adminSettingDropdown = [
+    {
+      "text": "<i class=\"fa fa-list\"></i>&nbsp;Übersicht",
+      "click": "goToState('bootstrap-layout.administration')"
+    },
+    {
+      "text": "<i class=\"fa fa-users\"></i>&nbsp;Benutzer",
+      "click": "goToState('bootstrap-layout.users')"
+    },
+    {
+      "text": "<i class=\"fa fa-sign-out\"></i>&nbsp;Abmelden",
+      "click": "$root.logout()"
+    }
+  ];
+
+  $scope.goToState = function (to, params, options) {
+    $state.go(to, params, options)
+  }
+
 });
 
 jumplink.cms.controller('LayoutController', function($scope) {
@@ -183,7 +202,7 @@ jumplink.cms.controller('FooterController', function($scope) {
 
 });
 
-jumplink.cms.controller('HomeContentController', function($scope, $sailsSocket, $location, $anchorScroll, $timeout, $window, about, goals) {
+jumplink.cms.controller('HomeContentController', function($scope, $sailsSocket, $location, $anchorScroll, $timeout, $window, about, goals, $log) {
 
   $scope.about = about;
   $scope.goals = goals;
@@ -205,24 +224,24 @@ jumplink.cms.controller('HomeContentController', function($scope, $sailsSocket, 
   $scope.save = function() {
     $sailsSocket.put('/content/replace', {name: 'about', content: $scope.about}).success(function(data, status, headers, config) {
       if(data != null && typeof(data) !== "undefined") {
-        console.log (data);
+        $log.debug (data);
       } else {
-        console.log ("Can't save site");
+        $log.debug ("Can't save site");
       }
     });
 
     $sailsSocket.put('/content/replace', {name: 'goals', content: $scope.goals}).success(function(data, status, headers, config) {
       if(data != null && typeof(data) !== "undefined") {
-        console.log (data);
+        $log.debug (data);
       } else {
-        console.log ("Can't save site");
+        $log.debug ("Can't save site");
       }
     });
   }
 
   // called on content changes
   $sailsSocket.subscribe('content', function(msg){
-    console.log(msg);
+    $log.debug(msg);
     switch(msg.verb) {
       case 'updated':
         switch(msg.id) {
@@ -246,9 +265,9 @@ jumplink.cms.controller('HomeContentController', function($scope, $sailsSocket, 
 });
 
 
-jumplink.cms.controller('GalleryContentController', function($rootScope, $scope, Fullscreen, $sailsSocket, $stateParams, images, FileUploader, $modal) {
+jumplink.cms.controller('GalleryContentController', function($rootScope, $scope, Fullscreen, $sailsSocket, $stateParams, images, FileUploader, $modal, $log) {
   $scope.images = images;
-  console.log(images[0]);
+  $log.debug(images[0]);
   $scope.uploader = new FileUploader({url: 'gallery/upload', removeAfterUpload: true});
   $scope.uploader.filters.push({
     name: 'imageFilter',
@@ -312,7 +331,7 @@ jumplink.cms.controller('GalleryContentController', function($rootScope, $scope,
   }
 
   $scope.edit = function(image) {
-    console.log("edit", image);
+    $log.debug("edit", image);
     if($rootScope.authenticated) {
       editImageModal.$scope.image = image;
       //- Show when some event occurs (use $promise property to ensure the template has been loaded)
@@ -321,7 +340,7 @@ jumplink.cms.controller('GalleryContentController', function($rootScope, $scope,
   }
 
   $sailsSocket.subscribe('gallery', function(msg){
-    console.log(msg);
+    $log.debug(msg);
 
     switch(msg.verb) {
       case 'updated':
@@ -336,24 +355,24 @@ jumplink.cms.controller('GalleryContentController', function($rootScope, $scope,
       case 'removedFrom':
         if($rootScope.authenticated)
           $rootScope.pop('success', 'Ein Bild wurde entfernt', "");
-        console.log(msg.data);
+        $log.debug(msg.data);
       break;
       case 'destroyed':
         if($rootScope.authenticated)
           $rootScope.pop('success', 'Ein Bild wurde gelöscht', "");
-        console.log(msg.data);
+        $log.debug(msg.data);
       break;
       case 'addedTo':
         if($rootScope.authenticated)
           $rootScope.pop('success', 'Ein Bild wurde hinzugefügt', "");
-        console.log(msg.data);
+        $log.debug(msg.data);
       break;
     }
   });
 
   var removeFromClient = function (image) {
     var index = $scope.images.indexOf(image);
-    console.log("removeFromClient", image, index);
+    $log.debug("removeFromClient", image, index);
     if (index > -1) {
       $scope.images.splice(index, 1);
     }
@@ -363,27 +382,27 @@ jumplink.cms.controller('GalleryContentController', function($rootScope, $scope,
     if($rootScope.authenticated) {
       removeFromClient(image);
       if(image.id) {
-        console.log(image);
+        $log.debug(image);
         // WORKAROUND
         image.original.name = image.original.name.replace("Undefined ", "");
         $sailsSocket.delete('/gallery/'+image.id+"?filename="+image.original.name, {id:image.id, filename:image.original.name}).success(function(data, status, headers, config) {
-          console.log(data);
+          $log.debug(data);
         });
       }
     }
   }
 
   $scope.add = function() {
-    console.log("add");
+    $log.debug("add");
     uploadImagesModal.$promise.then(uploadImagesModal.show);
   }
 
   var saveImage = function(image) {
     $sailsSocket.put('/gallery/'+image.id, image).success(function(data, status, headers, config) {
       if(data != null && typeof(data) !== "undefined") {
-        console.log (data);
+        $log.debug (data);
       } else {
-        console.log ("Can't save image");
+        $log.debug ("Can't save image");
       }
     });
   }
@@ -433,7 +452,7 @@ jumplink.cms.controller('GalleryContentController', function($rootScope, $scope,
 
 });
 
-jumplink.cms.controller('GallerySlideController', function($scope, $sailsSocket, $stateParams, $timeout, images) {
+jumplink.cms.controller('GallerySlideController', function($scope, $sailsSocket, $stateParams, $timeout, images, $log) {
 
   $scope.images = images;
 
@@ -454,7 +473,7 @@ jumplink.cms.controller('GallerySlideController', function($scope, $sailsSocket,
 
 });
 
-jumplink.cms.controller('TimelineController', function($rootScope, $scope, events, moment, $sailsSocket, $modal, $datepicker, eventService, FileUploader) {
+jumplink.cms.controller('TimelineController', function($rootScope, $scope, events, moment, $sailsSocket, $modal, $datepicker, eventService, FileUploader, $log) {
   $scope.events = events;
   $scope.uploader = new FileUploader({url: 'timeline/upload', removeAfterUpload: true});
   var typeChooserModal = $modal({scope: $scope, title: 'Typ wählen', template: 'bootstrap/events/typechoosermodal', show: false});
@@ -477,16 +496,16 @@ jumplink.cms.controller('TimelineController', function($rootScope, $scope, event
   var saveEvent = function (event, eventName) {
     if(angular.isUndefined(event.id)) {
       $sailsSocket.post('/timeline', event).success(function(data, status, headers, config) {
-        console.log("event created", event, data);
+        $log.debug("event created", event, data);
         var index = $scope.events[eventName].indexOf(event);
         if (index > -1) {
           $scope.events[eventName][index] = data;
-          console.log($scope.events[eventName][index]);
+          $log.debug($scope.events[eventName][index]);
         }
       });
     } else {
       $sailsSocket.put('/timeline/'+event.id, event).success(function(data, status, headers, config) {
-        console.log("event updated", event, data);
+        $log.debug("event updated", event, data);
         event = data;
       });
     }
@@ -519,31 +538,31 @@ jumplink.cms.controller('TimelineController', function($rootScope, $scope, event
         $scope.events.after.push(newEvent);
         $scope.edit(newEvent);
       } else {
-        console.log("Es gibt keine anstehenden Veranstaltungen zum duplizieren: ");
-        console.log($scope.events.after);
+        $log.debug("Es gibt keine anstehenden Veranstaltungen zum duplizieren: ");
+        $log.debug($scope.events.after);
       }
     }
   };
 
   var removeFromClient = function (event, eventName) {
-    console.log("removeFromClient", event, eventName);
+    $log.debug("removeFromClient", event, eventName);
     var index = $scope.events[eventName].indexOf(event);
     if (index > -1) {
       $scope.events[eventName].splice(index, 1);
     } else {
-      console.log("not found");
+      $log.debug("not found");
     }
   };
 
   // TODO use async "not found"-callback is fired after value was found
   var findEvent = function(id, callback) {
-    console.log("findEvent", id);
+    $log.debug("findEvent", id);
     angular.forEach(['after', 'before', 'unknown'], function(eventPart, index) {
       if(eventPart === 'unknown' && $scope.events[eventPart].length <= 0) {
         return callback("not found");
       }
       angular.forEach($scope.events[eventPart], function(event, index) {
-        console.log("event.id", event.id);
+        $log.debug("event.id", event.id);
         if(event.id == id) {
           return callback(null, event, eventPart, index);
         }
@@ -555,13 +574,13 @@ jumplink.cms.controller('TimelineController', function($rootScope, $scope, event
   };
 
   $scope.remove = function(event, eventName) {
-    console.log("$scope.remove", event, eventName);
+    $log.debug("$scope.remove", event, eventName);
     if($rootScope.authenticated) {
       if(eventName == "after" && $scope.events["after"].length <= 1) {
-        console.log("Das letzte noch anstehende Ereignis kann nicht gelöscht werden.");
+        $log.debug("Das letzte noch anstehende Ereignis kann nicht gelöscht werden.");
       } else {
         if(event.id) {
-          console.log(event);
+          $log.debug(event);
           $sailsSocket.delete('/timeline/'+event.id).success(function(users, status, headers, config) {
             removeFromClient(event, eventName);
           });
@@ -575,10 +594,10 @@ jumplink.cms.controller('TimelineController', function($rootScope, $scope, event
   $scope.refresh = function() {
     var allEvents = eventService.merge(events.unknown, events.before, events.after);
 
-    console.log("allEvents.length", allEvents.length);
+    $log.debug("allEvents.length", allEvents.length);
     $scope.events = eventService.split(allEvents);
     delete allEvents;
-    console.log("refreshed");
+    $log.debug("refreshed");
   };
 
   $scope.edit = function(event, eventName) {
@@ -604,7 +623,7 @@ jumplink.cms.controller('TimelineController', function($rootScope, $scope, event
   };
 
   $sailsSocket.subscribe('timeline', function(msg){
-    console.log(msg);
+    $log.debug(msg);
 
     switch(msg.verb) {
       case 'updated':
@@ -612,7 +631,7 @@ jumplink.cms.controller('TimelineController', function($rootScope, $scope, event
           $rootScope.pop('success', 'Ein Ereignis wurde aktualisiert', msg.data.title);
         }
         findEvent(msg.id, function(error, event, eventPart, index) {
-          if(error) console.log(error);
+          if(error) $log.debug(error);
           else event = msg.data;
           $scope.refresh();
         });
@@ -629,7 +648,7 @@ jumplink.cms.controller('TimelineController', function($rootScope, $scope, event
           $rootScope.pop('success', 'Ein Ereignis wurde entfernt', msg.data.title);
         }
         findEvent(msg.id, function(error, event, eventPart, index) {
-          if(error) console.log(error);
+          if(error) $log.debug(error);
           else removeFromClient(event, eventPart);
         });
       break;
@@ -638,7 +657,7 @@ jumplink.cms.controller('TimelineController', function($rootScope, $scope, event
           $rootScope.pop('success', 'Ein Ereignis wurde gelöscht', msg.data.title);
         }
         findEvent(msg.id, function(error, event, eventPart, index) {
-          if(error) console.log(error);
+          if(error) $log.debug(error);
           else removeFromClient(event, eventPart);
         });
       break;
@@ -652,7 +671,7 @@ jumplink.cms.controller('TimelineController', function($rootScope, $scope, event
 
 });
 
-jumplink.cms.controller('MembersController', function($rootScope, $scope, members, $sailsSocket, $filter, $modal, FileUploader) {
+jumplink.cms.controller('MembersController', function($rootScope, $scope, members, $sailsSocket, $filter, $modal, FileUploader, $log) {
   $scope.uploader = new FileUploader({url: 'member/upload', removeAfterUpload: true});
   $scope.uploader.filters.push({
     name: 'imageFilter',
@@ -685,7 +704,7 @@ jumplink.cms.controller('MembersController', function($rootScope, $scope, member
     if($rootScope.authenticated) {
       if($scope.members.length > 2) {
         if(member.id) {
-          console.log(member);
+          $log.debug(member);
           $sailsSocket.delete('/member/'+member.id).success(function(users, status, headers, config) {
             removeFromClient(member);
           });
@@ -714,12 +733,12 @@ jumplink.cms.controller('MembersController', function($rootScope, $scope, member
     if(angular.isUndefined(member.id)) {
       // create member
       $sailsSocket.post('/member', member).success(function(data, status, headers, config) {
-        // console.log(data);
+        // $log.debug(data);
       });
     } else {
       // update member
       $sailsSocket.put('/member/'+member.id, member).success(function(data, status, headers, config) {
-        // console.log(data);
+        // $log.debug(data);
       });
     }
   }
@@ -750,7 +769,7 @@ jumplink.cms.controller('MembersController', function($rootScope, $scope, member
       if(index < $scope.members.length && angular.isDefined($scope.members[index+1])) {
         var newPosition = $scope.members[index+1].position;
         var oldPosition = $scope.members[index].position;
-        console.log(newPosition+" <-> "+oldPosition);
+        $log.debug(newPosition+" <-> "+oldPosition);
         $scope.members[index].position = newPosition;
         $scope.members[index+1].position = oldPosition;
         $scope.members = $filter('orderBy')($scope.members, 'position');
@@ -765,7 +784,7 @@ jumplink.cms.controller('MembersController', function($rootScope, $scope, member
       if(index > 0 && angular.isDefined($scope.members[index-1])) {
         var newPosition = $scope.members[index-1].position;
         var oldPosition = $scope.members[index].position;
-        console.log(newPosition+" <-> "+oldPosition);
+        $log.debug(newPosition+" <-> "+oldPosition);
         $scope.members[index].position = newPosition;
         $scope.members[index-1].position = oldPosition;
         $scope.members = $filter('orderBy')($scope.members, 'position');
@@ -776,7 +795,7 @@ jumplink.cms.controller('MembersController', function($rootScope, $scope, member
   }
 
   $sailsSocket.subscribe('member', function(msg){
-    console.log(msg);
+    $log.debug(msg);
 
     switch(msg.verb) {
       case 'updated':
@@ -805,42 +824,50 @@ jumplink.cms.controller('MembersController', function($rootScope, $scope, member
 });
 
 jumplink.cms.controller('AdminController', function($scope) {
+
 });
 
-jumplink.cms.controller('UsersController', function($scope, $sailsSocket) {
-  var getUsers = function () {
-    $sailsSocket.get('/user').success(function(users, status, headers, config) {
-      if(users != null && typeof(users) !== "undefined") {
-        if(angular.isUndefined($scope.users))
-          $scope.users = {};
-        $scope.users = users;
-      } else {
-        // TODO redirect
-        console.error ("Can't load users");
-      }
-    });
+jumplink.cms.controller('UsersController', function($scope, $rootScope, $sailsSocket, users, $log, userService) {
+  $scope.users = users;
+
+  $scope.remove = function(user) {
+    userService.remove($scope.users, user);
   }
-  getUsers();
+
+  userService.subscribe();
+
 });
 
-jumplink.cms.controller('UserController', function($scope, $sailsSocket, $stateParams) {
-  var getUser = function () {
-    $sailsSocket.get('/user'+'/'+$stateParams.index).success(function(user, status, headers, config) {
-      if(user != null && typeof(user) !== "undefined") {
-        if(angular.isUndefined($scope.user))
-          $scope.user = {};
-        $scope.user = user;
-      } else {
-        // TODO redirect
-        console.error ("Can't load user");
-      }
+jumplink.cms.controller('UserController', function($scope, userService, user, $state, $log) {
+  $scope.user = user;
+  $scope.save = function(user) {
+    if(angular.isUndefined(user))
+      user = $scope.user;
+    userService.save(user, function(data) {
+      // $scope.user = data;
+      $state.go('bootstrap-layout.users');
     });
   }
-  getUser();
+
+  userService.subscribe();
+});
+
+jumplink.cms.controller('UserNewController', function($scope, userService, $state, $log) {
+  $scope.user = {};
+  $scope.save = function(user) {
+    if(angular.isUndefined(user))
+      user = $scope.user;
+    userService.save(user, function(data) {
+      // $scope.user = data;
+      $state.go('bootstrap-layout.users');
+    });
+  }
+
+  userService.subscribe();
 });
 
 // Aufnahmeantrag
-jumplink.cms.controller('ApplicationController', function($rootScope, $scope, $sailsSocket, moment, $filter, application) {
+jumplink.cms.controller('ApplicationController', function($rootScope, $scope, $sailsSocket, moment, $filter, application, $log) {
 
   var date = moment(); // now
   $scope.html = false;
@@ -866,24 +893,24 @@ jumplink.cms.controller('ApplicationController', function($rootScope, $scope, $s
   }
   $scope.minYearsOld = 10;
   $scope.minBirthdayDate = moment().subtract($scope.minYearsOld, 'years');
-  // console.log("$scope.minBirthdayDate", $scope.minBirthdayDate);
+  // $log.debug("$scope.minBirthdayDate", $scope.minBirthdayDate);
   $scope.maxYearsOld = 100;
   $scope.maxBirthdayDate = moment().subtract($scope.maxYearsOld, 'years');
-  // console.log("$scope.maxBirthdayDate)", $scope.maxBirthdayDate);
+  // $log.debug("$scope.maxBirthdayDate)", $scope.maxBirthdayDate);
 
   $scope.upload = function() {
     $rootScope.pop('info', 'Aufnahmeantrag wird bearbeitet');
     $scope.webodf.refresh(function() {
       $scope.webodf.upload(function(error, response ) {
-        if(error) console.log(error);
-        console.log(response);
+        if(error) $log.debug(error);
+        $log.debug(response);
         var odtFilename = response.files[0].uploadedAs;
         var odtPath = response.files[0].fd;
         $sailsSocket.put("/document/convert/", {filename: odtFilename, extension: 'pdf'}).success(function(data, status, headers, config){
-          console.log(data);
+          $log.debug(data);
            var pdfPath = data.target;
           $sailsSocket.put("/document/convert/", {filename: odtFilename, extension: 'html'}).success(function(data, status, headers, config){
-            // console.log(data);
+            // $log.debug(data);
             $rootScope.pop('success', 'Aufnahmeantrag erfolgreich erzeugt');
              var htmlPath = data.target;
             // callback(null, resInfo, data, status, headers, config);
@@ -930,7 +957,7 @@ jumplink.cms.controller('ApplicationController', function($rootScope, $scope, $s
   }
 
   var onWebODFReady = function() {
-    // console.log("ready");
+    // $log.debug("ready");
   }
 
   $scope.webodf = {
@@ -939,7 +966,7 @@ jumplink.cms.controller('ApplicationController', function($rootScope, $scope, $s
 
   // called on content changes
   $sailsSocket.subscribe('content', function(msg){
-    console.log(msg);
+    $log.debug(msg);
     switch(msg.verb) {
       case 'updated':
         switch(msg.id) {
@@ -961,16 +988,16 @@ jumplink.cms.controller('ApplicationController', function($rootScope, $scope, $s
   $scope.save = function() {
     $sailsSocket.put("/content/replace", {name: 'application', content: $scope.application}, function (response) {
       if(response != null && typeof(response) !== "undefined") {
-        console.log (response);
+        $log.debug (response);
       } else {
-        console.log ("Can't save site");
+        $log.debug ("Can't save site");
       }
     });
   }
 
 });
 
-jumplink.cms.controller('LinksController', function($rootScope, $scope, $sailsSocket, links, $location, $anchorScroll) {
+jumplink.cms.controller('LinksController', function($rootScope, $scope, $sailsSocket, links, $location, $anchorScroll, $log) {
   $scope.links = links;
 
   $scope.goTo = function (hash) {
@@ -985,16 +1012,16 @@ jumplink.cms.controller('LinksController', function($rootScope, $scope, $sailsSo
   $scope.save = function() {
     $sailsSocket.put("/content/replace", {name: 'links', content: $scope.links}, function (response) {
       if(response != null && typeof(response) !== "undefined") {
-        console.log (response);
+        $log.debug (response);
       } else {
-        console.log ("Can't save site");
+        $log.debug ("Can't save site");
       }
     });
   }
 
   // called on content changes
   $sailsSocket.subscribe('content', function(msg){
-    console.log(msg);
+    $log.debug(msg);
     switch(msg.verb) {
       case 'updated':
         switch(msg.id) {
@@ -1011,7 +1038,7 @@ jumplink.cms.controller('LinksController', function($rootScope, $scope, $sailsSo
 
 });
 
-jumplink.cms.controller('ImprintController', function($rootScope, $scope, $sailsSocket, imprint, $location, $anchorScroll) {
+jumplink.cms.controller('ImprintController', function($rootScope, $scope, $sailsSocket, imprint, $location, $anchorScroll, $log) {
   $scope.imprint = imprint;
 
   $scope.email = {
@@ -1033,9 +1060,9 @@ jumplink.cms.controller('ImprintController', function($rootScope, $scope, $sails
   $scope.save = function() {
     $sailsSocket.put("/content/replace", {name: 'imprint', content: $scope.imprint}, function (response) {
       if(response != null && typeof(response) !== "undefined") {
-        console.log (response);
+        $log.debug (response);
       } else {
-        console.log ("Can't save site");
+        $log.debug ("Can't save site");
       }
     });
   }
@@ -1058,7 +1085,7 @@ jumplink.cms.controller('ImprintController', function($rootScope, $scope, $sails
       if(!$rootScope.authenticated) {
         $rootScope.pop('success', 'E-Mail wurde versendet.');
       }
-      console.log(data);
+      $log.debug(data);
     });
   }
 
@@ -1088,7 +1115,7 @@ jumplink.cms.controller('ImprintController', function($rootScope, $scope, $sails
 
   // called on content changes
   $sailsSocket.subscribe('content', function(msg){
-    console.log(msg);
+    $log.debug(msg);
     switch(msg.verb) {
       case 'updated':
         switch(msg.id) {

@@ -33,5 +33,5 @@ nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="$r
           | HTML
         button.btn.btn-primary.navbar-btn(ng-if="save", title="Speichern", ng-click="save()")
           i.fa.fa-floppy-o
-      button.btn.btn-default.navbar-btn(title="Einstellungen", ui-sref='bootstrap-layout.administration')
+      button.btn.btn-default.navbar-btn(title="Einstellungen", bs-dropdown="adminSettingDropdown", ng-click="$event.stopPropagation();", data-template="bootstrap/dropdown", data-placement="top-left", data-html="true")
         i.fa.fa-cog

@@ -15,13 +15,8 @@
  * @docs        :: http://sailsjs.org/#!documentation/controllers
  */
 
-
-
 module.exports = {
-
-
   setup: function (req, res, next) {
-
     async.waterfall([
       function destroyAll(callback){
         sails.log.debug("destroyAll");
@@ -45,6 +40,32 @@ module.exports = {
       else
         res.json(result);
     });
-
+  }
+  , update: function (req, res, next) {
+    var id = req.param('id');
+    var data = req.params.all();
+    User.update({id:id},data).exec(function update(error, updated){
+      if(error) return res.serverError(error);
+      User.publishUpdate(updated[0].id, updated[0]);
+      res.json(updated);
+    });
+  }
+  , destroy: function(req, res) {
+    var id = req.param('id');
+    User.destroy(id, function (error, destroyed) {
+      if(error) return res.serverError(error);
+      User.publishDestroy(id);
+      sails.log.debug(destroyed);
+      res.ok();
+    });
+  }
+  , create: function(req, res) {
+    var data = req.params.all();
+    User.create(data, function (error, created) {
+      if(error) return res.serverError(error);
+      User.publishCreate(created);
+      sails.log.debug(created);
+      res.ok();
+    });
   }
 };
