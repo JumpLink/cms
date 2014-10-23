@@ -23,13 +23,12 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   // use the HTML5 History API
   $locationProvider.html5Mode(false);
 
-  $urlRouterProvider.otherwise('/bootstrap/home');
+  $urlRouterProvider.otherwise('/home');
 
   $stateProvider
   // LAYOUT
   .state('bootstrap-layout', {
-    url: '/bootstrap'
-    , abstract: true
+    abstract: true
     , templateUrl: "bootstrap/layout"
     , controller: 'LayoutController'
   })

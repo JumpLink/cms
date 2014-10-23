@@ -38,6 +38,10 @@ module.exports.routes = {
 
   '/signin': 'ViewController.signin',
 
+  '/bs/legacy/browser': 'ViewController.updateBrowser',
+
+  '/bs/legacy/home': 'ViewController.legacy',
+
   /***************************************************************************
   *                                                                          *
   * Custom routes here...                                                    *

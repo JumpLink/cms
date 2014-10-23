@@ -6,10 +6,23 @@
  */
 
 var updateBrowser = function (req, res, next) {
-  res.view('bootstrap/legacy/browser', { useragent: req.useragent });
+  res.view('bootstrap/templates/legacy/browser', { useragent: req.useragent, title: 'Ihr Browser wird nicht unterstützt' });
+}
+
+var legacy = function (req, res, next) {
+  var about, goals;
+  Content.find({name:'about'}).exec(function found(err, results) {
+    about = results[0].content;
+    Content.find({name:'goals'}).exec(function found(err, results) {
+      goals = results[0].content;
+      res.view('bootstrap/templates/home/legacy/content', { about: about, goals: goals, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Startseite' });
+    });
+  });
 }
 
 module.exports = {
+  updateBrowser: updateBrowser,
+  legacy: legacy,
   /*
    * single-page application https://en.wikipedia.org/wiki/Single-page_application
    */
@@ -24,7 +37,10 @@ module.exports = {
   singlePageBootstrap: function(req, res, next) {
 
     var ok = function (req, res, next) {
-      res.view('bootstrap/init', { authenticated: req.session.authenticated === true });
+      // TODO fix user
+      var user = "{}";
+      if(typeof req.session.user != 'undefined') user = JSON.stringify(req.session.user);
+      res.view('bootstrap/init', { authenticated: req.session.authenticated === true, user: user});
     }
 
     // TODO
@@ -46,7 +62,7 @@ module.exports = {
   signin: function(req, res, next) {
 
     var ok = function () {
-      res.view('bootstrap/legacy/signin', { flash: req.session.flash });
+      res.view('bootstrap/templates/legacy/signin', { flash: req.session.flash });
     }
 
     // TODO

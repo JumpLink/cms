@@ -48,7 +48,7 @@
               span(medium-editor, ng-model="event.place", options='{"placeholder": "Kein Ort angegeben", "disableToolbar": true, "forcePlainText": true, "disableReturn": true}')
             p.text-muted(ng-hide="$root.authenticated", ng-show="event.place")
               i.fa.fa-home(ng-show="event.place")
-              span(ng-hide="$root.authenticated", ng-bind-html="event.place")
+              a(ng-hide="$root.authenticated", ng-bind-html="event.place", ng-href="https://maps.google.com?q={{event.place}}")
           .timeline-body
             p(ng-show="event.download")
               a(href="/files/timeline/{{event.download}}").btn.btn-info: | Weitere Informationen
