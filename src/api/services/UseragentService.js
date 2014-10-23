@@ -1,6 +1,8 @@
 var getPrimaryVersion = function (req) {
   var primaryVersion = 0;
-  var firstDotIndex = req.useragent.Version.indexOf('.');
+  var firstDotIndex = -1;
+  if(typeof req.useragent.Version != 'undefined')
+    firstDotIndex = req.useragent.Version.indexOf('.');
   if(firstDotIndex < 0)
     primaryVersion = req.useragent.Version;
   else
