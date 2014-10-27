@@ -6,4 +6,11 @@ html
     meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1")
     link#style(rel="stylesheet", href="/styles/bootstrap.css")
   body
+    #toast-container.toast-bottom-right
+      .toast.toast-warning
+        //- button.toast-close-button ×
+        .toast-title Seite im Kompatibilitätsmodus
+        .toast-message
+          a(href="/bs/legacy/browser") Hier erfahren Sie mehr.
+      block toasts
     block body

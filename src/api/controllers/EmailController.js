@@ -7,6 +7,7 @@
 
 var fs = require('fs');
 
+
 module.exports = {
   send: function(req, res, next) {
     var html = '';
@@ -25,7 +26,6 @@ module.exports = {
       sails.sockets.broadcast('admins', 'email', result);
       res.json(result);
     });
-
   },
 };
 

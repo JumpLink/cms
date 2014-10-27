@@ -1,0 +1,11 @@
+extends ../../../legacy/layout.jade
+block body
+  include ../../legacy/toolbar.jade
+  .container-fluid(style="min-height: 400px;")
+    h1.anchor-static-navbar#gallery
+    .page-header
+      h1 Galerie
+     each image in images
+      a.pull-left(href=image.original.path, style="width:100px;padding:2px")
+        img.img-responsive(src=image.thumb.path)
+  include ../../legacy/footer.jade

@@ -5,19 +5,257 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 
+var validator = require('validator');
+
 var updateBrowser = function (req, res, next) {
-  res.view('bootstrap/templates/legacy/browser', { useragent: req.useragent, title: 'Ihr Browser wird nicht unterstützt' });
+  res.view('bootstrap/templates/legacy/browser', {host: req.host, url: req.url, useragent: req.useragent, title: 'Ihr Browser wird nicht unterstützt' });
 }
 
-var legacy = function (req, res, next) {
+var legacyHome = function (req, res, next) {
   var about, goals;
   Content.find({name:'about'}).exec(function found(err, results) {
     about = results[0].content;
     Content.find({name:'goals'}).exec(function found(err, results) {
       goals = results[0].content;
-      res.view('bootstrap/templates/home/legacy/content', { about: about, goals: goals, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Startseite' });
+      res.view('bootstrap/templates/home/legacy/content', {host: req.host, url: req.url, about: about, goals: goals, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Startseite' });
     });
   });
+}
+
+var legacyMembers = function (req, res, next) {
+  var members;
+  Member.find().exec(function found(err, results) {
+    members = results;
+    res.view('bootstrap/templates/members/legacy/content', {host: req.host, url: req.url, members: members, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Vorstand / Beirat' });
+  });
+}
+
+var legacyEvents = function (req, res, next) {
+  var events;
+  Timeline.find().exec(function found(err, results) {
+    events = EventService.split(results);
+    res.view('bootstrap/templates/events/legacy/timeline', {host: req.host, url: req.url, events: events, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Veranstaltungen' });
+  });
+}
+
+var legacyGallery = function (req, res, next) {
+  var about, goals;
+  Gallery.find().exec(function found(err, results) {
+    images = results;
+    res.view('bootstrap/templates/gallery/legacy/content', {host: req.host, url: req.url, images: images, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Galerie' });
+  });
+}
+
+var legacyApplication = function (req, res, next) {
+  var application;
+
+  var member = {
+    datum: moment()
+    , vorname: null
+    , geburtstag: null
+    , geburtsort: null
+    , email: null
+    , telefon: null
+    , beruf: null
+    , strasse: null
+    , plz: null
+    , ort: null
+    , bank: {
+      name: null
+      , iban: null
+      , bic: null
+    }
+  }
+
+  Content.find({name:'application'}).exec(function found(err, results) {
+    application = results[0].content;
+    res.view('bootstrap/templates/application/legacy/content', {host: req.host, url: req.url, application: application, member: member, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Aufnahmeantrag' });
+  });
+}
+
+var legacyLinks = function (req, res, next) {
+  var links;
+  Content.find({name:'links'}).exec(function found(err, results) {
+    links = results[0].content;
+    res.view('bootstrap/templates/links/legacy/content', {host: req.host, url: req.url, links: links, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Links' });
+  });
+}
+
+var legacyImprint = function (req, res, next) {
+  var imprint, emailIsSend;
+
+  var view = function (host, url, form, useragent, emailIsSend) {
+    Content.find({name:'imprint'}).exec(function found(err, results) {
+      imprint = results[0].content;
+      res.view('bootstrap/templates/imprint/legacy/content', {emailIsSend: emailIsSend, host: host, url: url, imprint: imprint, form: form, useragent: useragent, title: 'Nautischer Verein Cuxhaven e.V. - Impressum' });
+    });
+  }
+
+  var form = {
+    name: {
+      value: null,
+      $invalid: null,
+      $valid: null,
+      $error: {
+        required: false,
+        email: false
+      }
+    },
+    from:  {
+      value: null,
+      $invalid: null,
+      $valid: null,
+      $error: {
+        required: false,
+      }
+    },
+    subject: {
+      value: null,
+      $invalid: null,
+      $valid: null,
+      $error: {
+        required: false,
+        email: false
+      }
+    },
+    content:  {
+      value: null,
+      $invalid: null,
+      $valid: null,
+      $error: {
+        required: false,
+        email: false
+      }
+    }
+  };
+
+  if(req.method == 'POST') {
+    if(req.body) {
+      if(req.params.name)
+        form.name.value = req.params.name;
+      if(req.params.from)
+        form.from.value = req.params.from;
+      if(req.params.subject)
+        form.subject.value = req.params.subject;
+      if(req.params.content)
+        form.content.value = req.params.content;
+    }
+
+    if(req.body) {
+      if(req.body.name)
+        form.name.value = req.body.name;
+      if(req.body.from)
+        form.from.value = req.body.from;
+      if(req.body.subject)
+        form.subject.value = req.body.subject;
+      if(req.body.content)
+        form.content.value = req.body.content;
+    }
+
+    if(!form.name.value) {
+      form.name.$error.required = true;
+      form.name.$invalid = true;
+      form.name.$valid = !form.name.$invalid;
+    } else {
+      form.name.$error.required = false;
+      form.name.$invalid = false;
+      form.name.$valid = !form.name.$invalid;
+    }
+
+    if(!form.from.value) {
+      form.from.$error.required = true;
+      form.from.$invalid = true;
+      form.from.$valid = !form.from.$invalid;
+    } else {
+      form.from.$error.required = false;
+      form.from.$invalid = false;
+      form.from.$valid = !form.from.$invalid;
+    }
+
+    if(!validator.isEmail(form.from.value)) {
+      form.from.$error.email = true;
+      form.from.$invalid = true;
+      form.from.$valid = !form.from.$invalid;
+    } else {
+      form.from.$error.email = false;
+      form.from.$invalid = false;
+      form.from.$valid = !form.from.$invalid;
+    }
+
+    if(!form.subject.value) {
+      form.subject.$error.required = true;
+      form.subject.$invalid = true;
+      form.subject.$valid = !form.subject.$invalid;
+    } else {
+      form.subject.$error.required = false;
+      form.subject.$invalid = false;
+      form.subject.$valid = !form.subject.$invalid;
+    }
+
+    if(!form.content.value) {
+      form.content.$error.required = true;
+      form.content.$invalid = true;
+      form.content.$valid = !form.content.$invalid;
+    } else {
+      form.content.$error.required = false;
+      form.content.$invalid = false;
+      form.content.$valid = !form.content.$invalid;
+    }
+
+    if(form.name.$valid && form.from.$valid && form.subject.$valid && form.content.$valid) {
+      EmailService.send(from = form.from.value, to = "pascal@jumplink.eu", subject = form.subject.value, text = form.content.value, html = null, attachments = null, function(error, info) {
+        var emailResult = {from:from, subject:subject, text:text, html:html, attachments:attachments, error:error, info:info};
+        if(emailResult.error) {
+          emailIsSend = false;
+        } else {
+          emailIsSend = true;
+        }
+        view(req.host, req.url, form, req.useragent, emailIsSend);
+      });
+    } else {
+      emailIsSend = false;
+      view(req.host, req.url, form, req.useragent, emailIsSend);
+    }
+
+  } else {
+    view(req.host, req.url, form, req.useragent, null);
+  }
+
+}
+
+var legacy = function (req, res, next) {
+
+  sails.log.debug(req.originalUrl, req.url);
+
+  switch(req.url) {
+    case "/bs/legacy/browser":
+      updateBrowser(req, res, next);
+    break;
+    case "/bs/legacy/home":
+      legacyHome(req, res, next);
+    break;
+    case "/bs/legacy/members":
+      legacyMembers(req, res, next);
+    break;
+    case "/bs/legacy/events":
+      legacyEvents(req, res, next);
+    break;
+    case "/bs/legacy/gallery":
+      legacyGallery(req, res, next);
+    break;
+    case "/bs/legacy/application":
+      legacyApplication(req, res, next);
+    break;
+    case "/bs/legacy/links":
+      legacyLinks(req, res, next);
+    break;
+    case "/bs/legacy/imprint":
+      legacyImprint(req, res, next);
+    break;
+    default:
+      legacyHome(req, res, next);
+    break;
+  }
 }
 
 module.exports = {

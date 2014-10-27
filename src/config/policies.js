@@ -51,7 +51,9 @@ module.exports.policies = {
   },
 
   EmailController: {
-    'send': true
+    'send': true,
+    'contact': true,
+    'application': true
   },
 
   GalleryController: {
