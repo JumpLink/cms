@@ -225,42 +225,66 @@ var legacyImprint = function (req, res, next) {
 
 var legacy = function (req, res, next) {
 
-  sails.log.debug(req.originalUrl, req.url);
+  var ok = function (req, res, next) {
+    switch(req.url) {
+      case "/bs/legacy/browser":
+        updateBrowser(req, res, next);
+      break;
+      case "/bs/legacy/home":
+        legacyHome(req, res, next);
+      break;
+      case "/bs/legacy/members":
+        legacyMembers(req, res, next);
+      break;
+      case "/bs/legacy/events":
+        legacyEvents(req, res, next);
+      break;
+      case "/bs/legacy/gallery":
+        legacyGallery(req, res, next);
+      break;
+      case "/bs/legacy/application":
+        legacyApplication(req, res, next);
+      break;
+      case "/bs/legacy/links":
+        legacyLinks(req, res, next);
+      break;
+      case "/bs/legacy/imprint":
+        legacyImprint(req, res, next);
+      break;
+      default:
+        legacyHome(req, res, next);
+      break;
+    }
+  }
 
-  switch(req.url) {
-    case "/bs/legacy/browser":
-      updateBrowser(req, res, next);
-    break;
-    case "/bs/legacy/home":
-      legacyHome(req, res, next);
-    break;
-    case "/bs/legacy/members":
-      legacyMembers(req, res, next);
-    break;
-    case "/bs/legacy/events":
-      legacyEvents(req, res, next);
-    break;
-    case "/bs/legacy/gallery":
-      legacyGallery(req, res, next);
-    break;
-    case "/bs/legacy/application":
-      legacyApplication(req, res, next);
-    break;
-    case "/bs/legacy/links":
-      legacyLinks(req, res, next);
-    break;
-    case "/bs/legacy/imprint":
-      legacyImprint(req, res, next);
-    break;
-    default:
-      legacyHome(req, res, next);
-    break;
+  if(UseragentService.supported(req)) {
+    res.redirect('/');
+  } else {
+    ok(req, res, next);
   }
 }
+
+var singlePageBootstrap = function(req, res, next) {
+
+  var ok = function (req, res, next) {
+    // TODO fix user
+    var user = "{}";
+    if(typeof req.session.user != 'undefined') user = JSON.stringify(req.session.user);
+    res.view('bootstrap/init', { authenticated: req.session.authenticated === true, user: user});
+  }
+
+  if(UseragentService.supported(req)) {
+    ok(req, res, next);
+  } else {
+    res.redirect('/bs/legacy/home');
+  }
+
+};
 
 module.exports = {
   updateBrowser: updateBrowser,
   legacy: legacy,
+  singlePageBootstrap: singlePageBootstrap,
   /*
    * single-page application https://en.wikipedia.org/wiki/Single-page_application
    */
@@ -272,28 +296,6 @@ module.exports = {
     res.view('init-material');
   },
 
-  singlePageBootstrap: function(req, res, next) {
-
-    var ok = function (req, res, next) {
-      // TODO fix user
-      var user = "{}";
-      if(typeof req.session.user != 'undefined') user = JSON.stringify(req.session.user);
-      res.view('bootstrap/init', { authenticated: req.session.authenticated === true, user: user});
-    }
-
-    // TODO
-    var legacy = function () {
-
-    }
-
-    if(UseragentService.supported(req)) {
-      ok(req, res, next);
-    } else {
-      updateBrowser(req, res, next);
-    }
-
-  },
-
   /*
    * legacy html page to allow browser to auto-fill e-mail and password
    */
@@ -303,15 +305,10 @@ module.exports = {
       res.view('bootstrap/templates/legacy/signin', { flash: req.session.flash });
     }
 
-    // TODO
-    var legacy = function () {
-
-    }
-
     if(UseragentService.supported(req)) {
       ok();
     } else {
-      updateBrowser(req, res, next);
+      res.redirect('/bs/legacy/home');
     }
 
   }
