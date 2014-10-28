@@ -20,8 +20,6 @@ var supported = function (req) {
     return true;
   if(req.useragent.isDesktop && req.useragent.isFirefox && req.useragent.PrimaryVersion >= 32)
     return true;
-  if(req.useragent.isFirefox && req.useragent.PrimaryVersion >= 32)
-    return true;
   if(req.useragent.isOpera && req.useragent.PrimaryVersion >= 12)
     return true;
   // To slow?
