@@ -1,7 +1,11 @@
+button.btn.btn-primary.navbar-btn.navbar-left.hidden-lg.hidden-md.navbar-btn-legacy(style="font-size: 14px; margin-left: 15px; margin-right: 15px;")
+  i.fa.fa-bars
+  include ./sidebar.jade
 .navbar.navbar-default.navbar-fixed-top.hidden-print(role='navigation')
   .container
     .navbar-header
-      button.btn.btn-primary.navbar-btn.navbar-left.hidden-lg.hidden-md(style="font-size: 14px; margin-left: 15px; margin-right: 15px;")
+      //- placeholder
+      button.btn.btn-primary.navbar-btn.navbar-left.hidden-lg.hidden-md(style="font-size: 14px; margin-left: 15px; margin-right: 15px; visibility: hidden;")
         i.fa.fa-bars
       a.navbar-brand(href= force != null ? '/bs/legacy/home?force='+force : '/bs/legacy/home')
         img(src="/images/logo_small.svg", style="height: 40px;margin-top:-10px;float:left;padding-right:5px;")

@@ -6,6 +6,8 @@
  */
 
 var validator = require('validator');
+var moment = require('moment');
+moment.locale('de');
 
 var updateBrowser = function (req, res, next, force) {
   res.view('bootstrap/templates/legacy/browser', {force: force, host: req.host, url: req.path, useragent: req.useragent, title: 'Ihr Browser wird nicht unterstützt' });
@@ -52,7 +54,7 @@ var legacyApplication = function (req, res, next, force, showLegacyToast) {
   var application;
 
   var member = {
-    datum: moment()
+    datum: moment().format("dddd Do MMMM YYYY, HH:mm")
     , vorname: null
     , geburtstag: null
     , geburtsort: null

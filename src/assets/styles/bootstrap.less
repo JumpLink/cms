@@ -271,6 +271,25 @@ i.fa.img-dropdown {
   }
 }
 
+// legacy mode: show aside just over css
+.navbar-btn-legacy {
+  position: fixed;
+  top: 0;
+  z-index: 10000;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  .aside-legacy {
+    display: none;
+  }
+  &:active, &:focus ,&:hover {
+    .aside-legacy {
+      display: block;
+    }
+  }
+}
+.aside-title {
+  text-align: left;
+}
+
 *[ng-click] {
   cursor:pointer;
 }

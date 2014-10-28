@@ -1,6 +1,6 @@
 var moment = require('moment');
-var underscore = require('underscore'); // http://documentcloud.github.io/underscore/
 moment.locale('de');
+var underscore = require('underscore'); // http://documentcloud.github.io/underscore/
 
 // server compatibility to angular functions
 // TODO auslagern in eigene Library
