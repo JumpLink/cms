@@ -30,9 +30,9 @@ block body
           h1 Impressum
         div!= imprint
         h1.anchor-static-navbar#contact
-        .page-header
+        .page-header.hidden-print
           h1 Kontakt
-        form(role='form', name="form", validate, action="#contact", method="post")
+        form.hidden-print(role='form', name="form", validate, action="#contact", method="post")
           //-
           //- Name
           //-

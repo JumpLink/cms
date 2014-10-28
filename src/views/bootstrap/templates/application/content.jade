@@ -4,7 +4,7 @@
   div(ng-show="html && $root.authenticated", ui-ace="{mode: 'html'}", ng-model="application")
   div(ng-show="$root.authenticated", medium-editor, ng-model="application", options='{"buttons": ["bold", "italic", "underline", "anchor", "header1" , "header2", "quote", "orderedlist", "unorderedlist"]}', bind-options="mediumBindOptions")
   div(ng-bind-html="application", ng-hide="$root.authenticated")
-  form(role='form', name="form", novalidate, ng-submit="upload()")
+  form.hidden-print(role='form', name="form", novalidate, ng-submit="upload()")
     //-
     //- Name
     //-

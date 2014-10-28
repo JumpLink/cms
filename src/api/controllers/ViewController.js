@@ -285,11 +285,11 @@ var singlePageBootstrap = function(req, res, next) {
 
   sails.log('singlePageBootstrap(req, res, next)');
 
-  var ok = function (req, res, next) {
+  var ok = function (req, res, next, force) {
     // TODO fix user
     var user = "{}";
     if(typeof req.session.user != 'undefined') user = JSON.stringify(req.session.user);
-    res.view('bootstrap/init', { url: req.path, authenticated: req.session.authenticated === true, user: user});
+    res.view('bootstrap/init', { force: force, url: req.path, authenticated: req.session.authenticated === true, user: user});
   }
 
   var force = null; // modern | legacy
@@ -303,7 +303,7 @@ var singlePageBootstrap = function(req, res, next) {
   sails.log.debug('force', force);
 
   if((UseragentService.supported(req) || force == 'modern') && (force != 'legacy' && force != 'noscript')) {
-    ok(req, res, next);
+    ok(req, res, next, force);
   } else {
     if(force != null)
       res.redirect('/bs/legacy/home?force='+force);

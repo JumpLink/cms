@@ -1,7 +1,7 @@
 .main-body(ng-style="$root.mainStyle")
-  toaster-container(toaster-options="{'position-class': toasterPositionClass}")
-  .toolbar(ui-view="toolbar")
+  toaster-container.hidden-print(toaster-options="{'position-class': toasterPositionClass}")
+  .toolbar.hidden-print(ui-view="toolbar")
   .content(ui-view="content")
-  .footer(ui-view="footer")
-  .load(ng-class="loadclass")
+  .footer.hidden-print(ui-view="footer")
+  .load.hidden-print(ng-class="loadclass")
     | Lade..

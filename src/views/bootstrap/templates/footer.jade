@@ -25,6 +25,6 @@ img(src="/images/footer.png", width="100%", height="auto")
           dd: a(href="http://jumplink.eu"): | Pascal Garber
         dl.dl-horizontal
           dt: | Extras
-          dd: a(ng-hide="$root.authenticated", href="/signin"): | Administration
-          dd: a(ng-show="$root.authenticated", ng-click="logout()"): | Administration abmelden
+          dd(ng-if="!$root.authenticated"): a(href="/signin"): | Administration anmelden
+          dd(ng-if="$root.authenticated"): a(ng-click="logout()"): | Administration abmelden
           dd: a(href="/?force=legacy"): | Kompatibilitätsmodus erzwingen

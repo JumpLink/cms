@@ -17,9 +17,9 @@
       div(ng-show="authenticated", medium-editor, ng-model="imprint", options='{"buttons": ["bold", "italic", "underline", "anchor", "header1" , "header2", "quote", "orderedlist", "unorderedlist"]}', bind-options="mediumBindOptions")
       div(ng-bind-html="imprint", ng-hide="authenticated")
       h1.anchor-static-navbar#contact
-      .page-header
+      .page-header.hidden-print
         h1 Kontakt
-      form(role='form', name="form", novalidate, ng-submit="sendMail()")
+      form.hidden-print(role='form', name="form", novalidate, ng-submit="sendMail()")
         //-
         //- Name
         //-
@@ -81,9 +81,10 @@ nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="$r
           i.fa.fa-download
         button.btn.btn-success.navbar-btn(ng-if="refresh", title="Aktualisieren", ng-click="refresh()")
           i.fa.fa-refresh
-        button.btn.btn-default.navbar-btn(ng-if="toogleHtml", title="HTML-Modus umschalten", ng-click="toogleHtml()")
+        button.btn.btn-success.navbar-btn(ng-if="toogleHtml", title="HTML-Modus umschalten", ng-click="toogleHtml()")
           | HTML
         button.btn.btn-primary.navbar-btn(ng-if="save", title="Speichern", ng-click="save()")
           i.fa.fa-floppy-o
       button.btn.btn-default.navbar-btn(title="Einstellungen", bs-dropdown="adminSettingDropdown", ng-click="$event.stopPropagation();", data-template="bootstrap/dropdown", data-placement="top-left", data-html="true")
         i.fa.fa-cog
+
