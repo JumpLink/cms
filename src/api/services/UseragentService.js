@@ -18,7 +18,7 @@ var supported = function (req) {
 
   if(req.useragent.isChrome && req.useragent.PrimaryVersion >= 33)
     return true;
-  if(req.useragent.isFirefox && req.useragent.PrimaryVersion >= 32)
+  if(req.useragent.isDesktop && req.useragent.isFirefox && req.useragent.PrimaryVersion >= 32)
     return true;
   if(req.useragent.isFirefox && req.useragent.PrimaryVersion >= 32)
     return true;
