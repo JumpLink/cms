@@ -11,42 +11,42 @@ var updateBrowser = function (req, res, next, force) {
   res.view('bootstrap/templates/legacy/browser', {force: force, host: req.host, url: req.path, useragent: req.useragent, title: 'Ihr Browser wird nicht unterstützt' });
 }
 
-var legacyHome = function (req, res, next, force) {
+var legacyHome = function (req, res, next, force, showLegacyToast) {
   var about, goals;
   Content.find({name:'about'}).exec(function found(err, results) {
     about = results[0].content;
     Content.find({name:'goals'}).exec(function found(err, results) {
       goals = results[0].content;
-      res.view('bootstrap/templates/home/legacy/content', {force: force, host: req.host, url: req.path, about: about, goals: goals, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Startseite' });
+      res.view('bootstrap/templates/home/legacy/content', {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, about: about, goals: goals, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Startseite' });
     });
   });
 }
 
-var legacyMembers = function (req, res, next, force) {
+var legacyMembers = function (req, res, next, force, showLegacyToast) {
   var members;
   Member.find().exec(function found(err, results) {
     members = results;
-    res.view('bootstrap/templates/members/legacy/content', {force: force, host: req.host, url: req.path, members: members, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Vorstand / Beirat' });
+    res.view('bootstrap/templates/members/legacy/content', {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, members: members, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Vorstand / Beirat' });
   });
 }
 
-var legacyEvents = function (req, res, next, force) {
+var legacyEvents = function (req, res, next, force, showLegacyToast) {
   var events;
   Timeline.find().exec(function found(err, results) {
     events = EventService.split(results);
-    res.view('bootstrap/templates/events/legacy/timeline', {force: force, host: req.host, url: req.path, events: events, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Veranstaltungen' });
+    res.view('bootstrap/templates/events/legacy/timeline', {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, events: events, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Veranstaltungen' });
   });
 }
 
-var legacyGallery = function (req, res, next, force) {
+var legacyGallery = function (req, res, next, force, showLegacyToast) {
   var about, goals;
   Gallery.find().exec(function found(err, results) {
     images = results;
-    res.view('bootstrap/templates/gallery/legacy/content', {force: force, host: req.host, url: req.path, images: images, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Galerie' });
+    res.view('bootstrap/templates/gallery/legacy/content', {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, images: images, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Galerie' });
   });
 }
 
-var legacyApplication = function (req, res, next, force) {
+var legacyApplication = function (req, res, next, force, showLegacyToast) {
   var application;
 
   var member = {
@@ -69,25 +69,25 @@ var legacyApplication = function (req, res, next, force) {
 
   Content.find({name:'application'}).exec(function found(err, results) {
     application = results[0].content;
-    res.view('bootstrap/templates/application/legacy/content', {force: force, host: req.host, url: req.path, application: application, member: member, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Aufnahmeantrag' });
+    res.view('bootstrap/templates/application/legacy/content', {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, application: application, member: member, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Aufnahmeantrag' });
   });
 }
 
-var legacyLinks = function (req, res, next, force) {
+var legacyLinks = function (req, res, next, force, showLegacyToast) {
   var links;
   Content.find({name:'links'}).exec(function found(err, results) {
     links = results[0].content;
-    res.view('bootstrap/templates/links/legacy/content', {force: force, host: req.host, url: req.path, links: links, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Links' });
+    res.view('bootstrap/templates/links/legacy/content', {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, links: links, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Links' });
   });
 }
 
-var legacyImprint = function (req, res, next, force) {
+var legacyImprint = function (req, res, next, force, showLegacyToast) {
   var imprint, emailIsSend;
 
   var view = function (host, url, form, useragent, emailIsSend) {
     Content.find({name:'imprint'}).exec(function found(err, results) {
       imprint = results[0].content;
-      res.view('bootstrap/templates/imprint/legacy/content', {force: force, emailIsSend: emailIsSend, host: host, url: url, imprint: imprint, form: form, useragent: useragent, title: 'Nautischer Verein Cuxhaven e.V. - Impressum' });
+      res.view('bootstrap/templates/imprint/legacy/content', {showLegacyToast: showLegacyToast, force: force, emailIsSend: emailIsSend, host: host, url: url, imprint: imprint, form: form, useragent: useragent, title: 'Nautischer Verein Cuxhaven e.V. - Impressum' });
     });
   }
 
@@ -229,34 +229,36 @@ var legacy = function (req, res, next) {
 
   sails.log.debug('url', req.path, req.url, req.originalUrl);
 
+  sails.log.debug('req.useragent', req.useragent);
+
   var ok = function (req, res, next, force) {
     switch(req.path) {
       case "/bs/legacy/browser":
-        updateBrowser(req, res, next, force);
+        updateBrowser(req, res, next, force, showLegacyToast = false);
       break;
       case "/bs/legacy/home":
-        legacyHome(req, res, next, force);
+        legacyHome(req, res, next, force, showLegacyToast = true);
       break;
       case "/bs/legacy/members":
-        legacyMembers(req, res, next, force);
+        legacyMembers(req, res, next, force, showLegacyToast = true);
       break;
       case "/bs/legacy/events":
-        legacyEvents(req, res, next, force);
+        legacyEvents(req, res, next, force, showLegacyToast = true);
       break;
       case "/bs/legacy/gallery":
-        legacyGallery(req, res, next, force);
+        legacyGallery(req, res, next, force, showLegacyToast = true);
       break;
       case "/bs/legacy/application":
-        legacyApplication(req, res, next, force);
+        legacyApplication(req, res, next, force, showLegacyToast = true);
       break;
       case "/bs/legacy/links":
-        legacyLinks(req, res, next, force);
+        legacyLinks(req, res, next, force, showLegacyToast = true);
       break;
       case "/bs/legacy/imprint":
-        legacyImprint(req, res, next, force);
+        legacyImprint(req, res, next, force, showLegacyToast = true);
       break;
       default:
-        legacyHome(req, res, next, force);
+        legacyHome(req, res, next, force, showLegacyToast = true);
       break;
     }
   }

@@ -7,10 +7,11 @@ html
     link#style(rel="stylesheet", href="/styles/bootstrap.css")
   body
     #toast-container.toast-bottom-right
-      .toast.toast-warning
-        //- button.toast-close-button ×
-        .toast-title Seite im Kompatibilitätsmodus
-        .toast-message
-          a(href="/bs/legacy/browser") Hier erfahren Sie mehr.
+      if showLegacyToast
+        .toast.toast-warning
+          //- button.toast-close-button ×
+          .toast-title Seite im Kompatibilitätsmodus
+          .toast-message
+            a(href= force != null ? '/bs/legacy/browser?force='+force : '/bs/legacy/browser') Hier erfahren Sie mehr.
       block toasts
     block body
