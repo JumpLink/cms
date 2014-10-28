@@ -271,7 +271,7 @@ var legacy = function (req, res, next) {
 
   sails.log.debug('force', force);
 
-  if((UseragentService.supported(req) || force == 'modern') && force != 'legacy') {
+  if((UseragentService.supported(req) || force == 'modern') && (force != 'legacy' && force != 'noscript')) {
     if(force != null)
       res.redirect('/?force='+force);
     else
@@ -289,7 +289,7 @@ var singlePageBootstrap = function(req, res, next) {
     // TODO fix user
     var user = "{}";
     if(typeof req.session.user != 'undefined') user = JSON.stringify(req.session.user);
-    res.view('bootstrap/init', { authenticated: req.session.authenticated === true, user: user});
+    res.view('bootstrap/init', { url: req.path, authenticated: req.session.authenticated === true, user: user});
   }
 
   var force = null; // modern | legacy
@@ -302,7 +302,7 @@ var singlePageBootstrap = function(req, res, next) {
 
   sails.log.debug('force', force);
 
-  if((UseragentService.supported(req) || force == 'modern') && force != 'legacy') {
+  if((UseragentService.supported(req) || force == 'modern') && (force != 'legacy' && force != 'noscript')) {
     ok(req, res, next);
   } else {
     if(force != null)
@@ -349,7 +349,7 @@ module.exports = {
 
     sails.log.debug('force', force);
 
-    if((UseragentService.supported(req) || force == 'modern') && force != 'legacy') {
+    if((UseragentService.supported(req) || force == 'modern') && (force != 'legacy' && force != 'noscript')) {
       ok(req, res, next);
     } else {
       if(force != null)

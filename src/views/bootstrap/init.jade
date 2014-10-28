@@ -6,7 +6,8 @@ html(lang="en", ng-app="jumplink.cms", ng-controller="AppController", ng-init="$
 
     //- Viewport mobile tag for sensible mobile support
     meta(name="viewport",content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no")
-
+    noscript
+      meta(http-equiv="refresh" content="0; url="+url+"?force=noscript")
     //- Stylesheets
     link(href='/styles/bootstrap.css', rel='stylesheet')
 
@@ -46,6 +47,10 @@ html(lang="en", ng-app="jumplink.cms", ng-controller="AppController", ng-init="$
     script(type="text/ng-template", id="bootstrap/administration/users"): include ./templates/administration/users.jade
     script(type="text/ng-template", id="bootstrap/administration/user"): include ./templates/administration/user.jade
   body(ng-class="bodyclass")
+    noscript
+      div(style="padding: 40px 15px;text-align: center;")
+        h1 Sie haben JavaScript deaktivert.
+        a.btn.btn-primary.btn-lg(href="https://"+url+"?force=noscript") Kompatiblitätsmodus aktivieren
     span(ui-view)
     //- es5-shim: ECMAScript 5 compatibility shims for legacy JavaScript engines: https://github.com/es-shims/es5-shim
     script(type="text/javascript", src="/third-party/es5-shim/es5-shim.js")

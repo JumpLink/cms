@@ -14,6 +14,11 @@ block body
           | Sie haben den Kompatibilitätsmodus erzwungen.
         .lead
           a.btn.btn-success.btn-lg(href="/") Kompatibilitätsmodus verlassen
+      if force == 'noscript'
+        h3
+          | Ihr Webbrowser unterstützt kein JavaScript oder Sie haben es deaktiviert.
+        .lead
+          | Bitte aktivieren Sie JavaScript oder installieren Sie sich einen aktuellen Webbrowser.
       else
         if useragent.isChrome || useragent.isFirefox || isOpera
           h3
