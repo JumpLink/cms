@@ -7,46 +7,46 @@
 
 var validator = require('validator');
 
-var updateBrowser = function (req, res, next) {
-  res.view('bootstrap/templates/legacy/browser', {host: req.host, url: req.url, useragent: req.useragent, title: 'Ihr Browser wird nicht unterstützt' });
+var updateBrowser = function (req, res, next, force) {
+  res.view('bootstrap/templates/legacy/browser', {force: force, host: req.host, url: req.path, useragent: req.useragent, title: 'Ihr Browser wird nicht unterstützt' });
 }
 
-var legacyHome = function (req, res, next) {
+var legacyHome = function (req, res, next, force) {
   var about, goals;
   Content.find({name:'about'}).exec(function found(err, results) {
     about = results[0].content;
     Content.find({name:'goals'}).exec(function found(err, results) {
       goals = results[0].content;
-      res.view('bootstrap/templates/home/legacy/content', {host: req.host, url: req.url, about: about, goals: goals, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Startseite' });
+      res.view('bootstrap/templates/home/legacy/content', {force: force, host: req.host, url: req.path, about: about, goals: goals, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Startseite' });
     });
   });
 }
 
-var legacyMembers = function (req, res, next) {
+var legacyMembers = function (req, res, next, force) {
   var members;
   Member.find().exec(function found(err, results) {
     members = results;
-    res.view('bootstrap/templates/members/legacy/content', {host: req.host, url: req.url, members: members, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Vorstand / Beirat' });
+    res.view('bootstrap/templates/members/legacy/content', {force: force, host: req.host, url: req.path, members: members, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Vorstand / Beirat' });
   });
 }
 
-var legacyEvents = function (req, res, next) {
+var legacyEvents = function (req, res, next, force) {
   var events;
   Timeline.find().exec(function found(err, results) {
     events = EventService.split(results);
-    res.view('bootstrap/templates/events/legacy/timeline', {host: req.host, url: req.url, events: events, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Veranstaltungen' });
+    res.view('bootstrap/templates/events/legacy/timeline', {force: force, host: req.host, url: req.path, events: events, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Veranstaltungen' });
   });
 }
 
-var legacyGallery = function (req, res, next) {
+var legacyGallery = function (req, res, next, force) {
   var about, goals;
   Gallery.find().exec(function found(err, results) {
     images = results;
-    res.view('bootstrap/templates/gallery/legacy/content', {host: req.host, url: req.url, images: images, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Galerie' });
+    res.view('bootstrap/templates/gallery/legacy/content', {force: force, host: req.host, url: req.path, images: images, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Galerie' });
   });
 }
 
-var legacyApplication = function (req, res, next) {
+var legacyApplication = function (req, res, next, force) {
   var application;
 
   var member = {
@@ -69,25 +69,25 @@ var legacyApplication = function (req, res, next) {
 
   Content.find({name:'application'}).exec(function found(err, results) {
     application = results[0].content;
-    res.view('bootstrap/templates/application/legacy/content', {host: req.host, url: req.url, application: application, member: member, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Aufnahmeantrag' });
+    res.view('bootstrap/templates/application/legacy/content', {force: force, host: req.host, url: req.path, application: application, member: member, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Aufnahmeantrag' });
   });
 }
 
-var legacyLinks = function (req, res, next) {
+var legacyLinks = function (req, res, next, force) {
   var links;
   Content.find({name:'links'}).exec(function found(err, results) {
     links = results[0].content;
-    res.view('bootstrap/templates/links/legacy/content', {host: req.host, url: req.url, links: links, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Links' });
+    res.view('bootstrap/templates/links/legacy/content', {force: force, host: req.host, url: req.path, links: links, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Links' });
   });
 }
 
-var legacyImprint = function (req, res, next) {
+var legacyImprint = function (req, res, next, force) {
   var imprint, emailIsSend;
 
   var view = function (host, url, form, useragent, emailIsSend) {
     Content.find({name:'imprint'}).exec(function found(err, results) {
       imprint = results[0].content;
-      res.view('bootstrap/templates/imprint/legacy/content', {emailIsSend: emailIsSend, host: host, url: url, imprint: imprint, form: form, useragent: useragent, title: 'Nautischer Verein Cuxhaven e.V. - Impressum' });
+      res.view('bootstrap/templates/imprint/legacy/content', {force: force, emailIsSend: emailIsSend, host: host, url: url, imprint: imprint, form: form, useragent: useragent, title: 'Nautischer Verein Cuxhaven e.V. - Impressum' });
     });
   }
 
@@ -210,61 +210,78 @@ var legacyImprint = function (req, res, next) {
         } else {
           emailIsSend = true;
         }
-        view(req.host, req.url, form, req.useragent, emailIsSend);
+        view(req.host, req.path, form, req.useragent, emailIsSend);
       });
     } else {
       emailIsSend = false;
-      view(req.host, req.url, form, req.useragent, emailIsSend);
+      view(req.host, req.path, form, req.useragent, emailIsSend);
     }
 
   } else {
-    view(req.host, req.url, form, req.useragent, null);
+    view(req.host, req.path, form, req.useragent, null);
   }
 
 }
 
 var legacy = function (req, res, next) {
 
-  var ok = function (req, res, next) {
-    switch(req.url) {
+  sails.log('legacy(req, res, next)');
+
+  sails.log.debug('url', req.path, req.url, req.originalUrl);
+
+  var ok = function (req, res, next, force) {
+    switch(req.path) {
       case "/bs/legacy/browser":
-        updateBrowser(req, res, next);
+        updateBrowser(req, res, next, force);
       break;
       case "/bs/legacy/home":
-        legacyHome(req, res, next);
+        legacyHome(req, res, next, force);
       break;
       case "/bs/legacy/members":
-        legacyMembers(req, res, next);
+        legacyMembers(req, res, next, force);
       break;
       case "/bs/legacy/events":
-        legacyEvents(req, res, next);
+        legacyEvents(req, res, next, force);
       break;
       case "/bs/legacy/gallery":
-        legacyGallery(req, res, next);
+        legacyGallery(req, res, next, force);
       break;
       case "/bs/legacy/application":
-        legacyApplication(req, res, next);
+        legacyApplication(req, res, next, force);
       break;
       case "/bs/legacy/links":
-        legacyLinks(req, res, next);
+        legacyLinks(req, res, next, force);
       break;
       case "/bs/legacy/imprint":
-        legacyImprint(req, res, next);
+        legacyImprint(req, res, next, force);
       break;
       default:
-        legacyHome(req, res, next);
+        legacyHome(req, res, next, force);
       break;
     }
   }
 
-  if(UseragentService.supported(req)) {
-    res.redirect('/');
+  var force = null; // modern | legacy
+  if(req.param('force'))
+    force = req.param('force');
+  if(req.query.force)
+    force = req.query.force;
+
+  sails.log.debug('force', force);
+
+  if((UseragentService.supported(req) || force == 'modern') && force != 'legacy') {
+    if(force != null)
+      res.redirect('/?force='+force);
+    else
+      res.redirect('/');
   } else {
-    ok(req, res, next);
+    ok(req, res, next, force);
   }
 }
 
 var singlePageBootstrap = function(req, res, next) {
+
+  sails.log('singlePageBootstrap(req, res, next)');
 
   var ok = function (req, res, next) {
     // TODO fix user
@@ -273,10 +290,23 @@ var singlePageBootstrap = function(req, res, next) {
     res.view('bootstrap/init', { authenticated: req.session.authenticated === true, user: user});
   }
 
-  if(UseragentService.supported(req)) {
+  var force = null; // modern | legacy
+
+  if(req.param('force'))
+    force = req.param('force');
+
+  if(req.query.force)
+    force = req.query.force;
+
+  sails.log.debug('force', force);
+
+  if((UseragentService.supported(req) || force == 'modern') && force != 'legacy') {
     ok(req, res, next);
   } else {
-    res.redirect('/bs/legacy/home');
+    if(force != null)
+      res.redirect('/bs/legacy/home?force='+force);
+    else
+      res.redirect('/bs/legacy/home');
   }
 
 };
@@ -301,14 +331,29 @@ module.exports = {
    */
   signin: function(req, res, next) {
 
+    sails.log('signin(req, res, next)');
+
     var ok = function () {
       res.view('bootstrap/templates/legacy/signin', { flash: req.session.flash });
     }
 
-    if(UseragentService.supported(req)) {
-      ok();
+    var force = null; // modern | legacy
+
+    if(req.param('force'))
+      force = req.param('force');
+
+    if(req.query.force)
+      force = req.query.force;
+
+    sails.log.debug('force', force);
+
+    if((UseragentService.supported(req) || force == 'modern') && force != 'legacy') {
+      ok(req, res, next);
     } else {
-      res.redirect('/bs/legacy/home');
+      if(force != null)
+        res.redirect('/bs/legacy/home?force='+force);
+      else
+        res.redirect('/bs/legacy/home');
     }
 
   }

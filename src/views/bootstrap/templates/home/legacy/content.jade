@@ -1,18 +1,19 @@
 extends ../../../legacy/layout.jade
 block body
   include ../../legacy/toolbar.jade
-  div(style="width: 100%;")
+  #top(style="margin-top: -20px;width: 100%;")
+    img.img-responsive(src="/images/header/slideshow.gif", width="100%")
   .container(style="min-height: 200px;")
     .row
       .col-md-2.hidden-sm.hidden-xs
         .bs-sidebar(hidden-print, role="complementary")
           ul.nav.bs-sidenav
             li
-              a(ng-click="goTo('top')") Startseite
+              a(href="#top") Startseite
             li
-              a(ng-click="goTo('about')") Wir über uns
+              a(href="#about") Wir über uns
             li
-              a(ng-click="goTo('goals')") Ziele
+              a(href="#goals") Ziele
       .col-md-10
         h1.anchor-static-navbar#about
         .page-header
