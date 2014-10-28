@@ -57,12 +57,13 @@ block body
                     span!= event.person
                 //- Von bis (User) TODO amDateFormat:'dddd Do MMMM YYYY, HH:mm'
                 if event.from
-                  p.text-muted(title!=event.from+" Uhr")
+                  p.text-muted
                     //- TODO {{event.from | amCalendar}}
-                    i.fa.fa-clock-o!=" "+event.from+" Uhr"
+                    i.fa.fa-clock-o
+                    span(title!=event.from.format("dddd Do MMMM YYYY, HH:mm"))!=event.from.calendar()
                     //- TODO ' bis '+{{event.to | amCalendar}}
                     if event.to
-                      span(ng-show="event.to")!='bis '+event.to
+                      span(title!=event.to.format("dddd Do MMMM YYYY, HH:mm"))!=' bis '+event.to.calendar()
                 if event.place
                   p.text-muted
                     i.fa.fa-home

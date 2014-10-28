@@ -25,7 +25,7 @@ var legacyHome = function (req, res, next, force, showLegacyToast) {
 var legacyMembers = function (req, res, next, force, showLegacyToast) {
   var members;
   Member.find().exec(function found(err, results) {
-    members = results;
+    members = MemberService.sort(results);
     res.view('bootstrap/templates/members/legacy/content', {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, members: members, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Vorstand / Beirat' });
   });
 }
@@ -33,7 +33,9 @@ var legacyMembers = function (req, res, next, force, showLegacyToast) {
 var legacyEvents = function (req, res, next, force, showLegacyToast) {
   var events;
   Timeline.find().exec(function found(err, results) {
-    events = EventService.split(results);
+    events = EventService.sort(results);
+    events = EventService.momentise(events);
+    events = EventService.split(events);
     res.view('bootstrap/templates/events/legacy/timeline', {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, events: events, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Veranstaltungen' });
   });
 }
@@ -336,7 +338,8 @@ module.exports = {
     sails.log('signin(req, res, next)');
 
     var ok = function () {
-      res.view('bootstrap/templates/legacy/signin', { flash: req.session.flash });
+      // TODO use toast for flash
+      res.view('bootstrap/templates/legacy/signin', { showLegacyToast: false, flash: req.session.flash });
     }
 
     var force = null; // modern | legacy
