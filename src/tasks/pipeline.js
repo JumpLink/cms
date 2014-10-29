@@ -25,11 +25,92 @@ var jsFilesToInject = [
 
   // Dependencies like sails.io.js, jQuery, or Angular
   // are brought in here
-  'js/dependencies/**/*.js',
 
-  // All of the rest of your client-side js files
-  // will be injected here in no particular order.
-  'js/**/*.js'
+  //- es5-shim: ECMAScript 5 compatibility shims for legacy JavaScript engines: https://github.com/es-shims/es5-shim
+  "/third-party/es5-shim/es5-shim.js",
+  "/third-party/es5-shim/es5-sham.js",
+
+  //- angular-masonry
+  "/third-party/jquery/dist/jquery.js",
+  "/third-party/jquery-bridget/jquery.bridget.js",
+  "/third-party/get-style-property/get-style-property.js",
+  "/third-party/get-size/get-size.js",
+  "/third-party/eventEmitter/EventEmitter.js",
+  "/third-party/eventie/eventie.js",
+  "/third-party/doc-ready/doc-ready.js",
+  "/third-party/matches-selector/matches-selector.js",
+  "/third-party/outlayer/item.js",
+  "/third-party/outlayer/outlayer.js",
+  "/third-party/masonry/masonry.js",
+  "/third-party/imagesloaded/imagesloaded.js",
+
+  //- angular
+  "/third-party/angular/angular.js",
+  "/third-party/angular-i18n/angular-locale_de.js",
+  "/third-party/moment/moment.js",
+  "/third-party/angular-moment/angular-moment.js",
+  "/third-party/moment/locale/de.js",
+  "/third-party/angular-fullscreen/src/angular-fullscreen.js",
+  "/third-party/webodf/webodf-debug.js",
+  "/third-party/angular-animate/angular-animate.js",
+  "/third-party/angular-ui-router/release/angular-ui-router.js",
+  "/third-party/angular-sanitize/angular-sanitize.js",
+  "/third-party/angular-touch/angular-touch.js",
+  "/third-party/angular-strap/dist/angular-strap.js",
+  "/third-party/angular-carousel/dist/angular-carousel.js",
+  "/third-party/angular-fullscreen/src/angular-fullscreen.js",
+
+  //- textAngular
+  //- "/third-party/textAngular/dist/textAngular.min.js",
+
+  //- angular-medium-editor
+  "/third-party/medium-editor/dist/js/medium-editor.js",
+  "/third-party/angular-medium-editor/dist/angular-medium-editor.js",
+
+  //- angular-ui-ace
+  "/third-party/ace-builds/src-noconflict/ace.js",
+  "/third-party/angular-ui-ace/ui-ace.js",
+
+  //- angular-masonry
+  "/third-party/angular-masonry/angular-masonry.js",
+
+  //- html, css, javascript beautifier
+  "/third-party/js-beautify/js/lib/beautify.js",
+  "/third-party/js-beautify/js/lib/beautify-css.js",
+  "/third-party/js-beautify/js/lib/beautify-html.js",
+
+  //- angular-leaflet-directive: https://github.com/tombatossals/angular-leaflet-directive
+  "/third-party/leaflet/dist/leaflet-src.js",
+  "/third-party/Leaflet.label/dist/leaflet.label-src.js",
+  "/third-party/angular-leaflet-directive/dist/angular-leaflet-directive.js",
+
+  //- AngularJS-Toaster: https://github.com/jirikavi/AngularJS-Toaster: https://github.com/jirikavi/AngularJS-Toaster
+  "/third-party/AngularJS-Toaster/toaster.js",
+
+  //- async: https://github.com/caolan/async
+  "/third-party/async/lib/async.js",
+
+  //- generic angular filters: https://github.com/niemyjski/angular-filters
+  "/third-party/ng-filters/dist/angular-filters.js",
+
+  //- angular-file-upload: https://github.com/nervgh/angular-file-upload
+  "/third-party/angular-file-upload/angular-file-upload.js",
+
+  //- Bring in the socket.io client
+  "/js/dependencies/socket.io.js",
+  //- then beef it up with some convenience logic for talking to Sails.js'
+  "/third-party/sails.io.js/sails.io.js",
+  //- and for angular
+  "/third-party/angularSails/dist/ngsails.io.js",
+
+  "/js/app.js",
+  "/js/bootstrap.js",
+  "/js/translations.js",
+  "/js/services.js",
+  "/js/controllers.js",
+  "/js/bootstrap/controllers.js",
+  "/js/bootstrap/directives.js",
+  "/js/directives/*",
 ];
 
 

@@ -155,7 +155,7 @@ module.exports = function(grunt) {
 				appRoot: '.tmp/public'
 			},
 			files: {
-				'views/**/*.jade': require('../pipeline').jsFilesToInject
+				'views/bootstrap/init.jade': require('../pipeline').jsFilesToInject
 			}
 		},
 
@@ -168,7 +168,7 @@ module.exports = function(grunt) {
 				relative: true
 			},
 			files: {
-				'views/**/*.jade': require('../pipeline').jsFilesToInject
+				'views/bootstrap/init.jade': require('../pipeline').jsFilesToInject
 			}
 		},
 
@@ -180,7 +180,7 @@ module.exports = function(grunt) {
 				appRoot: '.tmp/public'
 			},
 			files: {
-				'views/**/*.jade': ['.tmp/public/min/production.min.js']
+				'views/bootstrap/init.jade': ['.tmp/public/min/production.min.js']
 			}
 		},
 
@@ -193,7 +193,7 @@ module.exports = function(grunt) {
 				relative: true
 			},
 			files: {
-				'views/**/*.jade': ['.tmp/public/min/production.min.js']
+				'views/bootstrap/init.jade': ['.tmp/public/min/production.min.js']
 			}
 		},
 
@@ -206,7 +206,7 @@ module.exports = function(grunt) {
 			},
 
 			files: {
-				'views/**/*.jade': require('../pipeline').cssFilesToInject
+				'views/bootstrap/init.jade': require('../pipeline').cssFilesToInject
 			}
 		},
 
@@ -220,7 +220,7 @@ module.exports = function(grunt) {
 			},
 
 			files: {
-				'views/**/*.jade': require('../pipeline').cssFilesToInject
+				'views/bootstrap/init.jade': require('../pipeline').cssFilesToInject
 			}
 		},
 
@@ -232,7 +232,7 @@ module.exports = function(grunt) {
 				appRoot: '.tmp/public'
 			},
 			files: {
-				'views/**/*.jade': ['.tmp/public/min/production.min.css']
+				'views/bootstrap/init.jade': ['.tmp/public/min/production.min.css']
 			}
 		},
 
@@ -245,7 +245,7 @@ module.exports = function(grunt) {
 				relative: true
 			},
 			files: {
-				'views/**/*.jade': ['.tmp/public/min/production.min.css']
+				'views/bootstrap/init.jade': ['.tmp/public/min/production.min.css']
 			}
 		},
 
@@ -258,7 +258,7 @@ module.exports = function(grunt) {
 				appRoot: '.tmp/public'
 			},
 			files: {
-				'views/**/*.jade': ['.tmp/public/jst.js']
+				'views/bootstrap/init.jade': ['.tmp/public/jst.js']
 			}
 		}
 	});

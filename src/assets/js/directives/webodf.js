@@ -246,6 +246,9 @@ angular.module('webodf', [])
               }, callback);
             break;
             default:
+              // WORKAROUND
+              // if(typeof data[key]._isAMomentObject != 'undefined' && data[key]._isAMomentObject)
+              //   data[key] = data[key].format('L');
               updateUserFieldElement(userFieldNodeElements, key, data[key], function(error) {
                 callback(error, data);
               });

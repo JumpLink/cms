@@ -207,7 +207,20 @@ var legacyImprint = function (req, res, next, force, showLegacyToast) {
     }
 
     if(form.name.$valid && form.from.$valid && form.subject.$valid && form.content.$valid) {
-      EmailService.send(from = form.from.value, to = "pascal@jumplink.eu", subject = form.subject.value, text = form.content.value, html = null, attachments = null, function(error, info) {
+
+      var html = ''
+      +'<dl>'
+        +'<dt>Absender</dt>'
+        +'<dd><a href="mailto:'+form.from.value+'">'+form.from.value+'</a></dd>'
+        +'<dt>Betreff</dt>'
+        +'<dd>'+form.subject.value+'</dd>'
+      +'</dl>'
+      +'<br>'
+      +form.content.value;
+
+      var text = String(html).replace(/<[^>]+>/gm, '');
+
+      EmailService.send(from = form.from.value, to = form.from.value+",nvcux@t­-online.de", subject = 'Kontaktanfrage von '+form.name.value+': '+form.subject.value, text = text, html = html, attachments = null, function(error, info) {
         var emailResult = {from:from, subject:subject, text:text, html:html, attachments:attachments, error:error, info:info};
         if(emailResult.error) {
           emailIsSend = false;
