@@ -14,21 +14,25 @@ module.exports = function(grunt) {
 
   grunt.config.set('less', {
     dev: {
+      options: {
+        cleancss: true,
+        compress: true
+      },
       files: [
-        {
-          expand: true,
-          cwd: 'assets/styles/',
-          src: ['ionic.less'],
-          dest: '.tmp/public/styles/',
-          ext: '.css'
-        },
-        {
-          expand: true,
-          cwd: 'assets/styles/',
-          src: ['material.less'],
-          dest: '.tmp/public/styles/',
-          ext: '.css'
-        },
+        // {
+        //   expand: true,
+        //   cwd: 'assets/styles/',
+        //   src: ['ionic.less'],
+        //   dest: '.tmp/public/styles/',
+        //   ext: '.css'
+        // },
+        // {
+        //   expand: true,
+        //   cwd: 'assets/styles/',
+        //   src: ['material.less'],
+        //   dest: '.tmp/public/styles/',
+        //   ext: '.css'
+        // },
         {
           expand: true,
           cwd: 'assets/styles/',
