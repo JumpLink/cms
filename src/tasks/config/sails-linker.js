@@ -147,55 +147,55 @@ module.exports = function(grunt) {
 			}
 		},
 
-		devJsJade: {
-			options: {
-				startTag: '// SCRIPTS',
-				endTag: '// SCRIPTS END',
-				fileTmpl: 'script(src="%s")',
-				appRoot: '.tmp/public'
-			},
-			files: {
-				'views/bootstrap/init.jade': require('../pipeline').jsFilesToInject
-			}
-		},
+    devJsJade: {
+      options: {
+        startTag: '// SCRIPTS',
+        endTag: '// SCRIPTS END',
+        fileTmpl: 'script(type="text/javascript", charset="utf-8", src="%s")',
+        appRoot: '.tmp/public'
+      },
+      files: {
+        'views/bootstrap/init.jade': require('../pipeline').jsFilesToInject
+      }
+    },
 
-		devJsRelativeJade: {
-			options: {
-				startTag: '// SCRIPTS',
-				endTag: '// SCRIPTS END',
-				fileTmpl: 'script(src="%s")',
-				appRoot: '.tmp/public',
-				relative: true
-			},
-			files: {
-				'views/bootstrap/init.jade': require('../pipeline').jsFilesToInject
-			}
-		},
+    devJsRelativeJade: {
+      options: {
+        startTag: '// SCRIPTS',
+        endTag: '// SCRIPTS END',
+        fileTmpl: 'script(type="text/javascript", charset="utf-8", src="%s")',
+        appRoot: '.tmp/public',
+        relative: true
+      },
+      files: {
+        'views/bootstrap/init.jade': require('../pipeline').jsFilesToInject
+      }
+    },
 
-		prodJsJade: {
-			options: {
-				startTag: '// SCRIPTS',
-				endTag: '// SCRIPTS END',
-				fileTmpl: 'script(src="%s")',
-				appRoot: '.tmp/public'
-			},
-			files: {
-				'views/bootstrap/init.jade': ['.tmp/public/min/production.min.js']
-			}
-		},
+    prodJsJade: {
+      options: {
+        startTag: '// SCRIPTS',
+        endTag: '// SCRIPTS END',
+        fileTmpl: 'script(type="text/javascript", charset="utf-8", src="%s")',
+        appRoot: '.tmp/public'
+      },
+      files: {
+        'views/bootstrap/init.jade': ['.tmp/public/min/production.min.js']
+      }
+    },
 
-		prodJsRelativeJade: {
-			options: {
-				startTag: '// SCRIPTS',
-				endTag: '// SCRIPTS END',
-				fileTmpl: 'script(src="%s")',
-				appRoot: '.tmp/public',
-				relative: true
-			},
-			files: {
-				'views/bootstrap/init.jade': ['.tmp/public/min/production.min.js']
-			}
-		},
+    prodJsRelativeJade: {
+      options: {
+        startTag: '// SCRIPTS',
+        endTag: '// SCRIPTS END',
+        fileTmpl: 'script(type="text/javascript", charset="utf-8", src="%s")',
+        appRoot: '.tmp/public',
+        relative: true
+      },
+      files: {
+        'views/bootstrap/init.jade': ['.tmp/public/min/production.min.js']
+      }
+    },
 
 		devStylesJade: {
 			options: {
