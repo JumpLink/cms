@@ -75,14 +75,6 @@
   }
 }
 
-i.fa.img-dropdown {
-
-  cursor: pointer;
-  &:hover {
-    color: @state-success-text;
-  }
-}
-
 .img-circle {
   canvas {
     .img-circle;
@@ -136,6 +128,11 @@ i.fa.img-dropdown {
   cursor: pointer;
   &:hover {
     color: @state-success-text;
+  }
+  &.static {
+    position: relative;
+    bottom: 20px;
+    right: -75px;
   }
 }
 

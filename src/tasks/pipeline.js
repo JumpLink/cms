@@ -30,18 +30,18 @@ var jsFilesToInject = [
   "/third-party/es5-shim/es5-shim.js",
   "/third-party/es5-shim/es5-sham.js",
 
-  //- angular-masonry
+  //- masonry and imagesloaded
   "/third-party/jquery/dist/jquery.js",
   "/third-party/jquery-bridget/jquery.bridget.js",
-  "/third-party/get-style-property/get-style-property.js",
-  "/third-party/get-size/get-size.js",
+  // "/third-party/get-style-property/get-style-property.js",
+  // "/third-party/get-size/get-size.js",
   "/third-party/eventEmitter/EventEmitter.js",
   "/third-party/eventie/eventie.js",
-  "/third-party/doc-ready/doc-ready.js",
-  "/third-party/matches-selector/matches-selector.js",
-  "/third-party/outlayer/item.js",
-  "/third-party/outlayer/outlayer.js",
-  "/third-party/masonry/masonry.js",
+  // "/third-party/doc-ready/doc-ready.js",
+  // "/third-party/matches-selector/matches-selector.js",
+  // "/third-party/outlayer/item.js",
+  // "/third-party/outlayer/outlayer.js",
+  // "/third-party/masonry/masonry.js",
   "/third-party/imagesloaded/imagesloaded.js",
 
   //- angular
@@ -72,7 +72,7 @@ var jsFilesToInject = [
   "/third-party/angular-ui-ace/ui-ace.js",
 
   //- angular-masonry
-  "/third-party/angular-masonry/angular-masonry.js",
+  // "/third-party/angular-masonry/angular-masonry.js",
 
   //- html, css, javascript beautifier
   "/third-party/js-beautify/js/lib/beautify.js",

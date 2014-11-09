@@ -7,7 +7,7 @@ jumplink.cms = angular.module('jumplink.cms', [
   , 'FBAngular'               // angular-fullscreen: https://github.com/fabiobiondi/angular-fullscreen
   , 'mgcrea.ngStrap'          // AngularJS 1.2+ native directives for Bootstrap 3: http://mgcrea.github.io/angular-strap/
   , 'angularMoment'           // Angular.JS directive and filters for Moment.JS: https://github.com/urish/angular-moment
-  , 'wu.masonry'              // A directive to use masonry with AngularJS: http://passy.github.io/angular-masonry/
+  // , 'wu.masonry'              // A directive to use masonry with AngularJS: http://passy.github.io/angular-masonry/
   , 'angular-carousel'        // An AngularJS carousel implementation optimised for mobile devices: https://github.com/revolunet/angular-carousel
   // , 'textAngular'             // A radically powerful Text-Editor/Wysiwyg editor for Angular.js: https://github.com/fraywing/textAngular
   , 'angular-medium-editor'   // AngularJS directive for Medium.com editor clone: https://github.com/thijsw/angular-medium-editor
