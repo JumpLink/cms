@@ -688,7 +688,7 @@ jumplink.cms.controller('MembersController', function($rootScope, $scope, member
   }
 
   $scope.uploader.onCompleteItem = function(fileItem, response, status, headers) {
-    fileItem.member.image = response.files[0].uploadedAs;
+    fileItem.member.image = response.files[0].thumb;
   };
 
 
