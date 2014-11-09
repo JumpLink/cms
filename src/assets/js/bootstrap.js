@@ -67,7 +67,7 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
     url: '/gallery'
     , resolve:{
       images: function($sailsSocket) {
-        return $sailsSocket.get('/gallery').then (function (data) {
+        return $sailsSocket.get('/gallery?limit=0').then (function (data) {
           return data.data;
         });
       }
@@ -92,7 +92,7 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
     url: '/slider/:slideIndex'
     , resolve:{
       images: function($sailsSocket) {
-        return $sailsSocket.get('/gallery').then (function (data) {
+        return $sailsSocket.get('/gallery?limit=0').then (function (data) {
           return data.data;
         });
       }
