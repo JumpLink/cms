@@ -452,10 +452,11 @@ jumplink.cms.controller('GalleryContentController', function($rootScope, $scope,
 
 });
 
+jumplink.cms.controller('GalleryFullscreenController', function($scope, $rootScope, $sailsSocket, $stateParams, image, $log) {
+  $scope.image = image;
+});
 jumplink.cms.controller('GallerySlideController', function($scope, $sailsSocket, $stateParams, $timeout, images, $log) {
-
   $scope.images = images;
-
   var setSlide = function () {
     if(typeof $stateParams.slideIndex !== 'undefined') {
       if($scope.slideIndex != $stateParams.slideIndex)
@@ -465,12 +466,10 @@ jumplink.cms.controller('GallerySlideController', function($scope, $sailsSocket,
         $scope.slideIndex = 0;
     }
   }
-
   // workaround
   $timeout(function() {
     setSlide();
   }, 1000);
-
 });
 
 jumplink.cms.controller('TimelineController', function($rootScope, $scope, events, moment, $sailsSocket, $modal, $datepicker, eventService, FileUploader, $log) {

@@ -20,7 +20,7 @@
   //-           i.fa.fa-close
   //- WORKAROUND images like in legacy mode
   div(ng-repeat="image in images")
-    a.pull-left(ng-href="{{image.original.path}}", style="width:100px;padding:2px")
+    div.pull-left(ui-sref="bootstrap-layout.gallery-fullscreen({id:image.id})", style="width:100px;padding:2px")
       img.img-responsive(ng-src="{{image.thumb.path}}")
       i.fa.fa-ellipsis-v.img-dropdown.static(ng-if="$root.authenticated", bs-dropdown="dropdown", ng-click="$event.stopPropagation();" data-template="bootstrap/dropdown", data-placement="bottom", data-html="true")
 nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="$root.authenticated")

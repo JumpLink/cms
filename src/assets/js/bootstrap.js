@@ -87,6 +87,32 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
       }
     }
   })
+  .state('bootstrap-layout.gallery-fullscreen', {
+    url: '/gallery/fs/:id'
+    , resolve:{
+      image: function($sailsSocket, $stateParams, $log) {
+        $log.debug("$stateParams", $stateParams);
+        return $sailsSocket.get('/gallery/'+$stateParams.id).then (function (data) {
+          $log.debug('/gallery/'+$stateParams.id, data);
+          return data.data;
+        });
+      }
+    }
+    , views: {
+      'content' : {
+        templateUrl: 'bootstrap/gallery/fullscreen'
+        , controller: 'GalleryFullscreenController'
+      }
+      , 'toolbar' : {
+        templateUrl: 'bootstrap/toolbar'
+        , controller: 'ToolbarController'
+      }
+      // , 'footer' : {
+      //   templateUrl: 'bootstrap/footer'
+      //   , controller: 'FooterController'
+      // }
+    }
+  })
   // gallery slideshow
   .state('bootstrap-layout.gallery-slider', {
     url: '/slider/:slideIndex'

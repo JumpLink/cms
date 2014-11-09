@@ -38,34 +38,35 @@ module.exports.policies = {
 
   SessionController: {
     'create': true,
-    'subscribe': true
+    'subscribe': true,
   },
 
   ContentController: {
-    'find': true
+    'find': true,
   },
 
   DocumentController: {
     'upload': true,
-    'convert': true
+    'convert': true,
   },
 
   EmailController: {
     'send': true,
     'contact': true,
-    'application': true
+    'application': true,
   },
 
   GalleryController: {
-    'find': true
+    'find': true,
+    'findOne': true,
   },
 
   MemberController: {
-    'find': true
+    'find': true,
   },
 
   TimelineController: {
-    'find': true
+    'find': true,
   },
 
 
