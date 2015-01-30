@@ -97,9 +97,9 @@ var jsFilesToInject = [
   "/third-party/angular-file-upload/angular-file-upload.js",
 
   //- Bring in the socket.io client
-  "/js/dependencies/socket.io.js",
+  "/js/dependencies/sails.io.js",
   //- then beef it up with some convenience logic for talking to Sails.js'
-  "/third-party/sails.io.js/sails.io.js",
+  //"/third-party/sails.io.js/sails.io.js",
   //- and for angular
   "/third-party/angularSails/dist/ngsails.io.js",
 

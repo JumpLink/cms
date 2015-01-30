@@ -36,7 +36,8 @@
     "es5-shim": "~4.0.*",
     "angular-file-upload": "~1.1.*",
     "ng-filters": "*",
-    "angular-animate": "1.2.26"
+    "angular-animate": "1.2.26",
+    "js-beautify": "beautify-web/js-beautify#~1.5.4"
   },
   "resolutions": {
     "angular": "1.2.26",
