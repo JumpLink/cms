@@ -38,12 +38,18 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
     , resolve:{
       about: function($sailsSocket) {
         return $sailsSocket.get('/content?name=about', {name: 'about'}).then (function (data) {
-          return html_beautify(data.data[0].content);
+          if(angular.isUndefined(data) || angular.isUndefined(data.data[0]))
+            return null;
+          else
+            return html_beautify(data.data[0].content);
         });
       }
       , goals: function($sailsSocket, $timeout) {
         return $sailsSocket.get('/content?name=goals', {name: 'goals'}).then (function (data) {
-          return html_beautify(data.data[0].content);
+          if(angular.isUndefined(data) || angular.isUndefined(data.data[0]))
+            return null;
+          else
+            return html_beautify(data.data[0].content);
         });
       }
     }
@@ -196,7 +202,7 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
           if(angular.isDefined(data) && angular.isDefined(data.data[0]) && angular.isDefined(data.data[0].content))
             return html_beautify(data.data[0].content);
           else
-            return '';
+            return null;
         });
       }
     }
@@ -221,7 +227,10 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
     , resolve:{
       imprint: function($sailsSocket) {
         return $sailsSocket.get('/content?name=imprint', {name: 'imprint'}).then (function (data) {
-          return html_beautify(data.data[0].content);
+          if(angular.isUndefined(data) || angular.isUndefined(data.data[0]))
+            return null;
+          else
+            return html_beautify(data.data[0].content);
         });
       }
     }
@@ -246,7 +255,10 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
     , resolve:{
       links: function($sailsSocket) {
         return $sailsSocket.get('/content?name=links', {name: 'links'}).then (function (data) {
-          return html_beautify(data.data[0].content);
+          if(angular.isUndefined(data) || angular.isUndefined(data.data[0]))
+            return null;
+          else
+            return html_beautify(data.data[0].content);
         });
       }
     }

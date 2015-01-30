@@ -1,7 +1,7 @@
 # uploaded images
-src/assets/images/gallery/
-src/assets/images/header/
-src/assets/images/members/
+assets/images/gallery/
+assets/images/header/
+assets/images/members/
 
 # Logs
 logs
@@ -66,7 +66,7 @@ build/Release
 # 
 ################################################
 
-src/config/local.js
+config/local.js
 
 
 
