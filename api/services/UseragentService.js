@@ -1,7 +1,7 @@
 var getPrimaryVersion = function (req) {
   var primaryVersion = 0;
   var firstDotIndex = -1;
-  if(typeof req.useragent.Version != 'undefined')
+  if(typeof req.useragent.Version !== 'undefined')
     firstDotIndex = req.useragent.Version.indexOf('.');
   if(firstDotIndex < 0)
     primaryVersion = req.useragent.Version;
@@ -14,10 +14,17 @@ var supported = function (req) {
 
   req.useragent.PrimaryVersion = getPrimaryVersion(req);
 
-  // sails.log.debug(req.useragent);
+  sails.log.debug(req.useragent);
 
-  if(req.useragent.isChrome && req.useragent.PrimaryVersion >= 33)
+  if(req.useragent.isChrome && req.useragent.PrimaryVersion >= 33) {
+     sails.log.debug("Allowed Version of Chrome");
+     return true;
+  }
+  // WORKAROUND
+  if(req.useragent.isChrome && (req.useragent.PrimaryVersion >= 33 || typeof (req.useragent.PrimaryVersion) === 'undefined')) {
+    sails.log.debug("Allowed Version of Chromium");
     return true;
+  }
   if(req.useragent.isDesktop && req.useragent.isFirefox && req.useragent.PrimaryVersion >= 32)
     return true;
   if(req.useragent.isOpera && req.useragent.PrimaryVersion >= 12)
