@@ -9,16 +9,25 @@ var validator = require('validator');
 var moment = require('moment');
 moment.locale('de');
 
+var isDefined = function (value) {
+ return typeof(value) !== "undefined" && value !== null;
+}
+
+var isUndefined = function (value) {
+ return !isDefined(value);
+}
+
+
 var updateBrowser = function (req, res, next, force) {
   res.view('bootstrap/templates/legacy/browser', {force: force, host: req.host, url: req.path, useragent: req.useragent, title: 'Ihr Browser wird nicht unterstützt' });
 }
 
 var legacyHome = function (req, res, next, force, showLegacyToast) {
-  var about, goals;
+  var about = null, goals = null;
   Content.find({name:'about'}).exec(function found(err, results) {
-    about = results[0].content;
+    if(isDefined(results) && isDefined(results[0]) && isDefined(results[0].content)) about = results[0].content;
     Content.find({name:'goals'}).exec(function found(err, results) {
-      goals = results[0].content;
+      if(isDefined(results) && isDefined(results[0]) && isDefined(results[0].content)) goals = results[0].content;
       res.view('bootstrap/templates/home/legacy/content', {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, about: about, goals: goals, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Startseite' });
     });
   });
@@ -51,7 +60,7 @@ var legacyGallery = function (req, res, next, force, showLegacyToast) {
 }
 
 var legacyApplication = function (req, res, next, force, showLegacyToast) {
-  var application;
+  var application = null;
 
   var member = {
     datum: moment().format("dddd Do MMMM YYYY, HH:mm")
@@ -72,25 +81,25 @@ var legacyApplication = function (req, res, next, force, showLegacyToast) {
   }
 
   Content.find({name:'application'}).exec(function found(err, results) {
-    application = results[0].content;
+    if(isDefined(results) && isDefined(results[0]) && isDefined(results[0].content)) application = results[0].content;
     res.view('bootstrap/templates/application/legacy/content', {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, application: application, member: member, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Aufnahmeantrag' });
   });
 }
 
 var legacyLinks = function (req, res, next, force, showLegacyToast) {
-  var links;
+  var links = null;
   Content.find({name:'links'}).exec(function found(err, results) {
-    links = results[0].content;
+    if(isDefined(results) && isDefined(results[0]) && isDefined(results[0].content)) links = results[0].content;
     res.view('bootstrap/templates/links/legacy/content', {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, links: links, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Links' });
   });
 }
 
 var legacyImprint = function (req, res, next, force, showLegacyToast) {
-  var imprint, emailIsSend;
+  var imprint = null, emailIsSend = null;
 
   var view = function (host, url, form, useragent, emailIsSend) {
     Content.find({name:'imprint'}).exec(function found(err, results) {
-      imprint = results[0].content;
+      if(isDefined(results) && isDefined(results[0]) && isDefined(results[0].content))  imprint = results[0].content;
       res.view('bootstrap/templates/imprint/legacy/content', {showLegacyToast: showLegacyToast, force: force, emailIsSend: emailIsSend, host: host, url: url, imprint: imprint, form: form, useragent: useragent, title: 'Nautischer Verein Cuxhaven e.V. - Impressum' });
     });
   }
