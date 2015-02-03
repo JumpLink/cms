@@ -14,40 +14,41 @@ html(lang="en", ng-app="jumplink.cms", ng-controller="AppController", ng-init="$
 
     //- Templates
     //- general
-    script(type="text/ng-template", id="bootstrap/layout"): include ./templates/layout.jade
-    script(type="text/ng-template", id="bootstrap/toolbar"): include ./templates/toolbar.jade
-    script(type="text/ng-template", id="bootstrap/footer"): include ./templates/footer.jade
-    script(type="text/ng-template", id="bootstrap/sidebar"): include ./templates/sidebar.jade
-    script(type="text/ng-template", id="bootstrap/adminbar"): include ./templates/adminbar.jade
-    script(type="text/ng-template", id="bootstrap/datepicker"): include ./templates/datepicker.jade
-    script(type="text/ng-template", id="bootstrap/timepicker"): include ./templates/timepicker.jade
-    script(type="text/ng-template", id="bootstrap/dropdown"): include ./templates/dropdown.jade
+    script(type="text/ng-template", id="bootstrap/layout"): include ./bootstrap/templates/layout.jade
+    script(type="text/ng-template", id="bootstrap/toolbar"): include ./bootstrap/templates/toolbar.jade
+    script(type="text/ng-template", id="bootstrap/footer"): include ./bootstrap/templates/footer.jade
+    script(type="text/ng-template", id="bootstrap/sidebar"): include ./bootstrap/templates/sidebar.jade
+    script(type="text/ng-template", id="bootstrap/adminbar"): include ./bootstrap/templates/adminbar.jade
+    script(type="text/ng-template", id="bootstrap/datepicker"): include ./bootstrap/templates/datepicker.jade
+    script(type="text/ng-template", id="bootstrap/timepicker"): include ./bootstrap/templates/timepicker.jade
+    script(type="text/ng-template", id="bootstrap/dropdown"): include ./bootstrap/templates/dropdown.jade
+    script(type="text/ng-template", id="bootstrap/select"): include ./bootstrap/templates/select.jade
     //- home
-    script(type="text/ng-template", id="bootstrap/home/content"): include ./templates/home/content.jade
+    script(type="text/ng-template", id="bootstrap/home/content"): include ./bootstrap/templates/home/content.jade
     //- gallery
-    script(type="text/ng-template", id="bootstrap/gallery/content"): include ./templates/gallery/content.jade
-    script(type="text/ng-template", id="bootstrap/gallery/fullscreen"): include ./templates/gallery/fullscreen.jade
-    script(type="text/ng-template", id="bootstrap/gallery/slider"): include ./templates/gallery/slider.jade
-    script(type="text/ng-template", id="bootstrap/gallery/toolbar"): include ./templates/gallery/toolbar.jade
-    script(type="text/ng-template", id="bootstrap/gallery/editimagemodal"): include ./templates/gallery/editimagemodal.jade
-    script(type="text/ng-template", id="bootstrap/gallery/uploadimagesmodal"): include ./templates/gallery/uploadimagesmodal.jade
+    script(type="text/ng-template", id="bootstrap/gallery/content"): include ./bootstrap/templates/gallery/content.jade
+    script(type="text/ng-template", id="bootstrap/gallery/fullscreen"): include ./bootstrap/templates/gallery/fullscreen.jade
+    script(type="text/ng-template", id="bootstrap/gallery/slider"): include ./bootstrap/templates/gallery/slider.jade
+    script(type="text/ng-template", id="bootstrap/gallery/toolbar"): include ./bootstrap/templates/gallery/toolbar.jade
+    script(type="text/ng-template", id="bootstrap/gallery/editimagemodal"): include ./bootstrap/templates/gallery/editimagemodal.jade
+    script(type="text/ng-template", id="bootstrap/gallery/uploadimagesmodal"): include ./bootstrap/templates/gallery/uploadimagesmodal.jade
     //- events
-    script(type="text/ng-template", id="bootstrap/events/timeline"): include ./templates/events/timeline.jade
-    script(type="text/ng-template", id="bootstrap/events/typechoosermodal"): include ./templates/events/typechoosermodal.jade
-    script(type="text/ng-template", id="bootstrap/events/editeventmodal"): include ./templates/events/editeventmodal.jade
+    script(type="text/ng-template", id="bootstrap/events/timeline"): include ./bootstrap/templates/events/timeline.jade
+    script(type="text/ng-template", id="bootstrap/events/typechoosermodal"): include ./bootstrap/templates/events/typechoosermodal.jade
+    script(type="text/ng-template", id="bootstrap/events/editeventmodal"): include ./bootstrap/templates/events/editeventmodal.jade
     //- members
-    script(type="text/ng-template", id="bootstrap/members/content"): include ./templates/members/content.jade
-    script(type="text/ng-template", id="bootstrap/members/editmembermodal"): include ./templates/members/editmembermodal.jade
+    script(type="text/ng-template", id="bootstrap/members/content"): include ./bootstrap/templates/members/content.jade
+    script(type="text/ng-template", id="bootstrap/members/editmembermodal"): include ./bootstrap/templates/members/editmembermodal.jade
     //- application
-    script(type="text/ng-template", id="bootstrap/application/content"): include ./templates/application/content.jade
+    script(type="text/ng-template", id="bootstrap/application/content"): include ./bootstrap/templates/application/content.jade
     //- imprint
-    script(type="text/ng-template", id="bootstrap/imprint/content"): include ./templates/imprint/content.jade
+    script(type="text/ng-template", id="bootstrap/imprint/content"): include ./bootstrap/templates/imprint/content.jade
     //- links
-    script(type="text/ng-template", id="bootstrap/links/content"): include ./templates/links/content.jade
+    script(type="text/ng-template", id="bootstrap/links/content"): include ./bootstrap/templates/links/content.jade
     //- admin
-    script(type="text/ng-template", id="bootstrap/administration/settings"): include ./templates/administration/settings.jade
-    script(type="text/ng-template", id="bootstrap/administration/users"): include ./templates/administration/users.jade
-    script(type="text/ng-template", id="bootstrap/administration/user"): include ./templates/administration/user.jade
+    script(type="text/ng-template", id="bootstrap/administration/settings"): include ./bootstrap/templates/administration/settings.jade
+    script(type="text/ng-template", id="bootstrap/administration/users"): include ./bootstrap/templates/administration/users.jade
+    script(type="text/ng-template", id="bootstrap/administration/user"): include ./bootstrap/templates/administration/user.jade
   body(ng-class="bodyclass")
     if force != 'modern'
       noscript
@@ -91,12 +92,9 @@ html(lang="en", ng-app="jumplink.cms", ng-controller="AppController", ng-init="$
     script(type="text/javascript", charset="utf-8", src="/js/dependencies/sails.io.js")
     script(type="text/javascript", charset="utf-8", src="/third-party/angularSails/dist/ngsails.io.js")
     script(type="text/javascript", charset="utf-8", src="/js/app.js")
-    script(type="text/javascript", charset="utf-8", src="/js/bootstrap.js")
     script(type="text/javascript", charset="utf-8", src="/js/translations.js")
     script(type="text/javascript", charset="utf-8", src="/js/services.js")
     script(type="text/javascript", charset="utf-8", src="/js/controllers.js")
-    script(type="text/javascript", charset="utf-8", src="/js/bootstrap/controllers.js")
-    script(type="text/javascript", charset="utf-8", src="/js/bootstrap/directives.js")
     script(type="text/javascript", charset="utf-8", src="/js/directives/imageMenu.js")
     script(type="text/javascript", charset="utf-8", src="/js/directives/match.js")
     script(type="text/javascript", charset="utf-8", src="/js/directives/ngThumb.js")

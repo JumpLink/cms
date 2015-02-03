@@ -14,15 +14,15 @@ var supported = function (req) {
 
   req.useragent.PrimaryVersion = getPrimaryVersion(req);
 
-  sails.log.debug(req.useragent);
+  // sails.log.debug(req.useragent);
 
   if(req.useragent.isChrome && req.useragent.PrimaryVersion >= 33) {
-     sails.log.debug("Allowed Version of Chrome");
+     // sails.log.debug("Allowed Version of Chrome");
      return true;
   }
-  // WORKAROUND
+  // WORKAROUND until merge https://github.com/biggora/express-useragent/pull/30
   if(req.useragent.isChrome && (req.useragent.PrimaryVersion >= 33 || typeof (req.useragent.PrimaryVersion) === 'undefined')) {
-    sails.log.debug("Allowed Version of Chromium");
+    // sails.log.debug("Allowed Version of Chromium");
     return true;
   }
   if(req.useragent.isDesktop && req.useragent.isFirefox && req.useragent.PrimaryVersion >= 32)

@@ -1,6 +1,9 @@
 .container
   .page-header
     h1 Einstellungen
+  h2 Allgemein
+  label Theme:&nbsp;
+  button.btn.btn-default(type="button", ng-model="settings.selected", data-html="0" ng-options="theme.dirname as theme.name for theme in settings.available", data-template="bootstrap/select", bs-select)
   h2
     a(ui-sref='bootstrap-layout.users') Benutzer
   h2

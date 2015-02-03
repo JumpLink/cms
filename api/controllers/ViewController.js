@@ -315,7 +315,7 @@ var singlePageBootstrap = function(req, res, next) {
     // TODO fix user
     var user = "{}";
     if(typeof req.session.user != 'undefined') user = JSON.stringify(req.session.user);
-    res.view('bootstrap/init', { force: force, url: req.path, authenticated: req.session.authenticated === true, user: user});
+    res.view('init', { force: force, url: req.path, authenticated: req.session.authenticated === true, user: user});
   }
 
   var force = null; // modern | legacy
