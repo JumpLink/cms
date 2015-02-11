@@ -822,8 +822,15 @@ jumplink.cms.controller('MembersController', function($rootScope, $scope, member
 
 });
 
-jumplink.cms.controller('AdminController', function($scope, settings) {
-  $scope.settings = settings;
+jumplink.cms.controller('AdminController', function($scope, themeSettings, $log, themeService) {
+  $scope.themeSettings = themeSettings;
+  
+  $scope.save = function() {
+    themeService.save($scope.themeSettings.available, function(data) {
+      // $scope.themeSettings = data;
+      $log.debug(data);
+    });
+  }
   
 });
 

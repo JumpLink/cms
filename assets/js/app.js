@@ -359,8 +359,8 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   .state('bootstrap-layout.administration', {
     url: '/admin'
     , resolve:{
-      settings: function($sailsSocket) {
-        return $sailsSocket.get('/theme/settings').then (function (data) {
+      themeSettings: function($sailsSocket) {
+        return $sailsSocket.get('/theme/find').then (function (data) {
           console.log(data);
           return data.data;
         });

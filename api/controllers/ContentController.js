@@ -19,7 +19,7 @@ module.exports = {
 
   // warn this creates each time a new id
   replace: function (req, res, next) {
-    ModelService.updateOrCreate('Content', 'name', req, res, next)
+    ModelService.updateOrCreateResponse('Content', 'name', req, res, next)
   }
 
   /**

@@ -1,16 +1,16 @@
 var extend = require('node.extend');
 
-// warn this creates each time a new id
 var updateOrCreateResponse = function (modelName, findBy, req, res, next) {
 
   // Locate and validate name parameter
-  var id = req.param(findBy);
+  var query = {};
+  query[findBy] = req.param(findBy);
   var data = req.params.all();
-  if (!name) {
-    return res.badRequest('No id provided.', findBy, name);
+  if (!findBy) {
+    return res.badRequest('No findBy provided.', findBy);
   }
 
-  updateOrCreate(modelName, data, id, function (err, result) {
+  updateOrCreate(modelName, data, query, function (err, result) {
      if (err) return res.serverError(err);
      res.status(201);
      return res.json(result.toJson());
@@ -94,6 +94,15 @@ var updateEach = function (modelName, datas, callback) {
   }
   async.map(datas, iterator, callback);
 }
+
+// var updateOrCreateEach = function(modelName, datas, findBy, callback, extendFound) {
+//   var iterator =  function (data, cb) {
+//     var query = {};
+//     query[findBy] = data[findBy];
+//     updateOrCreate(modelName, data, query, cb, extendFound);
+//   }
+//   async.each(datas, iterator, callback);
+// }
 
 var updateOrCreateEach = function (modelName, datas, propertyName, callback, extendFound) {
   if (!modelName) {

@@ -153,8 +153,78 @@ jumplink.cms.service('userService', function ($rootScope, $sailsSocket, $log) {
   }
 
   return {
-    save: save,
-    subscribe: subscribe,
-    remove: remove
+    save: save
+    , subscribe: subscribe
+    , remove: remove
+  };
+});
+
+
+jumplink.cms.service('themeService', function ($rootScope, $sailsSocket, $log, $async) {
+  var isSubscribed = false;
+
+  var save = function (themes, callback) {
+    updateOrCreateEach(themes, function (err, result) {
+      if(angular.isDefined(callback)) callback(err, result);
+    });
+  }
+  
+  var updateOrCreateEach = function(themes, callback) {
+    $log.debug(themes);
+    // $sailsSocket.put('/Theme/updateOrCreateEach', themes).success(function(data, status, headers, config) {
+    //   $log.debug(data, status, headers, config);
+    //   if(angular.isDefined(callback)) callback(data, status, headers, config)
+    // });
+    var iterator = function (theme, cb) {
+      $sailsSocket.put('/Theme/updateOrCreate', theme).success(function(data, status, headers, config) {
+        $log.debug(data, status, headers, config);
+        // TODO set error
+        
+      });
+    }
+    $async.each(themes, iterator, callback)
+    $sailsSocket.put('/Theme/updateOrCreateEach', themes).success(function(data, status, headers, config) {
+      $log.debug(data, status, headers, config);
+      callback(data, status, headers, config)
+    });
+  }
+
+  // TODO
+  var subscribe = function () {
+    if(!isSubscribed) {
+      $sailsSocket.subscribe('theme', function(msg){
+        if($rootScope.authenticated)
+          $log.debug(msg);
+        switch(msg.verb) {
+          case 'updated':
+            if($rootScope.authenticated)
+              $rootScope.pop('success', 'Themeeinstellungen wurdne aktualisiert', msg.data);
+          break;
+          case 'created':
+            if($rootScope.authenticated)
+              $rootScope.pop('success', 'Themeeinstellungen wurden erstellt', msg.data);
+          break;
+          case 'removedFrom':
+            if($rootScope.authenticated)
+              $rootScope.pop('success', 'Themeeinstellungen wurden entfernt', "");
+          break;
+          case 'destroyed':
+            if($rootScope.authenticated)
+              $rootScope.pop('success', 'Themeeinstellungen wurden gelöscht', "");
+          break;
+          case 'addedTo':
+            if($rootScope.authenticated)
+              $rootScope.pop('success', 'Themeeinstellungen wurden hinzugefügt', "");
+          break;
+        }
+      });
+      isSubscribed = true;
+    }
+  }
+
+  return {
+    save: save
+    , updateOrCreateEach: updateOrCreateEach
+   ,  subscribe: subscribe
   };
 });

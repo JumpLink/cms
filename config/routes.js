@@ -39,6 +39,10 @@ module.exports.routes = {
   '/signin': 'ViewController.signin',
 
   '/bs/legacy/*': 'ViewController.legacy',
+  
+  '/dynamic/**': 'ThemeController.assets',
+  '/dynamic/*': 'ThemeController.assets',
+  
 
   /***************************************************************************
   *                                                                          *

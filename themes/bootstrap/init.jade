@@ -1,0 +1,103 @@
+doctype html
+html(lang="en", ng-app="jumplink.cms", ng-controller="AppController", ng-init="$root.authenticated = #{authenticated}; $root.user = #{user}")
+  head
+    base(href="/bootstrap")
+    title Nautischer Verein Cuxhaven
+
+    //- Viewport mobile tag for sensible mobile support
+    meta(name="viewport",content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no")
+    if force != 'modern'
+      noscript
+        meta(http-equiv="refresh" content="0; url="+url+"?force=noscript")
+    //- Stylesheets
+    link(href='/styles/bootstrap.css', rel='stylesheet')
+
+    //- Templates
+    //- general
+    script(type="text/ng-template", id="bootstrap/layout"): include ./templates/layout.jade
+    script(type="text/ng-template", id="bootstrap/toolbar"): include ./templates/toolbar.jade
+    script(type="text/ng-template", id="bootstrap/footer"): include ./templates/footer.jade
+    script(type="text/ng-template", id="bootstrap/sidebar"): include ./templates/sidebar.jade
+    script(type="text/ng-template", id="bootstrap/adminbar"): include ./templates/adminbar.jade
+    script(type="text/ng-template", id="bootstrap/datepicker"): include ./templates/datepicker.jade
+    script(type="text/ng-template", id="bootstrap/timepicker"): include ./templates/timepicker.jade
+    script(type="text/ng-template", id="bootstrap/dropdown"): include ./templates/dropdown.jade
+    script(type="text/ng-template", id="bootstrap/select"): include ./templates/select.jade
+    //- home
+    script(type="text/ng-template", id="bootstrap/home/content"): include ./templates/home/content.jade
+    //- gallery
+    script(type="text/ng-template", id="bootstrap/gallery/content"): include ./templates/gallery/content.jade
+    script(type="text/ng-template", id="bootstrap/gallery/fullscreen"): include ./templates/gallery/fullscreen.jade
+    script(type="text/ng-template", id="bootstrap/gallery/slider"): include ./templates/gallery/slider.jade
+    script(type="text/ng-template", id="bootstrap/gallery/toolbar"): include ./templates/gallery/toolbar.jade
+    script(type="text/ng-template", id="bootstrap/gallery/editimagemodal"): include ./templates/gallery/editimagemodal.jade
+    script(type="text/ng-template", id="bootstrap/gallery/uploadimagesmodal"): include ./templates/gallery/uploadimagesmodal.jade
+    //- events
+    script(type="text/ng-template", id="bootstrap/events/timeline"): include ./templates/events/timeline.jade
+    script(type="text/ng-template", id="bootstrap/events/typechoosermodal"): include ./templates/events/typechoosermodal.jade
+    script(type="text/ng-template", id="bootstrap/events/editeventmodal"): include ./templates/events/editeventmodal.jade
+    //- members
+    script(type="text/ng-template", id="bootstrap/members/content"): include ./templates/members/content.jade
+    script(type="text/ng-template", id="bootstrap/members/editmembermodal"): include ./templates/members/editmembermodal.jade
+    //- application
+    script(type="text/ng-template", id="bootstrap/application/content"): include ./templates/application/content.jade
+    //- imprint
+    script(type="text/ng-template", id="bootstrap/imprint/content"): include ./templates/imprint/content.jade
+    //- links
+    script(type="text/ng-template", id="bootstrap/links/content"): include ./templates/links/content.jade
+    //- admin
+    script(type="text/ng-template", id="bootstrap/administration/settings"): include ./templates/administration/settings.jade
+    script(type="text/ng-template", id="bootstrap/administration/users"): include ./templates/administration/users.jade
+    script(type="text/ng-template", id="bootstrap/administration/user"): include ./templates/administration/user.jade
+  body(ng-class="bodyclass")
+    if force != 'modern'
+      noscript
+        div(style="padding: 40px 15px;text-align: center;")
+          h1 Sie haben JavaScript deaktivert.
+          a.btn.btn-primary.btn-lg(href="https://"+url+"?force=noscript") Kompatiblitätsmodus aktivieren
+    span(ui-view)
+    // SCRIPTS
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/es5-shim/es5-shim.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/es5-shim/es5-sham.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/jquery/dist/jquery.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/eventEmitter/EventEmitter.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/eventie/eventie.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/imagesloaded/imagesloaded.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/angular/angular.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/angular-i18n/angular-locale_de.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/moment/moment.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/angular-moment/angular-moment.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/moment/locale/de.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/angular-fullscreen/src/angular-fullscreen.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/angular-animate/angular-animate.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/angular-ui-router/release/angular-ui-router.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/angular-sanitize/angular-sanitize.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/angular-touch/angular-touch.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/angular-strap/dist/angular-strap.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/angular-carousel/dist/angular-carousel.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/medium-editor/dist/js/medium-editor.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/angular-medium-editor/dist/angular-medium-editor.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/ace-builds/src-noconflict/ace.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/angular-ui-ace/ui-ace.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/js-beautify/js/lib/beautify.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/js-beautify/js/lib/beautify-css.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/js-beautify/js/lib/beautify-html.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/leaflet/dist/leaflet-src.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/Leaflet.label/dist/leaflet.label-src.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/angular-leaflet-directive/dist/angular-leaflet-directive.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/AngularJS-Toaster/toaster.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/async/lib/async.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/ng-filters/dist/angular-filters.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/angular-file-upload/angular-file-upload.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/js/dependencies/sails.io.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/third-party/angularSails/dist/ngsails.io.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/js/app.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/js/translations.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/js/services.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/js/controllers.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/js/directives/imageMenu.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/js/directives/match.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/js/directives/ngThumb.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/js/directives/resize.js")
+    script(type="text/javascript", charset="utf-8", src="/dynamic/js/directives/webodf.js")
+    // SCRIPTS END

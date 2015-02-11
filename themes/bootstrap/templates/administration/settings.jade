@@ -2,8 +2,16 @@
   .page-header
     h1 Einstellungen
   h2 Allgemein
-  label Theme:&nbsp;
-  button.btn.btn-default(type="button", ng-model="settings.selected", data-html="0" ng-options="theme.dirname as theme.name for theme in settings.available", data-template="bootstrap/select", bs-select)
+  .media(ng-repeat="theme in themeSettings.available | orderBy:priority:reverse")
+    .media-left
+      img.media-object(ng-src='/images/{{theme.image}}?theme={{theme.dirname}}', alt='{{theme.image}}', style="width:200px;", width="200px")
+    .media-body
+      h4.media-heading {{theme.name}}
+      | {{theme.description}}
+    .media-right
+      .form-group(style="width:100px;")
+        label(for='exampleInputEmail1') Priorität
+        input.form-control(type='number', ng-model="theme.priority")
   h2
     a(ui-sref='bootstrap-layout.users') Benutzer
   h2

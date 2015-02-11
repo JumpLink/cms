@@ -49,10 +49,40 @@ var getDirs = function(srcpath, cb) {
   });
 }
 
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+var sortArrayByProperty = function(array, propertyName, inverse) {
+  if (inverse)
+    var sorter = function (a, b) {
+      if (a[propertyName] > b[propertyName] ) {
+        return 1;
+      }
+      if (a[propertyName]  < b[propertyName] ) {
+        return -1;
+      }
+      // a must be equal to b
+      return 0;
+    };
+  else
+    var sorter = function (a, b) {
+      if (a[propertyName] < b[propertyName] ) {
+        return 1;
+      }
+      if (a[propertyName]  > b[propertyName] ) {
+        return -1;
+      }
+      // a must be equal to b
+      return 
+    };
+  
+  array.sort(sorter);
+  return array;
+}
+
 module.exports = {
   isDefined: isDefined
   , isUndefined: isUndefined
   , $filter: $filter
   , getDirsSync: getDirsSync
   , getDirs: getDirs
-}
+  , sortArrayByProperty: sortArrayByProperty
+};
