@@ -27,6 +27,15 @@ module.exports.views = {
   // For more options, check out the docs:
   // https://github.com/balderdashy/sails-wiki/blob/0.9/config.views.md#engine
 
-  engine: 'jade',
+  engine: 'terraform',
   
+  engine: {
+    ext: 'terraform', // Or `html`, whatever you are using
+    fn: function (pathName, locals, cb) {
+      var terraform = require('terraform'); // https://github.com/sintaxi/terraform
+      var globals = {}; //global variables to be available to every template
+      var planet = terraform.root(sails.config.paths.public, globals);
+      return planet.render(pathName, locals, cb);
+    }
+  },
 };
