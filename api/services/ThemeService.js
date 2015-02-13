@@ -90,14 +90,14 @@ var getRootPathOfFile = function (filepath, cb) {
       var rootPath = getRootPathOfThemeDirname(theme.dirname);
       fs.exists(rootPath+'/'+filepath, function(exists) { 
         if (exists) { 
-          sails.log.debug("file FOUND", rootPath, filepath);
+          //sails.log.debug("file FOUND", rootPath, filepath);
           return cb(null, rootPath);
         } else {
-          sails.log.debug("file NOT found", rootPath, filepath);
+          //sails.log.debug("file NOT found", rootPath, filepath);
           if(i <= 0) {
-            sails.log.debug("file not found in any theme", sails.config.paths.public, filepath);
+            //sails.log.debug("file not found in any theme", sails.config.paths.public, filepath);
             // return cb(null, sails.config.paths.public);
-            return cb(null, sails.config.paths.public);
+            return cb(null, '.');
           }
         }
       });

@@ -60,12 +60,15 @@ var assets = function (req, res, next) {
     return res.sendfile(req.path,  {root: rootPath});
   } else {
     ThemeService.getRootPathOfFile(filepath, function (err, rootpath) {
-      if(err) return res.error(err);
-      var fullpath = path.normalize(rootpath+"/"+filepath);
-      sails.log.debug(path);
-      //return res.redirect(fullpath);
-      //return res.sendfile(req.path,  {root: rootpath});
-      return res.sendfile(fullpath, {root: '/'});
+      if(err) {
+        sails.log.error(err);
+        return res.error(err);
+      }
+      else {
+        var relativepath = path.resolve(rootpath, filepath);
+        sails.log.debug("relativepath", relativepath);
+        return res.sendfile(relativepath, {root: sails.config.paths.public});
+      }
     });
   }
 }
