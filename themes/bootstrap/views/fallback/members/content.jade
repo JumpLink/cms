@@ -1,6 +1,6 @@
-extends ../../../legacy/layout.jade
+extends ../layout.jade
 block body
-  include ../../legacy/toolbar.jade
+  include ../toolbar.jade
   .container(style="min-height: 200px;")
     .page-header
       h1 Vorstand / Beirat
@@ -11,4 +11,4 @@ block body
           h2
             div!= member.name
             small!= member.job
-  include ../../legacy/footer.jade
+  include ../footer.jade

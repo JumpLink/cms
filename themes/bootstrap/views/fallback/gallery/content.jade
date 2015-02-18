@@ -1,6 +1,6 @@
-extends ../../../legacy/layout.jade
+extends ../layout.jade
 block body
-  include ../../legacy/toolbar.jade
+  include ../toolbar.jade
   .container-fluid(style="min-height: 400px;")
     h1.anchor-static-navbar#gallery
     .page-header
@@ -8,4 +8,4 @@ block body
      each image in images
       a.pull-left(href=image.original.path, style="width:100px;padding:2px")
         img.img-responsive(src=image.thumb.path)
-  include ../../legacy/footer.jade
+  include ../footer.jade

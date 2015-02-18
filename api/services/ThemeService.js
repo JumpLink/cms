@@ -59,7 +59,7 @@ var getThemesSortedByPriority = function (cb) {
     async.map(availableThemes, iterator, function (err, result) {
       if(err) return cb(err);
       result = UtilityService.sortArrayByProperty(result, true);
-      return  cb(err, result);
+      return cb(err, result);
     });
   });
 }
@@ -89,7 +89,7 @@ var getRootPathOfFile = function (filepath, cb) {
     
     var found = false;
     
-    for (var i = 0; i <= themes.length && !found; i++) {
+    for (var i = 0; i < themes.length && !found; i++) {
       var theme = themes[i];
       sails.log.debug(theme.name, theme.dirname);
       var rootPath = getRootPathOfThemeDirname(theme.dirname);

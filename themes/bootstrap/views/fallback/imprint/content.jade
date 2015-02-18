@@ -1,4 +1,4 @@
-extends ../../../legacy/layout.jade
+extends ../layout.jade
 block toasts
   if emailIsSend
     .toast.toast-success
@@ -11,7 +11,7 @@ block toasts
       .toast-title E-Mail wurde nicht versendet.
       .toast-message
 block body
-  include ../../legacy/toolbar.jade
+  include ../toolbar.jade
   //- Container
   .container(style="min-height: 200px;")
     .row
@@ -92,4 +92,4 @@ block body
           .col-xs-12
             a(href="https://www.google.de/maps/dir//Kapit%C3%A4n-Alexander-Stra%C3%9Fe+40,+27472+Cuxhaven/@53.8668035,8.7066221,17z/data=!4m13!1m4!3m3!1s0x47b4040e075eaf1f:0xfaba82b12994a2e!2sKapit%C3%A4n-Alexander-Stra%C3%9Fe+40,+27472+Cuxhaven!3b1!4m7!1m0!1m5!1m1!1s0x47b4040e075eaf1f:0xfaba82b12994a2e!2m2!1d8.7066221!2d53.8668035?hl=de")
               img.img-responsive(src="/dynamic/images/anfahrt.png")
-  include ../../legacy/footer.jade
+  include ../footer.jade

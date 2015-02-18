@@ -1,6 +1,6 @@
-extends ../../../legacy/layout.jade
+extends ../layout.jade
 block body
-  include ../../legacy/toolbar.jade
+  include ../toolbar.jade
   .container(style="min-height: 200px;")
     each eventName in ['after', 'before', 'unknown']
       case eventName
@@ -71,4 +71,4 @@ block body
               .timeline-body
                 if event.download
                   p: a(href="/files/timeline/"+event.download).btn.btn-info: | Weitere Informationen
-  include ../../legacy/footer.jade
+  include ../footer.jade
