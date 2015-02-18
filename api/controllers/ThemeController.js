@@ -14,14 +14,14 @@ var available = function (req, res, next) {
   });
 }
 var infos = function (req, res, next) {
-  ThemeService.getThemes(function (err, themes) {
+  ThemeService.getThemesSortedByPriority(function (err, themes) {
     if(err) return res.error(err);
     res.json(themes);
   });
 }
 
 var find = function (req, res, next) {
-  ThemeService.getThemes(function (err, themes) {
+  ThemeService.getThemesSortedByPriority(function (err, themes) {
     if(err) return res.error(err);
     return res.json({available: themes});
   });
@@ -45,7 +45,7 @@ var updateOrCreateEach = function (req, res, next) {
   });
 }
 
-// TODO check theme pathes (in piorität order) and general assests path for this file and response this file if found
+// FIXME
 var assets = function (req, res, next) {
   sails.log.debug(req.path);
   
@@ -55,8 +55,8 @@ var assets = function (req, res, next) {
   
   if(req.param('theme')) {
     var rootPath = ThemeService.getRootPathOfThemeDirname(req.param('theme'));
-    sails.log.debug("get "+req.path+" from theme "+req.param('theme')+".");
-    sails.log.debug(rootPath);
+    // sails.log.debug("get "+req.path+" from theme "+req.param('theme')+".");
+    // sails.log.debug(rootPath);
     return res.sendfile(req.path,  {root: rootPath});
   } else {
     ThemeService.getRootPathOfFile(filepath, function (err, rootpath) {
@@ -65,7 +65,7 @@ var assets = function (req, res, next) {
         return res.error(err);
       }
       else {
-        var relativepath = path.resolve(rootpath, filepath);
+        var relativepath = path.join(rootpath, filepath);
         sails.log.debug("relativepath", relativepath);
         return res.sendfile(relativepath, {root: sails.config.paths.public});
       }

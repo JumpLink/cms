@@ -4,7 +4,7 @@
 
 var fs = require('fs-extra'); // https://github.com/jprichardson/node-fs-extra
 var THEME_DIR = './themes';
-var INFO_FILENAME = "theme.json";
+var INFO_FILENAME = "bower.json";
 var path = require("path");
 
 // Get an array of found theme dirnames
@@ -12,6 +12,7 @@ var getAvailableThemes = function (cb) {
   UtilityService.getDirs(THEME_DIR, function (dirs) {
     var iterator = function (dir, cb)  {
       var themeInfoPath = THEME_DIR+"/"+dir+"/"+INFO_FILENAME;
+      // sails.log.debug(themeInfoPath);
       fs.exists(themeInfoPath, function(exists) { 
          cb(exists);
       }); 
@@ -23,9 +24,9 @@ var getAvailableThemes = function (cb) {
 // set Priority from Database
 var setPriority = function (theme, cb) {
   var query = {'dirname': theme.dirname};
-  sails.log.debug('setPriority', query);
+  // sails.log.debug('setPriority', query);
   global.Theme.findOne(query).exec(function found(err, found) {
-    sails.log.debug('found', found);
+    // sails.log.debug('found', found);
     theme.priority = found.priority;
     if(UtilityService.isUndefined(theme.priority)) {
       theme.priority = 0;
@@ -40,13 +41,13 @@ var sortByPriority = function(themes, inverse) {
 }
 
 // get Theme info from local json file of each found theme
-var getThemes = function (cb) {
+var getThemesSortedByPriority = function (cb) {
   getAvailableThemes(function (availableThemes) {
     var iterator = function (theme, cb) {
       var themePath = THEME_DIR+"/"+theme;
       var themeInfoPath = themePath+"/"+INFO_FILENAME;
       fs.readJson(themeInfoPath, function(err, themeInfo) {
-        if(err) {return cb(err);}
+        if(err) {return  sails.log.error(err); cb(err);}
         // themeInfo.path = themePath;
         themeInfo.dirname = theme;
         // themeInfo.info = themeInfoPath;
@@ -83,37 +84,34 @@ var getRootPathOfThemeDirname = function (dirname, cb) {
  */
 var getRootPathOfFile = function (filepath, cb) {
   
-  getThemes(function (err, themes) {
-    sails.log.debug("getRootPathOfFile", themes);
-    for (var i = themes.length; i--; ) {
+  getThemesSortedByPriority(function (err, themes) {
+    // sails.log.debug("getRootPathOfFile", themes);
+    
+    var found = false;
+    
+    for (var i = 0; i <= themes.length && !found; i++) {
       var theme = themes[i];
+      sails.log.debug(theme.name, theme.dirname);
       var rootPath = getRootPathOfThemeDirname(theme.dirname);
-      fs.exists(rootPath+'/'+filepath, function(exists) { 
-        if (exists) { 
-          //sails.log.debug("file FOUND", rootPath, filepath);
-          return cb(null, rootPath);
-        } else {
-          //sails.log.debug("file NOT found", rootPath, filepath);
-          if(i <= 0) {
-            //sails.log.debug("file not found in any theme", sails.config.paths.public, filepath);
-            // return cb(null, sails.config.paths.public);
-            return cb(null, '.');
-          }
-        }
-      });
+      var fullpath = path.join(rootPath, filepath);
+      var found = fs.existsSync(fullpath);
+      if (found) { 
+        sails.log.debug("file FOUND", fullpath);
+        return cb(null, rootPath);
+      } else {
+        sails.log.debug("file NOT found", fullpath);
+      }
+    }
+    if(!found) {
+      sails.log.debug("file not found in any theme", '.');
+      return cb(null, '.');
     }
   })
 }
 
-    // path.exists('foo.txt', function(exists) { 
-    //   if (exists) { 
-        // do something 
-    //   } 
-    // });
-
 module.exports = {
   getAvailableThemes: getAvailableThemes
-  , getThemes: getThemes
+  , getThemesSortedByPriority: getThemesSortedByPriority
   , updateOrCreate: updateOrCreate
   , updateOrCreateEach: updateOrCreateEach
   , getRootPathOfFile: getRootPathOfFile
