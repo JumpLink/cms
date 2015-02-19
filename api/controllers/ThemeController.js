@@ -45,20 +45,25 @@ var updateOrCreateEach = function (req, res, next) {
   });
 }
 
-// TODO more than home
 var fallback = function (req, res, next, force) {
-  var router = require('../../themes/bootstrap/api/controllers/FallbackController.js');
-  return router.fallback(req, res, next, force);
+  ThemeService.getController('FallbackController', function (err, FallbackController) {
+    if(err) return res.serverError(err);
+    else return FallbackController.fallback(req, res, next, force);
+  });
 }
 
 var signin = function (req, res, next, force) {
-  var router = require('../../themes/bootstrap/api/controllers/FallbackController.js');
-  return router.signin(req, res, next, force);
+  ThemeService.getController('FallbackController', function (err, FallbackController) {
+    if(err) return res.serverError(err);
+    else return FallbackController.signin(req, res, next, force);
+  });
 }
 
 var updateBrowser = function (req, res, next, force) {
-  var router = require('../../themes/bootstrap/api/controllers/FallbackController.js');
-  return router.updateBrowser(req, res, next, force);
+  ThemeService.getController('FallbackController', function (err, FallbackController) {
+    if(err) return res.serverError(err);
+    else return FallbackController.updateBrowser(req, res, next, force);
+  });
 }
 
 var modern = function(req, res, next) {

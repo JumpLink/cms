@@ -84,13 +84,6 @@ var getRootPathOfThemeDirname = function (dirname, cb) {
  return path.normalize(THEME_DIR+"/"+dirname);
 }
 
-// var geAssetsPathOfThemeDirname = function (dirname, cb) {
-// return getRootPathOfThemeDirname(dirname, function(err, rootpath) {
-//   if(err) return cb(err);
-//   callback(null, rootpath+"/assets");
-// });
-// }
-
 var getThemeByDirname = function (dirname, callback) {
   getAvailableThemes(function (themes) {
     
@@ -127,24 +120,29 @@ var getThemeForFile = function (filepath, cb) {
     
     for (var i = 0; i < themes.length && !found; i++) {
       var theme = themes[i];
-      sails.log.debug(theme.name, theme.dirname);
+      //sails.log.debug(theme.name, theme.dirname);
       var rootpath = getRootPathOfThemeDirname(theme.dirname);
       var fullpath = path.join(rootpath, filepath);
       var found = fs.existsSync(fullpath);
       if (found) { 
-        sails.log.debug("file FOUND", fullpath);
+        sails.log.debug(fullpath);
         return cb(null, theme);
       } else {
-        sails.log.debug("file NOT found", fullpath);
+        // sails.log.debug("file NOT found", fullpath);
       }
     }
     if(!found) {
-      sails.log.debug("file not found in any theme", '.');
+      sails.log.error("file not found in any theme", '.');
       return cb("not found", null);
     }
   })
 }
 
+/**
+ * find file in theme with the heigest priority,
+ * if file not found try next theme.
+ * If file was found callback the rootpath of founded file in theme.
+ */
 var getThemeRootPathForFile = function (filepath, cb) {
   getThemeForFile (filepath, function (err, theme) {
     if(!err && theme) {
@@ -172,18 +170,37 @@ var getThemeFullPathForFile = function (filepath, cb) {
   });
 }
 
+/**
+ * Render view from theme with the highest priority,
+ * if view not found try next theme.
+ */
 var view = function (filepath, res, locals) {
   getThemeFullPathForFile(filepath, function (err, fullpath) {
-    fullpath = path.join('../', fullpath); // FIX root of view for themes
     if(err) { sails.log.error(err); return res.serverError(err); }
     else {
+      fullpath = path.join('../', fullpath); // WORKAROUND root of view for themes
       sails.log.debug("fullpath", fullpath);
       return res.view(fullpath, locals);
     }
   });
 }
 
-
+/**
+ * Load controller from theme with the highest priority,
+ * if controller not found try next theme.
+ */
+var getController = function (name, callback) {
+  var filepath = "api/controllers/"+name+".js";
+  getThemeFullPathForFile(filepath, function (err, fullpath) {
+    if(err) { return callback(err); }
+    else {
+      fullpath = path.join('../../', fullpath); // WORKAROUND root of controllers for themes
+      // fullpath = path.join(__dirname, '../../', fullpath); // WORKAROUND root of controllers for themes
+      // sails.log.debug("controller path", fullpath);
+      return callback(null, require(fullpath));
+    }
+  });
+}
 
 module.exports = {
   getAvailableThemes: getAvailableThemes
@@ -193,9 +210,9 @@ module.exports = {
   , updateOrCreateEach: updateOrCreateEach
   , getThemeForFile: getThemeForFile
   , getRootPathOfThemeDirname: getRootPathOfThemeDirname
-  // , geAssetsPathOfThemeDirname: geAssetsPathOfThemeDirname
   , getThemeByDirname: getThemeByDirname
   , getThemeRootPathForFile: getThemeRootPathForFile
   , getThemeFullPathForFile: getThemeFullPathForFile
   , view: view
+  , getController: getController
 };

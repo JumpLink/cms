@@ -238,41 +238,26 @@ var fallbackImprint = function (req, res, next, force, showLegacyToast) {
 
 var fallback = function (req, res, next, force) {
 
-  sails.log('fallback(req, res, next)');
-
-  sails.log.debug('url', req.path, req.url, req.originalUrl);
-
-  sails.log.debug('req.useragent', req.useragent);
-
   var ok = function (req, res, next, force) {
     switch(req.path) {
       case "/fallback/browser":
         return updateBrowser(req, res, next, force, showLegacyToast = false);
-      break;
       case "/fallback/home":
         return fallbackHome(req, res, next, force, showLegacyToast = true);
-      break;
       case "/fallback/members":
         return fallbackMembers(req, res, next, force, showLegacyToast = true);
-      break;
       case "/fallback/events":
         return fallbackEvents(req, res, next, force, showLegacyToast = true);
-      break;
       case "/fallback/gallery":
         return fallbackGallery(req, res, next, force, showLegacyToast = true);
-      break;
       case "/fallback/application":
         return fallbackApplication(req, res, next, force, showLegacyToast = true);
-      break;
       case "/fallback/links":
         return fallbackLinks(req, res, next, force, showLegacyToast = true);
-      break;
       case "/fallback/imprint":
         return fallbackImprint(req, res, next, force, showLegacyToast = true);
-      break;
       default:
         return fallbackHome(req, res, next, force, showLegacyToast = true);
-      break;
     }
   }
 
@@ -282,7 +267,7 @@ var fallback = function (req, res, next, force) {
   if(req.query.force)
     force = req.query.force;
 
-  sails.log.debug('force', force);
+  // sails.log.debug('force', force);
 
   if(UseragentService.isModern(req, force)) {
     if(force != null && typeof force != 'undefined')
@@ -314,15 +299,15 @@ var signin = function(req, res, next) {
   if(req.query.force)
     force = req.query.force;
 
-  sails.log.debug('force', force);
+  // sails.log.debug('force', force);
 
   if((UseragentService.supported(req) || force == 'modern') && (force != 'fallback' && force != 'noscript')) {
-    ok(req, res, next);
+    return ok(req, res, next);
   } else {
     if(force != null)
-      res.redirect('/fallback/home?force='+force);
+      return res.redirect('/fallback/home?force='+force);
     else
-      res.redirect('/fallback/home');
+      return res.redirect('/fallback/home');
   }
 
 }

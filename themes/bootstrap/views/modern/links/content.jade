@@ -1,7 +1,7 @@
 .container(style="min-height: 400px;")
   .page-header
     h1 Links
-  div(ng-show="html && authenticated", ng-model="links", ui-ace="{mode: 'html'}")
+  div(ng-show="html && authenticated", ng-model="links", ui-ace="{workerPath: '/dynamic/third-party/ace-builds/src-noconflict', mode: 'html'}")
   div(ng-show="authenticated", medium-editor, ng-model="links", options='{"buttons": ["bold", "italic", "underline", "anchor", "header1" , "header2", "quote", "orderedlist", "unorderedlist"]}', bind-options="mediumBindOptions")
   div(ng-bind-html="links", ng-hide="authenticated")
 nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="$root.authenticated")

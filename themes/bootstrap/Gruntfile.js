@@ -53,6 +53,7 @@ module.exports = function(grunt) {
   
     //- angular-ui-ace
     'assets/third-party/ace-builds/src-noconflict/ace.js',
+    'assets/third-party/ace-builds/src-noconflict/mode-html.js',
     'assets/third-party/angular-ui-ace/ui-ace.js',
   
     //- angular-masonry

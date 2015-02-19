@@ -13,7 +13,7 @@
       h1.anchor-static-navbar#imprint
       .page-header
         h1 Impressum
-      div(ng-show="html && authenticated", ng-model="imprint", ui-ace="{mode: 'html'}")
+      div(ng-show="html && authenticated", ng-model="imprint", ui-ace="{workerPath: '/dynamic/third-party/ace-builds/src-noconflict', mode: 'html'}")
       div(ng-show="authenticated", medium-editor, ng-model="imprint", options='{"buttons": ["bold", "italic", "underline", "anchor", "header1" , "header2", "quote", "orderedlist", "unorderedlist"]}', bind-options="mediumBindOptions")
       div(ng-bind-html="imprint", ng-hide="authenticated")
       h1.anchor-static-navbar#contact
