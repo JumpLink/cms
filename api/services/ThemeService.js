@@ -64,6 +64,14 @@ var getThemesSortedByPriority = function (cb) {
   });
 }
 
+var getThemeWithHighestPriority = function (callback) {
+  getThemesSortedByPriority(function (err, themes) {
+    if(err) callback(err);
+    else if(!UtilityService.isArray(themes)) callback("themes is not an array");
+    else callback(null, themes[0]);
+  });
+}
+
 var updateOrCreate = function(theme, cb) {
   ModelService.updateOrCreate('Theme', theme, {'dirname': theme.dirname}, cb);
 }
@@ -73,47 +81,121 @@ var updateOrCreateEach = function(themes, cb) {
 }
 
 var getRootPathOfThemeDirname = function (dirname, cb) {
- return path.normalize(THEME_DIR+"/"+dirname+"/assets");
+ return path.normalize(THEME_DIR+"/"+dirname);
+}
+
+// var geAssetsPathOfThemeDirname = function (dirname, cb) {
+// return getRootPathOfThemeDirname(dirname, function(err, rootpath) {
+//   if(err) return cb(err);
+//   callback(null, rootpath+"/assets");
+// });
+// }
+
+var getThemeByDirname = function (dirname, callback) {
+  getAvailableThemes(function (themes) {
+    
+    var found = false;
+    
+    for (var i = 0; i < themes.length && !found; i++) {
+      var theme = themes[i];
+      if(themes.dirname === dirname) found = true;
+      if (found) { 
+        sails.log.debug("theme FOUND", dirname);
+        return cb(null, theme);
+      }
+    }
+    if(!found) {
+      var err = "theme NOT found: "+dirname;
+      sails.log.error(err);
+      return cb(err);
+    }
+  });
 }
 
 /**
- * Get root path of file from Theme.
+ * Get theme the file was found in.
  * If file was not found in theme with the highest priority,
  * the file with a lower priority will be used instead,
  * and so on..
  */
-var getRootPathOfFile = function (filepath, cb) {
+var getThemeForFile = function (filepath, cb) {
   
   getThemesSortedByPriority(function (err, themes) {
-    // sails.log.debug("getRootPathOfFile", themes);
+    // sails.log.debug("getThemeForFile", themes);
     
     var found = false;
     
     for (var i = 0; i < themes.length && !found; i++) {
       var theme = themes[i];
       sails.log.debug(theme.name, theme.dirname);
-      var rootPath = getRootPathOfThemeDirname(theme.dirname);
-      var fullpath = path.join(rootPath, filepath);
+      var rootpath = getRootPathOfThemeDirname(theme.dirname);
+      var fullpath = path.join(rootpath, filepath);
       var found = fs.existsSync(fullpath);
       if (found) { 
         sails.log.debug("file FOUND", fullpath);
-        return cb(null, rootPath);
+        return cb(null, theme);
       } else {
         sails.log.debug("file NOT found", fullpath);
       }
     }
     if(!found) {
       sails.log.debug("file not found in any theme", '.');
-      return cb(null, '.');
+      return cb("not found", null);
     }
   })
 }
 
+var getThemeRootPathForFile = function (filepath, cb) {
+  getThemeForFile (filepath, function (err, theme) {
+    if(!err && theme) {
+      var rootpath = getRootPathOfThemeDirname(theme.dirname);
+      cb(null, rootpath);
+    } else {
+      cb(null, '.');
+    }
+  });
+}
+
+/**
+ * find file in theme with the possible heigest found priority
+ * and callback this path
+ */
+var getThemeFullPathForFile = function (filepath, cb) {
+  getThemeForFile (filepath, function (err, theme) {
+    if(!err && theme) {
+      var rootPath = getRootPathOfThemeDirname(theme.dirname);
+      var fullpath = path.join(rootPath, filepath);
+      return cb(null, fullpath);
+    } else {
+      return cb(err, filepath);
+    }
+  });
+}
+
+var view = function (filepath, res, locals) {
+  getThemeFullPathForFile(filepath, function (err, fullpath) {
+    fullpath = path.join('../', fullpath); // FIX root of view for themes
+    if(err) { sails.log.error(err); return res.serverError(err); }
+    else {
+      sails.log.debug("fullpath", fullpath);
+      return res.view(fullpath, locals);
+    }
+  });
+}
+
+
+
 module.exports = {
   getAvailableThemes: getAvailableThemes
   , getThemesSortedByPriority: getThemesSortedByPriority
+  , getThemeWithHighestPriority: getThemeWithHighestPriority
   , updateOrCreate: updateOrCreate
   , updateOrCreateEach: updateOrCreateEach
-  , getRootPathOfFile: getRootPathOfFile
+  , getThemeForFile: getThemeForFile
   , getRootPathOfThemeDirname: getRootPathOfThemeDirname
+  // , geAssetsPathOfThemeDirname: geAssetsPathOfThemeDirname
+  , getThemeByDirname: getThemeByDirname
+  , getThemeRootPathForFile: getThemeRootPathForFile
+  , getThemeFullPathForFile: getThemeFullPathForFile
+  , view: view
 };

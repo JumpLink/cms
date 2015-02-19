@@ -7,7 +7,8 @@
   ],
   "description": "Custom Theme of Nautischer Verein Cuxhaven",
   "image": "preview.png",
-  "main": "init.jade",
+  "main": "",
+  "modernview": "views/modern/init.jade",
   "moduleType": [
     "node"
   ],

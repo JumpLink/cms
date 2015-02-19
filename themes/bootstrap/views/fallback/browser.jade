@@ -1,4 +1,4 @@
-extends ../../legacy/layout.jade
+extends layout.jade
 block body
   .container
     //- browser icons from https://github.com/alrra/browser-logos
@@ -9,7 +9,7 @@ block body
         | Im Kompatibilitätsmodus ist diese Seite nur eingeschränkt nutzbar, dadurch ist Sie auch auf nicht unterstützten Webbrowsern darstellar.
       h2
         | Grund:
-      if force == 'legacy'
+      if force == 'legacy' || force == 'fallback'
         h3
           | Sie haben den Kompatibilitätsmodus erzwungen.
         .lead

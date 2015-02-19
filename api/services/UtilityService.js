@@ -1,15 +1,13 @@
 var fs = require('fs-extra'); // https://github.com/jprichardson/node-fs-extra
 var path = require('path');
 var underscore = require('underscore'); // http://documentcloud.github.io/underscore/
+var extend = require('node.extend'); // https://github.com/dreamerslab/node.extend
 
 // server compatibility to angular functions
 // TODO outsource to node-angular?
+
 var isDefined = function(value) {
   return !underscore.isUndefined(value);
-};
-
-var isUndefined = function(value) {
-  return !isDefined(value);
 };
 
 var $filter = function(filtername) {
@@ -78,11 +76,15 @@ var sortArrayByProperty = function(array, propertyName, inverse) {
   return array;
 }
 
+
+
 module.exports = {
-  isDefined: isDefined
-  , isUndefined: isUndefined
+  isUndefined: underscore.isUndefined
+  , isDefined: isDefined
   , $filter: $filter
   , getDirsSync: getDirsSync
   , getDirs: getDirs
   , sortArrayByProperty: sortArrayByProperty
+  , extend: extend
+  , isArray: underscore.isArray
 };

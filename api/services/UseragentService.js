@@ -42,6 +42,11 @@ var supported = function (req) {
   return false;
 }
 
+var isModern = function (req, force) {
+  return (UseragentService.supported(req) || force == 'modern') && (force != 'fallback' && force != 'legacy' && force != 'noscript')
+}
+
 module.exports = {
   supported:supported
+  , isModern: isModern
 }

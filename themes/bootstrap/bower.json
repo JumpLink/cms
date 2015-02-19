@@ -7,7 +7,8 @@
   ],
   "description": "The default theme of JumpLink CMS",
   "image": "preview.png",
-  "main": "init.jade",
+  "main": "",
+  "modernview": "views/modern/init.jade",
   "moduleType": [
     "node"
   ],

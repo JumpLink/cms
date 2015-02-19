@@ -1,56 +1,50 @@
-/**
- * ViewController
- *
- * @description :: Server-side logic for managing views
- * @help        :: See http://links.sailsjs.org/docs/controllers
- */
-
 var validator = require('validator');
 var moment = require('moment');
 moment.locale('de');
 
 var updateBrowser = function (req, res, next, force) {
-  res.view('../themes/bootstrap/views/fallback/browser.jade', {force: force, host: req.host, url: req.path, useragent: req.useragent, title: 'Ihr Browser wird nicht unterstützt' });
+  return ThemeService.view('views/fallback/browser.jade', res, {force: force, host: req.host, url: req.path, useragent: req.useragent, title: 'Ihr Browser wird nicht unterstützt' });
 }
 
-var legacyHome = function (req, res, next, force, showLegacyToast) {
+var fallbackHome = function (req, res, next, force, showLegacyToast) {
+  sails.log.debug("fallbackHome");
   var about = null, goals = null;
   Content.find({name:'about'}).exec(function found(err, results) {
     if(UtilityService.isDefined(results) && UtilityService.isDefined(results[0]) && UtilityService.isDefined(results[0].content)) about = results[0].content;
     Content.find({name:'goals'}).exec(function found(err, results) {
       if(UtilityService.isDefined(results) && UtilityService.isDefined(results[0]) && UtilityService.isDefined(results[0].content)) goals = results[0].content;
-      res.view('../themes/bootstrap/views/fallback/home/content.jade', {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, about: about, goals: goals, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Startseite' });
+      return ThemeService.view('views/fallback/home/content.jade', res, {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, about: about, goals: goals, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Startseite' });
     });
   });
 }
 
-var legacyMembers = function (req, res, next, force, showLegacyToast) {
+var fallbackMembers = function (req, res, next, force, showLegacyToast) {
   var members;
   Member.find().exec(function found(err, results) {
     members = MemberService.sort(results);
-    res.view('../themes/bootstrap/views/fallback/members/content.jade', {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, members: members, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Vorstand / Beirat' });
+    return ThemeService.view('views/fallback/members/content.jade', res, {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, members: members, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Vorstand / Beirat' });
   });
 }
 
-var legacyEvents = function (req, res, next, force, showLegacyToast) {
+var fallbackEvents = function (req, res, next, force, showLegacyToast) {
   var events;
   Timeline.find().exec(function found(err, results) {
     events = EventService.sort(results);
     events = EventService.momentise(events);
     events = EventService.split(events);
-    res.view('../themes/bootstrap/views/fallback/events/timeline.jade', {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, events: events, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Veranstaltungen' });
+    return ThemeService.view('views/fallback/events/timeline.jade', res,  {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, events: events, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Veranstaltungen' });
   });
 }
 
-var legacyGallery = function (req, res, next, force, showLegacyToast) {
+var fallbackGallery = function (req, res, next, force, showLegacyToast) {
   var about, goals;
   Gallery.find().exec(function found(err, results) {
     images = results;
-    res.view('../themes/bootstrap/views/fallback/gallery/content.jade', {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, images: images, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Galerie' });
+    return ThemeService.view('views/fallback/gallery/content.jade', res, {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, images: images, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Galerie' });
   });
 }
 
-var legacyApplication = function (req, res, next, force, showLegacyToast) {
+var fallbackApplication = function (req, res, next, force, showLegacyToast) {
   var application = null;
 
   var member = {
@@ -72,26 +66,28 @@ var legacyApplication = function (req, res, next, force, showLegacyToast) {
   }
 
   Content.find({name:'application'}).exec(function found(err, results) {
-    if(UtilityService.isDefined(results) && UtilityService.isDefined(results[0]) && UtilityService.isDefined(results[0].content)) application = results[0].content;
-    res.view('../themes/bootstrap/views/fallback/application/content.jade', {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, application: application, member: member, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Aufnahmeantrag' });
+    if(UtilityService.isDefined(results) && UtilityService.isDefined(results[0]) && UtilityService.isDefined(results[0].content)) {
+      application = results[0].content;
+    }
+    return ThemeService.view('views/fallback/application/content.jade', res, {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, application: application, member: member, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Aufnahmeantrag' });
   });
 }
 
-var legacyLinks = function (req, res, next, force, showLegacyToast) {
+var fallbackLinks = function (req, res, next, force, showLegacyToast) {
   var links = null;
   Content.find({name:'links'}).exec(function found(err, results) {
     if(UtilityService.isDefined(results) && UtilityService.isDefined(results[0]) && UtilityService.isDefined(results[0].content)) links = results[0].content;
-    res.view('../themes/bootstrap/views/fallback/links/content.jade', {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, links: links, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Links' });
+    return ThemeService.view('views/fallback/links/content.jade', res, {showLegacyToast: showLegacyToast, force: force, host: req.host, url: req.path, links: links, useragent: req.useragent, title: 'Nautischer Verein Cuxhaven e.V. - Links' });
   });
 }
 
-var legacyImprint = function (req, res, next, force, showLegacyToast) {
+var fallbackImprint = function (req, res, next, force, showLegacyToast) {
   var imprint = null, emailIsSend = null;
 
   var view = function (host, url, form, useragent, emailIsSend) {
     Content.find({name:'imprint'}).exec(function found(err, results) {
       if(UtilityService.isDefined(results) && UtilityService.isDefined(results[0]) && UtilityService.isDefined(results[0].content))  imprint = results[0].content;
-      res.view('../themes/bootstrap/views/fallback/imprint/content.jade', {showLegacyToast: showLegacyToast, force: force, emailIsSend: emailIsSend, host: host, url: url, imprint: imprint, form: form, useragent: useragent, title: 'Nautischer Verein Cuxhaven e.V. - Impressum' });
+      return ThemeService.view('views/fallback/imprint/content.jade', res, {showLegacyToast: showLegacyToast, force: force, emailIsSend: emailIsSend, host: host, url: url, imprint: imprint, form: form, useragent: useragent, title: 'Nautischer Verein Cuxhaven e.V. - Impressum' });
     });
   }
 
@@ -240,9 +236,9 @@ var legacyImprint = function (req, res, next, force, showLegacyToast) {
 
 }
 
-var legacy = function (req, res, next) {
+var fallback = function (req, res, next, force) {
 
-  sails.log('legacy(req, res, next)');
+  sails.log('fallback(req, res, next)');
 
   sails.log.debug('url', req.path, req.url, req.originalUrl);
 
@@ -250,37 +246,37 @@ var legacy = function (req, res, next) {
 
   var ok = function (req, res, next, force) {
     switch(req.path) {
-      case "/bs/legacy/browser":
-        updateBrowser(req, res, next, force, showLegacyToast = false);
+      case "/fallback/browser":
+        return updateBrowser(req, res, next, force, showLegacyToast = false);
       break;
-      case "/bs/legacy/home":
-        legacyHome(req, res, next, force, showLegacyToast = true);
+      case "/fallback/home":
+        return fallbackHome(req, res, next, force, showLegacyToast = true);
       break;
-      case "/bs/legacy/members":
-        legacyMembers(req, res, next, force, showLegacyToast = true);
+      case "/fallback/members":
+        return fallbackMembers(req, res, next, force, showLegacyToast = true);
       break;
-      case "/bs/legacy/events":
-        legacyEvents(req, res, next, force, showLegacyToast = true);
+      case "/fallback/events":
+        return fallbackEvents(req, res, next, force, showLegacyToast = true);
       break;
-      case "/bs/legacy/gallery":
-        legacyGallery(req, res, next, force, showLegacyToast = true);
+      case "/fallback/gallery":
+        return fallbackGallery(req, res, next, force, showLegacyToast = true);
       break;
-      case "/bs/legacy/application":
-        legacyApplication(req, res, next, force, showLegacyToast = true);
+      case "/fallback/application":
+        return fallbackApplication(req, res, next, force, showLegacyToast = true);
       break;
-      case "/bs/legacy/links":
-        legacyLinks(req, res, next, force, showLegacyToast = true);
+      case "/fallback/links":
+        return fallbackLinks(req, res, next, force, showLegacyToast = true);
       break;
-      case "/bs/legacy/imprint":
-        legacyImprint(req, res, next, force, showLegacyToast = true);
+      case "/fallback/imprint":
+        return fallbackImprint(req, res, next, force, showLegacyToast = true);
       break;
       default:
-        legacyHome(req, res, next, force, showLegacyToast = true);
+        return fallbackHome(req, res, next, force, showLegacyToast = true);
       break;
     }
   }
 
-  var force = null; // modern | legacy
+  // var force = null; // modern | fallback
   if(req.param('force'))
     force = req.param('force');
   if(req.query.force)
@@ -288,28 +284,29 @@ var legacy = function (req, res, next) {
 
   sails.log.debug('force', force);
 
-  if((UseragentService.supported(req) || force == 'modern') && (force != 'legacy' && force != 'noscript')) {
-    if(force != null)
-      res.redirect('/?force='+force);
+  if(UseragentService.isModern(req, force)) {
+    if(force != null && typeof force != 'undefined')
+      return res.redirect('/?force='+force);
     else
-      res.redirect('/');
+      return res.redirect('/');
   } else {
-    ok(req, res, next, force);
+    return ok(req, res, next, force);
   }
 }
 
-var singlePageBootstrap = function(req, res, next) {
+  /*
+   * fallback html page to allow browser to auto-fill e-mail and password
+   */
+var signin = function(req, res, next) {
 
-  sails.log('singlePageBootstrap(req, res, next)');
+  sails.log('signin(req, res, next)');
 
-  var ok = function (req, res, next, force) {
-    // TODO fix user
-    var user = "{}";
-    if(typeof req.session.user != 'undefined') user = JSON.stringify(req.session.user);
-    res.view('init.jade', { force: force, url: req.path, authenticated: req.session.authenticated === true, user: user});
+  var ok = function () {
+    // TODO use toast for flash
+    return ThemeService.view('views/fallback/signin.jade', res,  { showLegacyToast: false, flash: req.session.flash });
   }
 
-  var force = null; // modern | legacy
+  var force = null; // modern | fallback
 
   if(req.param('force'))
     force = req.param('force');
@@ -319,53 +316,20 @@ var singlePageBootstrap = function(req, res, next) {
 
   sails.log.debug('force', force);
 
-  if((UseragentService.supported(req) || force == 'modern') && (force != 'legacy' && force != 'noscript')) {
-    ok(req, res, next, force);
+  if((UseragentService.supported(req) || force == 'modern') && (force != 'fallback' && force != 'noscript')) {
+    ok(req, res, next);
   } else {
     if(force != null)
-      res.redirect('/bs/legacy/home?force='+force);
+      res.redirect('/fallback/home?force='+force);
     else
-      res.redirect('/bs/legacy/home');
+      res.redirect('/fallback/home');
   }
 
-};
+}
 
 module.exports = {
   updateBrowser: updateBrowser
-  , legacy: legacy
-  , singlePageBootstrap: singlePageBootstrap
-
-  /*
-   * legacy html page to allow browser to auto-fill e-mail and password
-   */
-  , signin: function(req, res, next) {
-
-    sails.log('signin(req, res, next)');
-
-    var ok = function () {
-      // TODO use toast for flash
-      res.view('../themes/bootstrap/views/fallback/signin.jade', { showLegacyToast: false, flash: req.session.flash });
-    }
-
-    var force = null; // modern | legacy
-
-    if(req.param('force'))
-      force = req.param('force');
-
-    if(req.query.force)
-      force = req.query.force;
-
-    sails.log.debug('force', force);
-
-    if((UseragentService.supported(req) || force == 'modern') && (force != 'legacy' && force != 'noscript')) {
-      ok(req, res, next);
-    } else {
-      if(force != null)
-        res.redirect('/bs/legacy/home?force='+force);
-      else
-        res.redirect('/bs/legacy/home');
-    }
-
-  }
+  , fallback: fallback
+  , signin: signin
 };
 
