@@ -37,6 +37,6 @@
             label.control-label(for="image") Vorschau
             .img-circle(ng-if="uploader.queue[uploader.queue.length-1].file", ng-thumb="{ file: uploader.queue[uploader.queue.length-1]._file, width: 140, height: 140 }")
             div
-              img.img-circle(ng-hide="uploader.queue[uploader.queue.length-1].file", width="140", height="140", ng-src='dynamic/images/members/{{member.image}}', style='width: 140px; height: 140px;')
+              img.img-circle(ng-hide="uploader.queue[uploader.queue.length-1].file", width="140", height="140", ng-src='assets/images/members/{{member.image}}', style='width: 140px; height: 140px;')
       .modal-footer
         button.btn.btn-primary(type='button', ng-click='save(member);$hide()') Speichern

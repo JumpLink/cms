@@ -40,7 +40,7 @@ module.exports.routes = {
 
   '/fallback/*': 'ThemeController.fallback',
   
-  '/dynamic/*': 'ThemeController.assets',
+  '/assets/*': 'ThemeController.assets',
 
   /***************************************************************************
   *                                                                          *

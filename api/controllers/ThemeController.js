@@ -101,15 +101,11 @@ var modern = function(req, res, next) {
  * Loads asset files dynamically
  * First the file will be loaded from the theme with the highest priority,
  * if file was not found, it will be loaded from theme with lower piority and so on..
- * FIXME on much javascript files
+ * FIXME much javascript files not parsed as application/javascript
  */
 var assets = function (req, res, next) {
-  sails.log.debug(req.path);
-  
-  var filepath = "/assets"+req.path.substring(8); // replace '/dynamic' with '/assets'
-  
-  sails.log.debug(filepath);
-  
+  //sails.log.debug(req.path);
+  var filepath = req.path;
   if(req.param('theme')) {
     var rootpath = ThemeService.getRootPathOfThemeDirname(req.param('theme'));
     return res.sendfile(req.path,  {root: rootpath});

@@ -4,7 +4,7 @@
   h2 Allgemein
   .media(ng-repeat="theme in themeSettings.available | orderBy:priority:reverse")
     .media-left
-      img.media-object(ng-src='/dynamic/images/{{theme.image}}?theme={{theme.dirname}}', alt='{{theme.image}}', style="width:200px;", width="200px")
+      img.media-object(ng-src='{{theme.image}}?theme={{theme.dirname}}', alt='{{theme.image}}', style="width:200px;", width="200px")
     .media-body
       h4.media-heading {{theme.name}}
       | {{theme.description}}

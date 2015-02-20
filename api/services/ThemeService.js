@@ -4,7 +4,7 @@
 
 var fs = require('fs-extra'); // https://github.com/jprichardson/node-fs-extra
 var THEME_DIR = './themes';
-var INFO_FILENAME = "bower.json";
+var INFO_FILENAME = "theme.json";
 var path = require("path");
 
 // Get an array of found theme dirnames
@@ -186,20 +186,35 @@ var view = function (filepath, res, locals) {
 }
 
 /**
+ * Load javascript module from api subfolder from theme with the highest priority,
+ * if module not found try next theme.
+ */
+var getApiModule = function (filepath, callback) {
+  getThemeFullPathForFile(filepath, function (err, fullpath) {
+    if(err) { return callback(err); }
+    else {
+      fullpath = path.join('../../', fullpath); // WORKAROUND root of controllers / servides for themes
+      return callback(null, require(fullpath));
+    }
+  });
+}
+
+/**
  * Load controller from theme with the highest priority,
  * if controller not found try next theme.
  */
 var getController = function (name, callback) {
   var filepath = "api/controllers/"+name+".js";
-  getThemeFullPathForFile(filepath, function (err, fullpath) {
-    if(err) { return callback(err); }
-    else {
-      fullpath = path.join('../../', fullpath); // WORKAROUND root of controllers for themes
-      // fullpath = path.join(__dirname, '../../', fullpath); // WORKAROUND root of controllers for themes
-      // sails.log.debug("controller path", fullpath);
-      return callback(null, require(fullpath));
-    }
-  });
+  getApiModule(filepath, callback);
+}
+
+/**
+ * Load controller from theme with the highest priority,
+ * if controller not found try next theme.
+ */
+var getService = function (name, callback) {
+  var filepath = "api/services/"+name+".js";
+  getApiModule(filepath, callback);
 }
 
 module.exports = {
@@ -215,4 +230,5 @@ module.exports = {
   , getThemeFullPathForFile: getThemeFullPathForFile
   , view: view
   , getController: getController
+  , getService: getService
 };

@@ -25,13 +25,13 @@
       h1.anchor-static-navbar#about
       .page-header
         h1 Wir über uns
-      div(ng-show="html && $root.authenticated", ui-ace="{workerPath: '/dynamic/third-party/ace-builds/src-noconflict', mode: 'html'}", ng-model="about")
+      div(ng-show="html && $root.authenticated", ui-ace="{workerPath: '/assets/third-party/ace-builds/src-noconflict', mode: 'html'}", ng-model="about")
       div(ng-show="$root.authenticated", medium-editor, ng-model="about", options='{"buttons": ["bold", "italic", "underline", "anchor", "header1" , "header2", "quote", "orderedlist", "unorderedlist"]}', bind-options="mediumBindOptions")
       div(ng-bind-html="about", ng-hide="$root.authenticated")
       h1.anchor-static-navbar#goals
       .page-header
         h1 Unsere Ziele
-      div(ng-show="html && $root.authenticated", ui-ace="{workerPath: '/dynamic/third-party/ace-builds/src-noconflict', mode: 'html'}", ng-model="goals")
+      div(ng-show="html && $root.authenticated", ui-ace="{workerPath: '/assets/third-party/ace-builds/src-noconflict', mode: 'html'}", ng-model="goals")
       div(ng-show="$root.authenticated", medium-editor, ng-model="goals", options='{"buttons": ["bold", "italic", "underline", "anchor", "header1" , "header2", "quote", "orderedlist", "unorderedlist"]}', bind-options="mediumBindOptions")
       div(ng-bind-html="goals", ng-hide="$root.authenticated")
 nav.navbar.navbar-inverse.navbar-fixed-bottom(role="administration", ng-show="$root.authenticated")

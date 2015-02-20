@@ -3,7 +3,7 @@
     h1 Vorstand / Beirat
   .row(style='text-align: center;')
     .col-lg-3.col-md-4.col-sm-6.member(ng-repeat="member in members")
-      img.img-circle(alt='{{member.name}}', ng-src='dynamic/images/members/{{member.image}}', style='width: 140px; height: 140px;')
+      img.img-circle(alt='{{member.name}}', ng-src='assets/images/members/{{member.image}}', style='width: 140px; height: 140px;')
       h2
         div(ng-show="$root.authenticated", medium-editor, ng-model="member.name", options='{"placeholder": "Name eingeben", "disableToolbar": true, "forcePlainText": true, "disableReturn": true}')
         div(ng-hide="$root.authenticated", ng-bind-html="member.name")

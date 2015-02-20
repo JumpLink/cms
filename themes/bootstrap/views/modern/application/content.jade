@@ -1,7 +1,7 @@
 .container(style="min-height: 200px;")
   .page-header
     h1 Aufnahmeantrag
-  div(ng-show="html && $root.authenticated", ui-ace="{workerPath: '/dynamic/third-party/ace-builds/src-noconflict', mode: 'html'}", ng-model="application")
+  div(ng-show="html && $root.authenticated", ui-ace="{workerPath: '/assets/third-party/ace-builds/src-noconflict', mode: 'html'}", ng-model="application")
   div(ng-show="$root.authenticated", medium-editor, ng-model="application", options='{"buttons": ["bold", "italic", "underline", "anchor", "header1" , "header2", "quote", "orderedlist", "unorderedlist"]}', bind-options="mediumBindOptions")
   div(ng-bind-html="application", ng-hide="$root.authenticated")
   form.hidden-print(role='form', name="form", novalidate, ng-submit="upload()")
