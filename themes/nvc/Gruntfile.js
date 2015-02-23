@@ -110,6 +110,42 @@ module.exports = function(grunt) {
       }
     },
     
+    ngAnnotate: {
+        options: {
+            singleQuotes: true,
+        },
+  		dist: {
+  			src: 'assets/js/app.concat.js',
+  			dest: 'assets/js/app.annotated.js'
+  		}
+    },
+    
+    uglify: {
+      options: {
+        mangle: true // http://stackoverflow.com/questions/17238759/angular-module-minification-bug
+      },
+  		dist: {
+  			src: 'assets/js/app.annotated.js',
+  			dest: 'assets/js/app.min.js'
+  		}
+  	},
+  	
+    jshint: {
+      options: {
+        curly: true,
+        eqeqeq: true,
+        eqnull: true,
+        browser: true,
+        asi: true,
+        globals: {
+          angular: true
+        },
+      },
+      before: jsFiles,
+      afterconcat: ['assets/js/app.concat.js'],
+      aftermin: ['assets/js/app.min.js']
+    },
+    
     less: {
       dist: {
         options: {
@@ -127,12 +163,14 @@ module.exports = function(grunt) {
         ]
       }
     }
-    
   });
   
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-less');
+  grunt.loadNpmTasks('grunt-ng-annotate');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
 
   grunt.registerTask('dev', [ 'concat:dist', 'less:dist' ]);
-  grunt.registerTask('prod', [ 'concat:dist', 'less:dist' ]);
+  grunt.registerTask('prod', [ 'concat:dist', 'ngAnnotate:dist', 'uglify:dist', 'less:dist' ]);
 };

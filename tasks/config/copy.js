@@ -39,12 +39,6 @@ module.exports = function(grunt) {
 					cwd: '.tmp/public',
 					src: ['**/*'],
 					dest: 'www'
-				},
-				{
-					expand: true,
-					cwd: './themes',
-					src: ['**/*'],
-					dest: 'www'
 				}
 			]
 		}

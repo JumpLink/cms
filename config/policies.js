@@ -41,7 +41,8 @@ module.exports.policies = {
     'signin': "useragent",
     'modern': "useragent",
     'updateBrowser': "useragent",
-    'fallback': "useragent"
+    'fallback': "useragent",
+    'assets': true
   },
 
 

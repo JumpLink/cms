@@ -98,7 +98,7 @@ angular.module('webodf', [])
       var textns = "urn:oasis:names:tc:opendocument:xmlns:text:1.0";
       var userFieldsGet = odfParentNodeElement.getElementsByTagNameNS(textns, 'user-field-get');
       var userFieldsDecl = odfParentNodeElement.getElementsByTagNameNS(textns, 'user-field-decls')[0].childNodes;
-      if(callback) callback(null, {get: UserFieldsGet, decl: UserFieldsDecl});
+      if(callback) callback(null, {get: userFieldsGet, decl: userFieldsDecl});
       return {get: userFieldsGet, decl: userFieldsDecl};
     }
 
@@ -200,14 +200,15 @@ angular.module('webodf', [])
      */
     var updateUserFieldElement = function (userFieldNodeElements, name, value, callback) {
       var error, curValue;
-      if(typeof value != undefined && value != null) {
-        if(typeof value.human !== 'undefined')
-          curValue = value.human
-        else
-          curValue = value
+      if(typeof value !== 'undefined' && value !== null) {
+        if(typeof value.human !== 'undefined') {
+          curValue = value.human;
+        } else {
+          curValue = value;
+        }
         updateUserFieldDeclElement(userFieldNodeElements.decl, name, curValue, function(error, userFieldDeclNodeElements){
           if(error) {
-            if(callback) callback(error);
+            if(callback) { callback(error); }
             return error;
           }
           updateUserFieldGetElement(userFieldNodeElements.get, name, curValue, function(founds, userFieldGetNodeElements) {
@@ -282,7 +283,7 @@ angular.module('webodf', [])
 
         $scope.download = function (name) {
           downloadAs(odfContainer, name, function(error) {
-            if(error) console.log(error);
+            if(error) { console.log(error); }
           });
         }
 

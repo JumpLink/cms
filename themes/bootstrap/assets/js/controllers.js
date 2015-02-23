@@ -595,7 +595,6 @@ jumplink.cms.controller('TimelineController', function($rootScope, $scope, event
 
     $log.debug("allEvents.length", allEvents.length);
     $scope.events = eventService.split(allEvents);
-    delete allEvents;
     $log.debug("refreshed");
   };
 

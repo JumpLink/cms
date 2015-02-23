@@ -102468,7 +102468,7 @@ jumplink.cms = angular.module('jumplink.cms', [
   , 'angular-filters'         // Useful filters for AngularJS: https://github.com/niemyjski/angular-filters
 ]);
 
-jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvider) {
+jumplink.cms.config( ['$stateProvider', '$urlRouterProvider', '$locationProvider', function($stateProvider, $urlRouterProvider, $locationProvider) {
 
   // use the HTML5 History API
   $locationProvider.html5Mode(false);
@@ -102486,22 +102486,22 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   .state('bootstrap-layout.home', {
     url: '/home'
     , resolve:{
-      about: function($sailsSocket) {
+      about: ['$sailsSocket', function($sailsSocket) {
         return $sailsSocket.get('/content?name=about', {name: 'about'}).then (function (data) {
           if(angular.isUndefined(data) || angular.isUndefined(data.data[0]))
             return null;
           else
             return html_beautify(data.data[0].content);
         });
-      }
-      , goals: function($sailsSocket, $timeout) {
+      }]
+      , goals: ['$sailsSocket', '$timeout', function($sailsSocket, $timeout) {
         return $sailsSocket.get('/content?name=goals', {name: 'goals'}).then (function (data) {
           if(angular.isUndefined(data) || angular.isUndefined(data.data[0]))
             return null;
           else
             return html_beautify(data.data[0].content);
         });
-      }
+      }]
     }
     , views: {
       'content' : {
@@ -102522,11 +102522,11 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   .state('bootstrap-layout.gallery', {
     url: '/gallery'
     , resolve:{
-      images: function($sailsSocket) {
+      images: ['$sailsSocket', function($sailsSocket) {
         return $sailsSocket.get('/gallery?limit=0').then (function (data) {
           return data.data;
         });
-      }
+      }]
     }
     , views: {
       'content' : {
@@ -102546,13 +102546,13 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   .state('bootstrap-layout.gallery-fullscreen', {
     url: '/gallery/fs/:id'
     , resolve:{
-      image: function($sailsSocket, $stateParams, $log) {
+      image: ['$sailsSocket', '$stateParams', '$log', function($sailsSocket, $stateParams, $log) {
         $log.debug("$stateParams", $stateParams);
         return $sailsSocket.get('/gallery/'+$stateParams.id).then (function (data) {
           $log.debug('/gallery/'+$stateParams.id, data);
           return data.data;
         });
-      }
+      }]
     }
     , views: {
       'content' : {
@@ -102573,11 +102573,11 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   .state('bootstrap-layout.gallery-slider', {
     url: '/slider/:slideIndex'
     , resolve:{
-      images: function($sailsSocket) {
+      images: ['$sailsSocket', function($sailsSocket) {
         return $sailsSocket.get('/gallery?limit=0').then (function (data) {
           return data.data;
         });
-      }
+      }]
     }
     , views: {
       'content' : {
@@ -102594,11 +102594,11 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   .state('bootstrap-layout.timeline', {
     url: '/events'
     , resolve:{
-      events: function($sailsSocket, eventService) {
+      events: ['$sailsSocket', 'eventService', function($sailsSocket, eventService) {
         return $sailsSocket.get('/timeline').then (function (data) {
           return eventService.split(data.data);
         });
-      }
+      }]
     }
     , views: {
       'content' : {
@@ -102619,11 +102619,11 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   .state('bootstrap-layout.members', {
     url: '/members'
     , resolve:{
-      members: function($sailsSocket, $filter) {
+      members: ['$sailsSocket', '$filter', function($sailsSocket, $filter) {
         return $sailsSocket.get('/member').then (function (data) {
           return $filter('orderBy')(data.data, 'position');
         });
-      }
+      }]
     }
     , views: {
       'content' : {
@@ -102647,14 +102647,14 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   .state('bootstrap-layout.application', {
     url: '/application'
     , resolve:{
-      application: function($sailsSocket) {
+      application: ['$sailsSocket', function($sailsSocket) {
         return $sailsSocket.get('/content?name=application', {name: 'application'}).then (function (data) {
           if(angular.isDefined(data) && angular.isDefined(data.data[0]) && angular.isDefined(data.data[0].content))
             return html_beautify(data.data[0].content);
           else
             return null;
         });
-      }
+      }]
     }
     , views: {
       'content' : {
@@ -102675,14 +102675,14 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   .state('bootstrap-layout.imprint', {
     url: '/imprint'
     , resolve:{
-      imprint: function($sailsSocket) {
+      imprint: ['$sailsSocket', function($sailsSocket) {
         return $sailsSocket.get('/content?name=imprint', {name: 'imprint'}).then (function (data) {
           if(angular.isUndefined(data) || angular.isUndefined(data.data[0]))
             return null;
           else
             return html_beautify(data.data[0].content);
         });
-      }
+      }]
     }
     , views: {
       'content' : {
@@ -102703,14 +102703,14 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   .state('bootstrap-layout.links', {
     url: '/links'
     , resolve:{
-      links: function($sailsSocket) {
+      links: ['$sailsSocket', function($sailsSocket) {
         return $sailsSocket.get('/content?name=links', {name: 'links'}).then (function (data) {
           if(angular.isUndefined(data) || angular.isUndefined(data.data[0]))
             return null;
           else
             return html_beautify(data.data[0].content);
         });
-      }
+      }]
     }
     , views: {
       'content' : {
@@ -102731,12 +102731,12 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   .state('bootstrap-layout.administration', {
     url: '/admin'
     , resolve:{
-      themeSettings: function($sailsSocket) {
+      themeSettings: ['$sailsSocket', function($sailsSocket) {
         return $sailsSocket.get('/theme/find').then (function (data) {
           console.log(data);
           return data.data;
         });
-      }
+      }]
     }
     , views: {
       'content' : {
@@ -102752,11 +102752,11 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   .state('bootstrap-layout.users', {
     url: '/users'
     , resolve:{
-      users: function($sailsSocket) {
+      users: ['$sailsSocket', function($sailsSocket) {
         return $sailsSocket.get('/user').then (function (data) {
           return data.data;
         });
-      }
+      }]
     }
     , views: {
       'content' : {
@@ -102772,12 +102772,12 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   .state('bootstrap-layout.user', {
     url: '/user/:index'
     , resolve:{
-      user: function($sailsSocket, $stateParams) {
+      user: ['$sailsSocket', '$stateParams', function($sailsSocket, $stateParams) {
         return $sailsSocket.get('/user'+'/'+$stateParams.index).then (function (data) {
           delete data.data.password;
           return data.data;
         });
-      }
+      }]
     }
     , views: {
       'content' : {
@@ -102804,11 +102804,11 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
     }
   })
   ;
-});
-;jumplink.cms.run(function(amMoment) {
+}]);
+;jumplink.cms.run(['amMoment', function(amMoment) {
   amMoment.changeLocale('de');
-});
-;jumplink.cms.service('historyService', function ($window) {
+}]);
+;jumplink.cms.service('historyService', ['$window', function ($window) {
   var back = function () {
     $window.history.back();
   }
@@ -102816,9 +102816,9 @@ jumplink.cms.config( function($stateProvider, $urlRouterProvider, $locationProvi
   return {
     back: back
   };
-});
+}]);
 
-jumplink.cms.service('eventService', function (moment) {
+jumplink.cms.service('eventService', ['moment', function (moment) {
 
   var split = function(events) {
     var unknown = [], before = [], after = [];
@@ -102855,7 +102855,7 @@ jumplink.cms.service('eventService', function (moment) {
     split: split
     , merge: merge
   };
-});
+}]);
 
 jumplink.cms.service('$async', function () {
 
@@ -102880,7 +102880,7 @@ jumplink.cms.service('$async', function () {
   return async;
 });
 
-jumplink.cms.service('userService', function ($rootScope, $sailsSocket, $log) {
+jumplink.cms.service('userService', ['$rootScope', '$sailsSocket', '$log', function ($rootScope, $sailsSocket, $log) {
   var isSubscribed = false;
 
   var save = function(user, callback) {
@@ -102967,10 +102967,10 @@ jumplink.cms.service('userService', function ($rootScope, $sailsSocket, $log) {
     , subscribe: subscribe
     , remove: remove
   };
-});
+}]);
 
 
-jumplink.cms.service('themeService', function ($rootScope, $sailsSocket, $log, $async) {
+jumplink.cms.service('themeService', ['$rootScope', '$sailsSocket', '$log', '$async', function ($rootScope, $sailsSocket, $log, $async) {
   var isSubscribed = false;
 
   var save = function (themes, callback) {
@@ -103037,8 +103037,8 @@ jumplink.cms.service('themeService', function ($rootScope, $sailsSocket, $log, $
     , updateOrCreateEach: updateOrCreateEach
    ,  subscribe: subscribe
   };
-});
-;jumplink.cms.controller('AppController', function($rootScope, $scope, $state, $window, $timeout, Fullscreen, toaster, $sailsSocket, $location, $anchorScroll, $log) {
+}]);
+;jumplink.cms.controller('AppController', ['$rootScope', '$scope', '$state', '$window', '$timeout', 'Fullscreen', 'toaster', '$sailsSocket', '$location', '$anchorScroll', '$log', function($rootScope, $scope, $state, $window, $timeout, Fullscreen, toaster, $sailsSocket, $location, $anchorScroll, $log) {
 
   // fix scroll to top on route change
   $scope.$on("$stateChangeSuccess", function () {
@@ -103226,23 +103226,23 @@ jumplink.cms.service('themeService', function ($rootScope, $sailsSocket, $log, $
     $state.go(to, params, options)
   }
 
-});
+}]);
 
-jumplink.cms.controller('LayoutController', function($scope) {
-
-
-});
-
-jumplink.cms.controller('ToolbarController', function($scope) {
+jumplink.cms.controller('LayoutController', ['$scope', function($scope) {
 
 
-});
+}]);
 
-jumplink.cms.controller('FooterController', function($scope) {
+jumplink.cms.controller('ToolbarController', ['$scope', function($scope) {
 
-});
 
-jumplink.cms.controller('HomeContentController', function($scope, $sailsSocket, $location, $anchorScroll, $timeout, $window, about, goals, $log) {
+}]);
+
+jumplink.cms.controller('FooterController', ['$scope', function($scope) {
+
+}]);
+
+jumplink.cms.controller('HomeContentController', ['$scope', '$sailsSocket', '$location', '$anchorScroll', '$timeout', '$window', 'about', 'goals', '$log', function($scope, $sailsSocket, $location, $anchorScroll, $timeout, $window, about, goals, $log) {
 
   $scope.about = about;
   $scope.goals = goals;
@@ -103302,10 +103302,10 @@ jumplink.cms.controller('HomeContentController', function($scope, $sailsSocket, 
     }
   });
 
-});
+}]);
 
 
-jumplink.cms.controller('GalleryContentController', function($rootScope, $scope, Fullscreen, $sailsSocket, $stateParams, images, FileUploader, $modal, $log, $location) {
+jumplink.cms.controller('GalleryContentController', ['$rootScope', '$scope', 'Fullscreen', '$sailsSocket', '$stateParams', 'images', 'FileUploader', '$modal', '$log', '$location', function($rootScope, $scope, Fullscreen, $sailsSocket, $stateParams, images, FileUploader, $modal, $log, $location) {
   $scope.images = images;
   // $log.debug(images[0]);
   $scope.uploader = new FileUploader({url: 'gallery/upload', removeAfterUpload: true});
@@ -103490,12 +103490,12 @@ jumplink.cms.controller('GalleryContentController', function($rootScope, $scope,
     }
   ];
 
-});
+}]);
 
-jumplink.cms.controller('GalleryFullscreenController', function($scope, $rootScope, $sailsSocket, $stateParams, image, $log) {
+jumplink.cms.controller('GalleryFullscreenController', ['$scope', '$rootScope', '$sailsSocket', '$stateParams', 'image', '$log', function($scope, $rootScope, $sailsSocket, $stateParams, image, $log) {
   $scope.image = image;
-});
-jumplink.cms.controller('GallerySlideController', function($scope, $sailsSocket, $stateParams, $timeout, images, $log) {
+}]);
+jumplink.cms.controller('GallerySlideController', ['$scope', '$sailsSocket', '$stateParams', '$timeout', 'images', '$log', function($scope, $sailsSocket, $stateParams, $timeout, images, $log) {
   $scope.images = images;
   var setSlide = function () {
     if(typeof $stateParams.slideIndex !== 'undefined') {
@@ -103510,9 +103510,9 @@ jumplink.cms.controller('GallerySlideController', function($scope, $sailsSocket,
   $timeout(function() {
     setSlide();
   }, 1000);
-});
+}]);
 
-jumplink.cms.controller('TimelineController', function($rootScope, $scope, events, moment, $sailsSocket, $modal, $datepicker, eventService, FileUploader, $log) {
+jumplink.cms.controller('TimelineController', ['$rootScope', '$scope', 'events', 'moment', '$sailsSocket', '$modal', '$datepicker', 'eventService', 'FileUploader', '$log', function($rootScope, $scope, events, moment, $sailsSocket, $modal, $datepicker, eventService, FileUploader, $log) {
   $scope.events = events;
   $scope.uploader = new FileUploader({url: 'timeline/upload', removeAfterUpload: true});
   var typeChooserModal = $modal({scope: $scope, title: 'Typ wählen', template: 'bootstrap/events/typechoosermodal', show: false});
@@ -103707,9 +103707,9 @@ jumplink.cms.controller('TimelineController', function($rootScope, $scope, event
     }
   });
 
-});
+}]);
 
-jumplink.cms.controller('MembersController', function($rootScope, $scope, members, $sailsSocket, $filter, $modal, FileUploader, $log) {
+jumplink.cms.controller('MembersController', ['$rootScope', '$scope', 'members', '$sailsSocket', '$filter', '$modal', 'FileUploader', '$log', function($rootScope, $scope, members, $sailsSocket, $filter, $modal, FileUploader, $log) {
   $scope.uploader = new FileUploader({url: 'member/upload', removeAfterUpload: true});
   $scope.uploader.filters.push({
     name: 'imageFilter',
@@ -103859,9 +103859,9 @@ jumplink.cms.controller('MembersController', function($rootScope, $scope, member
     }
   });
 
-});
+}]);
 
-jumplink.cms.controller('AdminController', function($scope, themeSettings, $log, themeService) {
+jumplink.cms.controller('AdminController', ['$scope', 'themeSettings', '$log', 'themeService', function($scope, themeSettings, $log, themeService) {
   $scope.themeSettings = themeSettings;
   
   $scope.save = function() {
@@ -103871,9 +103871,9 @@ jumplink.cms.controller('AdminController', function($scope, themeSettings, $log,
     });
   }
   
-});
+}]);
 
-jumplink.cms.controller('UsersController', function($scope, $rootScope, $sailsSocket, users, $log, userService) {
+jumplink.cms.controller('UsersController', ['$scope', '$rootScope', '$sailsSocket', 'users', '$log', 'userService', function($scope, $rootScope, $sailsSocket, users, $log, userService) {
   $scope.users = users;
 
   $scope.remove = function(user) {
@@ -103882,9 +103882,9 @@ jumplink.cms.controller('UsersController', function($scope, $rootScope, $sailsSo
 
   userService.subscribe();
 
-});
+}]);
 
-jumplink.cms.controller('UserController', function($scope, userService, user, $state, $log) {
+jumplink.cms.controller('UserController', ['$scope', 'userService', 'user', '$state', '$log', function($scope, userService, user, $state, $log) {
   $scope.user = user;
   $scope.save = function(user) {
     if(angular.isUndefined(user))
@@ -103896,9 +103896,9 @@ jumplink.cms.controller('UserController', function($scope, userService, user, $s
   }
 
   userService.subscribe();
-});
+}]);
 
-jumplink.cms.controller('UserNewController', function($scope, userService, $state, $log) {
+jumplink.cms.controller('UserNewController', ['$scope', 'userService', '$state', '$log', function($scope, userService, $state, $log) {
   $scope.user = {};
   $scope.save = function(user) {
     if(angular.isUndefined(user))
@@ -103910,10 +103910,10 @@ jumplink.cms.controller('UserNewController', function($scope, userService, $stat
   }
 
   userService.subscribe();
-});
+}]);
 
 // Aufnahmeantrag
-jumplink.cms.controller('ApplicationController', function($rootScope, $scope, $sailsSocket, moment, $filter, application, $log) {
+jumplink.cms.controller('ApplicationController', ['$rootScope', '$scope', '$sailsSocket', 'moment', '$filter', 'application', '$log', function($rootScope, $scope, $sailsSocket, moment, $filter, application, $log) {
 
   var date = moment(); // now
   $scope.html = false;
@@ -104041,9 +104041,9 @@ jumplink.cms.controller('ApplicationController', function($rootScope, $scope, $s
     });
   }
 
-});
+}]);
 
-jumplink.cms.controller('LinksController', function($rootScope, $scope, $sailsSocket, links, $location, $anchorScroll, $log) {
+jumplink.cms.controller('LinksController', ['$rootScope', '$scope', '$sailsSocket', 'links', '$location', '$anchorScroll', '$log', function($rootScope, $scope, $sailsSocket, links, $location, $anchorScroll, $log) {
   $scope.links = links;
 
   $scope.goTo = function (hash) {
@@ -104082,9 +104082,9 @@ jumplink.cms.controller('LinksController', function($rootScope, $scope, $sailsSo
     }
   });
 
-});
+}]);
 
-jumplink.cms.controller('ImprintController', function($rootScope, $scope, $sailsSocket, imprint, $location, $anchorScroll, $log) {
+jumplink.cms.controller('ImprintController', ['$rootScope', '$scope', '$sailsSocket', 'imprint', '$location', '$anchorScroll', '$log', function($rootScope, $scope, $sailsSocket, imprint, $location, $anchorScroll, $log) {
   $scope.imprint = imprint;
 
   $scope.email = {
@@ -104176,7 +104176,7 @@ jumplink.cms.controller('ImprintController', function($rootScope, $scope, $sails
     }
   });
 
-});
+}]);
 ;// jumplink.cms.directive('imageMenu', function($window, $dropdown) {
 //   return {
 //     restrict: 'A',
@@ -104241,7 +104241,7 @@ jumplink.cms.directive('match', function () {
 * @author: nerv
 * @version: 0.1.2, 2014-01-09
 */
-jumplink.cms.directive('ngThumb', function($window) {
+jumplink.cms.directive('ngThumb', ['$window', function($window) {
 
   var helper = {
     support: !!($window.FileReader && $window.CanvasRenderingContext2D),
@@ -104293,9 +104293,9 @@ jumplink.cms.directive('ngThumb', function($window) {
       }
     }
   };
-});
+}]);
 ;// http://stackoverflow.com/questions/14703517/angular-js-set-element-height-on-page-load
-jumplink.cms.directive('resize', function ($rootScope, $window, $timeout) {
+jumplink.cms.directive('resize', ['$rootScope', '$window', '$timeout', function ($rootScope, $window, $timeout) {
   return function (scope, element) {
 
     var setStyle = function (newValue) {
@@ -104317,9 +104317,9 @@ jumplink.cms.directive('resize', function ($rootScope, $window, $timeout) {
       });
     }, true);
   }
-});
+}]);
 ;angular.module('webodf', [])
-  .directive('webodfview', function ($compile, $window, $sailsSocket, $async) {
+  .directive('webodfview', ['$compile', '$window', '$sailsSocket', '$async', function ($compile, $window, $sailsSocket, $async) {
 
     var createBlob = function (type, data, callback) {
       if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -104631,4 +104631,4 @@ jumplink.cms.directive('resize', function ($rootScope, $window, $timeout) {
 
       }
     };
-  });
+  }]);
