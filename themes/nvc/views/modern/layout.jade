@@ -1,0 +1,7 @@
+.main-body(ng-style="$root.mainStyle")
+  toaster-container.hidden-print(toaster-options="{'position-class': toasterPositionClass}")
+  .toolbar.hidden-print(ui-view="toolbar")
+  .content(ui-view="content")
+  .footer.hidden-print(ui-view="footer")
+  .load.hidden-print(ng-class="loadclass")
+    | Lade..

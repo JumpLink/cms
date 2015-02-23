@@ -9,11 +9,13 @@ var updateOrCreateResponse = function (modelName, findBy, req, res, next) {
   if (!findBy) {
     return res.badRequest('No findBy provided.', findBy);
   }
+  sails.log.debug("query", query);
+  sails.log.debug("data", data);
 
   updateOrCreate(modelName, data, query, function (err, result) {
-     if (err) return res.serverError(err);
+     if (err) { sails.log.error(err); return res.serverError(err); }
      res.status(201);
-     return res.json(result.toJson());
+     return res.json(result);
   });
 
 }
@@ -30,11 +32,11 @@ var updateOrCreate = function (modelName, data, query, callback, extendFound) {
   }
 
   // Otherwise, find and destroy the global[modelName] in question
-  global[modelName].find(query).exec(function found(err, found) {
+  global[modelName].findOne(query).exec(function found(err, found) {
     if (err) return callback(err);
     if (found instanceof Array) found = found[0];
     // not found
-    if (!found) {
+    if (UtilityService.isUndefined(found) || UtilityService.isUndefined(found.id) || found.id === null) {
       global[modelName].create(data).exec(function created (err, data) {
         if (err) return callback(err);
         // sails.log.debug("created", err, data);
@@ -42,6 +44,7 @@ var updateOrCreate = function (modelName, data, query, callback, extendFound) {
         return callback(null, data);
       });
     } else {
+      data.id = found.id;
       // sails.log.debug("found", found);
       if(extendFound) {
         sails.log.error("found", found);
@@ -50,11 +53,11 @@ var updateOrCreate = function (modelName, data, query, callback, extendFound) {
         sails.log.error("extended", data);
       }
 
-      global[modelName].update(found.id, data).exec(function updated (err, data) {
+      global[modelName].update(data.id, data).exec(function updated (err, data) {
         if (err) return callback(err);
         if (data instanceof Array) data = data[0];
         // sails.log.debug("update", err, data);
-        global[modelName].publishUpdate(found.id, data);
+        global[modelName].publishUpdate(data.id, data);
         return callback(null, data);
       });
     }
@@ -125,7 +128,7 @@ var updateOrCreateEach = function (modelName, datas, propertyName, callback, ext
 module.exports = {
   updateOrCreate: updateOrCreate,
   updateOrCreateResponse: updateOrCreateResponse,
-  replace: replace,
+  // replace: replace,
   updateEach: updateEach,
   updateOrCreateEach: updateOrCreateEach
 }

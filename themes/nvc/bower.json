@@ -6,9 +6,7 @@
     "Pascal Garber <pascal@jumplink.eu>"
   ],
   "description": "Custom Theme of Nautischer Verein Cuxhaven",
-  "image": "preview.png",
   "main": "",
-  "modernview": "views/modern/init.jade",
   "moduleType": [
     "node"
   ],
@@ -47,6 +45,8 @@
     "js-beautify": "beautify-web/js-beautify#~1.5.4",
     "ng-filters": "*",
     "sails.io.js": "~0.11.5",
-    "socket.io-client": "1.2.1"
+    "socket.io-client": "1.2.1",
+    "WebODF": "kogmbh/WebODF#~0.5.5",
+    "webodf.js": "kogmbh/webodf.js_release#~0.5.5"
   }
 }

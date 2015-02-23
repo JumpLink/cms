@@ -85,12 +85,19 @@ var getFileFromFilesystem = function(filename, callback) {
   // get information about thumb
   easyimg.info(tmpThumbPath).then(
     function(thumbInfo) {
+      // TODO
       thumbInfo.path = thumbPath;
+      delete thumbInfo.path;
 
       // get information about original
       easyimg.info(tmpOriginalPath).then(
         function(originalInfo) {
+          // TODO
           originalInfo.path = originalPath;
+          delete originalInfo.path;
+          
+          thumbInfo.name = originalInfo.name; // WORKAROUND for thumb name undefined bug
+          
           callback(null, {original:originalInfo, thumb:thumbInfo});
         }, function (err) {
           callback(err);

@@ -27,7 +27,8 @@ var setPriority = function (theme, cb) {
   // sails.log.debug('setPriority', query);
   global.Theme.findOne(query).exec(function found(err, found) {
     // sails.log.debug('found', found);
-    theme.priority = found.priority;
+    if(!err && found) theme.priority = found.priority;
+    else sails.log.error("theme priority not set", err);
     if(UtilityService.isUndefined(theme.priority)) {
       theme.priority = 0;
     }
@@ -58,7 +59,7 @@ var getThemesSortedByPriority = function (cb) {
     }
     async.map(availableThemes, iterator, function (err, result) {
       if(err) return cb(err);
-      result = UtilityService.sortArrayByProperty(result, true);
+      result = sortByPriority(result, false);
       return cb(err, result);
     });
   });

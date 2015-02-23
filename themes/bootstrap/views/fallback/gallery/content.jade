@@ -6,6 +6,6 @@ block body
     .page-header
       h1 Galerie
      each image in images
-      a.pull-left(href=image.original.path, style="width:100px;padding:2px")
-        img.img-responsive(src=image.thumb.path)
+      a.pull-left(href="/images/gallery/full/"+image.original.path, style="width:100px;padding:2px")
+        img.img-responsive(src="/images/gallery/thumbs/"+image.thumb.path)
   include ../footer.jade

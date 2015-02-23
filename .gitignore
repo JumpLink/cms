@@ -1,7 +1,6 @@
 # uploaded images
-assets/images/gallery/
-assets/images/header/
-assets/images/members/
+/assets/files/
+/assets/images/
 
 # Logs
 logs

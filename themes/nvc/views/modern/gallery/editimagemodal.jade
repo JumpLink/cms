@@ -1,0 +1,19 @@
+.modal(tabindex='-1', role='dialog')
+  .modal-dialog
+    .modal-content
+      .modal-header(ng-show='title')
+        button.close(type='button', ng-click='$hide()') ×
+        h4.modal-title(ng-bind='title')
+      .modal-body
+        form(role='form')
+          .form-group
+            label(for='name') Name
+            input#name.form-control(type='text', ng-model="image.name", placeholder='Bildname eingeben')
+          //- .form-group
+          //-   label(for='description') Bildbeschreibung
+          //-   input#description.form-control(type='text', ng-model="image.description", placeholder='Bildbeschreibung eingeben')
+          .form-group
+            label(for='description') Bildbeschreibung
+            .textarea#description(medium-editor, ng-model="image.description", options='{"placeholder": "Bildbeschreibung eingeben","buttons": ["bold", "italic", "underline", "anchor", "header1" , "header2", "quote", "orderedlist", "unorderedlist"]}', bind-options="mediumBindOptions")
+      .modal-footer
+        button.btn.btn-primary(type='button', ng-click='save(image);$hide()') Speichern

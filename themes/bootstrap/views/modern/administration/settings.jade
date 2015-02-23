@@ -2,7 +2,7 @@
   .page-header
     h1 Einstellungen
   h2 Allgemein
-  .media(ng-repeat="theme in themeSettings.available | orderBy:priority:reverse")
+  .media(ng-repeat="theme in themeSettings.available | orderBy:priority")
     .media-left
       img.media-object(ng-src='{{theme.image}}?theme={{theme.dirname}}', alt='{{theme.image}}', style="width:200px;", width="200px")
     .media-body
