@@ -1,5 +1,0 @@
-.container-fluid(style="padding:0;", resize, ng-style="style({'overflow-x': 'hidden'})", ng-init="slideIndex = 0")
-  .center-slider
-    ul.image.silder(rn-carousel=true, rn-carousel-control=true, rn-carousel-buffered=false, rn-carousel-index="slideIndex", rn-carousel-swipe=true, rn-carousel-auto-slide=false)
-      li(ng-repeat="image in images")
-        img(ng-src="/images/gallery/full/{{image.original.name}}", style="max-width:100%;")
