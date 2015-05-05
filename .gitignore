@@ -65,7 +65,7 @@ build/Release
 # 
 ################################################
 
-config/local.js
+config/local.json
 
 
 
