@@ -31,16 +31,6 @@ module.exports = function(grunt) {
 					dest: '.tmp/public/themes'
 				}
 			]
-		},
-		build: {
-			files: [
-				{
-					expand: true,
-					cwd: '.tmp/public',
-					src: ['**/*'],
-					dest: 'www'
-				}
-			]
 		}
 	});
 

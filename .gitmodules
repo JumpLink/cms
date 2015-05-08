@@ -4,3 +4,6 @@
 [submodule "themes/nvc"]
 	path = themes/nvc
 	url = git@github.com:JumpLink/cms-bootstrap-theme.git
+[submodule "themes/bugwelder"]
+	path = themes/bugwelder
+	url = git@github.com:JumpLink/cms-material-theme.git

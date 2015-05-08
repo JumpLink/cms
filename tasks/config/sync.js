@@ -15,11 +15,18 @@ module.exports = function(grunt) {
 
 	grunt.config.set('sync', {
 		dev: {
-			files: [{
+			files: [
+			{
 				cwd: './assets',
 				src: ['**/*.!(coffee)'],
 				dest: '.tmp/public'
-			}]
+			},
+			{
+				cwd: './themes',
+				src: ['**/*'],
+				dest: '.tmp/public/themes'
+			},
+			]
 		}
 	});
 
