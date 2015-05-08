@@ -29,16 +29,17 @@ var path = require('path');
 var log = require('captains-log')();
 var platform = path.basename(process.argv[0]); // iojs, node, nodejs, etc
 
+// TODO move this to bootstrap
 fs.exists('config/local.json', function(exists) { 
   if (!exists) {
     log.warn("Your config/local.json is missing, start configuration webapp..");
     startConfig();
   } else {
-    startSails();
+    lift();
   }
 });
 
-var startSails = function () {
+var lift = function () {
   // Ensure a "local.json" can be loaded:
   try {
     var local = require('./config/local.json');

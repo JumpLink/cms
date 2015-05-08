@@ -17,23 +17,7 @@
 
 module.exports = {
   setup: function (req, res, next) {
-    async.waterfall([
-      function destroyAll(callback){
-        sails.log.debug("destroyAll");
-        User.destroy({}, function (error, destroyed) {
-          sails.log.debug(destroyed);
-          callback(error);
-        });
-      },
-      function getNewSetup (callback){
-        sails.log.debug("getNewSetup");
-        SetupService.users(callback);
-      },
-      function createNewSetup (newValue, callback){
-        sails.log.debug("createNewSetup");
-        User.create(newValue, callback);
-      },
-    ], function (err, result) {
+    SetupService.generateUsers(function(err, result) {
       sails.log.debug("done");
       if(err)
         res.json(err);

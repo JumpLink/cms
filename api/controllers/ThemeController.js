@@ -104,6 +104,7 @@ var modern = function(req, res, next) {
  * FIXME much javascript files not parsed as application/javascript
  */
 var assets = function (req, res, next) {
+  use_public_tmp_folder = true;
   //sails.log.debug(req.path);
   var filepath = req.path;
   if(req.param('theme')) {
@@ -118,7 +119,10 @@ var assets = function (req, res, next) {
       else {
         var fullpath = path.join(rootpath, filepath);
         sails.log.debug("fullpath", fullpath);
-        return res.sendfile(fullpath, {root: sails.config.paths.public});
+        if(use_public_tmp_folder)
+          return res.sendfile(fullpath, {root: sails.config.paths.public});
+        else
+          return res.sendfile(fullpath);
       }
     });
   }

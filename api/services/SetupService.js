@@ -2,7 +2,27 @@ var moment = require('moment');
 
 module.exports = {
   users: function (cb) {
-    cb(null, {email:"admin@admin.org", name: "admin", color: "#000000", password: "cms-admin"});
+    cb(null, [{email:"admin@admin.org", name: "admin", color: "#000000", password: "cms-admin"}]);
+  },
+  generateUsers: function (cb) {
+    async.waterfall([
+      function destroyAll(callback){
+        sails.log.debug("destroyAll");
+        User.destroy({}, function (error, destroyed) {
+          sails.log.debug(destroyed);
+          callback(error);
+        });
+      },
+      function getNewSetup (callback){
+        sails.log.debug("getNewSetup");
+        SetupService.users(callback);
+      },
+      function createNewSetup (newUsers, callback){
+        sails.log.debug("createNewSetup");
+        //User.create(newUsers[0], callback);
+        async.map(newUsers, User.create, callback);
+      },
+    ], cb);
   }
   , members: function (cb) {
     cb(null,
@@ -22,6 +42,30 @@ module.exports = {
         , {position: 13, name:"Kapt. Wolfgang Gewiese", job: "Fischerei", image: 'photo.png'}
       ]
     );
+  }
+  , generateMembers: function (cb) {
+    async.waterfall([
+      function destroyAll(callback){
+        sails.log.debug("destroyAll");
+        Member.destroy({}, function (error, destroyed) {
+          sails.log.debug(destroyed);
+          callback(error);
+        });
+      },
+      function getNewSetup (callback){
+        sails.log.debug("getNewSetup Member");
+        SetupService.members(function (error, newMembers) {
+          callback(error, newMembers);
+        });
+      },
+      function createNewSetup (newMembers, callback){
+        sails.log.debug("createNewSetup");
+        // sails.log.debug("newMembers", newMembers);
+        // sails.log.debug("callback", callback);
+        // https://github.com/caolan/async#map
+        async.map(newMembers, Member.create, callback);
+      },
+    ], cb);
   }
   , timeline: function (cb) {
     cb(null,
@@ -76,4 +120,31 @@ module.exports = {
       ]
     );
   }
+  , generateTimeline: function (cb) {
+    async.waterfall([
+      function destroyAll(callback){
+        sails.log.debug("destroyAll");
+        Timeline.destroy({}, function (error, destroyed) {
+          sails.log.debug(destroyed);
+          callback(error);
+        });
+      },
+      function getNewSetup (callback){
+        sails.log.debug("getNewSetup Timeline");
+        SetupService.timeline(callback);
+      },
+      function createNewSetup (newValues, callback){
+        sails.log.debug("createNewSetup");
+        // https://github.com/caolan/async#map
+        async.map(newValues, Timeline.create, callback);
+      },
+    ], cb);
+  }
+  , generateAll: function (cb) {
+    async.series([
+      SetupService.generateUsers,
+      SetupService.generateMembers,
+      SetupService.generateTimeline,
+    ], cb);
+  },
 }
