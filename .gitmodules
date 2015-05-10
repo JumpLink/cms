@@ -1,9 +1,9 @@
-[submodule "themes/bootstrap"]
-	path = themes/bootstrap
+[submodule "public/themes/bootstrap"]
+	path = public/themes/bootstrap
 	url = git@github.com:JumpLink/cms-bootstrap-theme.git
-[submodule "themes/nvc"]
-	path = themes/nvc
+[submodule "public/themes/nvc"]
+	path = public/themes/nvc
 	url = git@github.com:JumpLink/cms-bootstrap-theme.git
-[submodule "themes/bugwelder"]
-	path = themes/bugwelder
+[submodule "public/themes/bugwelder"]
+	path = public/themes/bugwelder
 	url = git@github.com:JumpLink/cms-material-theme.git

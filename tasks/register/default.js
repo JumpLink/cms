@@ -1,3 +1,3 @@
 module.exports = function (grunt) {
-	grunt.registerTask('default', ['clean', 'copy',  'watch']);
+	grunt.registerTask('default', ['hub:clean', 'hub:build-dev',  'hub:watch-dev']);
 };

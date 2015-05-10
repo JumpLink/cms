@@ -1,6 +1,6 @@
 module.exports = function (grunt) {
 	grunt.registerTask('build', [
-		'clean',
-		'copy'
+		'hub:clean',
+		'hub:build'
 	]);
 };

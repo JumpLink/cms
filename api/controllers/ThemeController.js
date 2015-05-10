@@ -103,29 +103,31 @@ var modern = function(req, res, next) {
  * if file was not found, it will be loaded from theme with lower piority and so on..
  * FIXME much javascript files not parsed as application/javascript
  */
-var assets = function (req, res, next) {
-  use_public_tmp_folder = true;
+var assets = function (req, res, next, filepath) {
   //sails.log.debug(req.path);
-  var filepath = req.path;
+  var filepath = filepath || req.path;
   if(req.param('theme')) {
     var rootpath = ThemeService.getRootPathOfThemeDirname(req.param('theme'));
     return res.sendfile(req.path,  {root: rootpath});
   } else {
     ThemeService.getThemeRootPathForFile(filepath, function (err, rootpath) {
-      if(err) {
-        sails.log.error(err);
-        return res.serverError(err);
-      }
-      else {
+      if(err || rootpath === null) {
+        sails.log.error(err, filepath);
+        return res.serverError(err, filepath);
+      } else {
         var fullpath = path.join(rootpath, filepath);
-        sails.log.debug("fullpath", fullpath);
-        if(use_public_tmp_folder)
-          return res.sendfile(fullpath, {root: sails.config.paths.public});
-        else
-          return res.sendfile(fullpath);
+        // sails.log.debug("fullpath", fullpath);
+        return res.sendfile(fullpath);
       }
     });
   }
+}
+
+/**
+ * converts /favicon.ico and /robots.txt to /assets/favicon.ico and /assets/robots.txt so you can put it in your theme folder 
+ */
+var likeAssets = function (req, res, next) {
+  assets(req, res, next, path.join('/assets', req.path));
 }
  
 module.exports = {
@@ -139,6 +141,7 @@ module.exports = {
   , updateBrowser: updateBrowser
   , modern: modern
   , assets: assets
+  , likeAssets: likeAssets
   /**
    * Overrides for the settings in `config/controllers.js`
    * (specific to ContentController)

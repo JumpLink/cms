@@ -1,6 +1,6 @@
 # uploaded images
-/assets/files/
-/assets/images/
+public/assets/images/members
+public/assets/files
 
 # Logs
 logs

@@ -30,6 +30,9 @@
 
 var local_config = require('./local.json');
 
+local_config.paths = local_config.paths || { public: './public' };
+
+
 /***************************************************************************
  * Your SSL certificate and key, if you want to be able to serve HTTP      *
  * responses over https:// and/or use websockets over the wss:// protocol  *

@@ -41,6 +41,8 @@ module.exports.routes = {
   '/fallback/*': 'ThemeController.fallback',
   
   '/assets/*': 'ThemeController.assets',
+  '/favicon.ico': 'ThemeController.likeAssets',
+  '/robots.txt': 'ThemeController.likeAssets',
 
   /***************************************************************************
   *                                                                          *

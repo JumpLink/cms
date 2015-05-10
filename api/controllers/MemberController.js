@@ -1,6 +1,6 @@
 var path = require('path');
 var fs = require('fs-extra'); // Node.js: extra methods for the fs object: https://github.com/jprichardson/node-fs-extra
-var MEMBER_FILE_DIR = path.normalize(__dirname+'/../../.tmp/public/images/members');
+var MEMBER_FILE_DIR = path.resolve(sails.config.paths.public, 'assets/images/members');
 
 module.exports = {
   setup: function (req, res, next) {

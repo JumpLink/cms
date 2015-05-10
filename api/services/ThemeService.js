@@ -3,9 +3,10 @@
  */
 
 var fs = require('fs-extra'); // https://github.com/jprichardson/node-fs-extra
-var THEME_DIR = './themes';
-var INFO_FILENAME = "theme.json";
 var path = require("path");
+var THEME_DIR = path.resolve(sails.config.paths.public, 'themes');
+sails.log.debug("path.resolve(sails.config.paths", sails.config.paths);
+var INFO_FILENAME = "theme.json";
 
 // Get an array of found theme dirnames
 var getAvailableThemes = function (cb) {
@@ -133,8 +134,9 @@ var getThemeForFile = function (filepath, cb) {
       }
     }
     if(!found) {
-      sails.log.error("file not found in any theme", '.');
-      return cb("not found", null);
+      var error = "file not found in any theme";
+      // sails.log.error(error, '.');
+      return cb(error, null);
     }
   })
 }
@@ -150,7 +152,14 @@ var getThemeRootPathForFile = function (filepath, cb) {
       var rootpath = getRootPathOfThemeDirname(theme.dirname);
       cb(null, rootpath);
     } else {
-      cb(null, '.');
+      var general_path = path.join(sails.config.paths.public, filepath);
+      if(fs.existsSync(general_path)) {
+        sails.log.warn("File not found in any theme but in general folder!", general_path);
+        cb(null, sails.config.paths.public);
+      } else {
+        sails.log.debug(err, general_path);
+        cb(err, sails.config.paths.public);
+      }
     }
   });
 }
@@ -179,7 +188,7 @@ var view = function (filepath, res, locals) {
   getThemeFullPathForFile(filepath, function (err, fullpath) {
     if(err) { sails.log.error(err); return res.serverError(err); }
     else {
-      fullpath = path.join('../', fullpath); // WORKAROUND root of view for themes
+      // fullpath = path.join('../', fullpath); // WORKAROUND root of view for themes
       sails.log.debug("fullpath", fullpath);
       return res.view(fullpath, locals);
     }
@@ -194,7 +203,7 @@ var getApiModule = function (filepath, callback) {
   getThemeFullPathForFile(filepath, function (err, fullpath) {
     if(err) { return callback(err); }
     else {
-      fullpath = path.join('../../', fullpath); // WORKAROUND root of controllers / servides for themes
+      // fullpath = path.join('../../', fullpath); // WORKAROUND root of controllers / servides for themes
       return callback(null, require(fullpath));
     }
   });
