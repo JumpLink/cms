@@ -16,6 +16,7 @@
  */
 
 module.exports = {
+
   setup: function (req, res, next) {
     SetupService.generateUsers(function(err, result) {
       sails.log.debug("done");
@@ -25,6 +26,7 @@ module.exports = {
         res.json(result);
     });
   }
+
   , update: function (req, res, next) {
     var id = req.param('id');
     var data = req.params.all();
@@ -34,6 +36,7 @@ module.exports = {
       res.json(updated);
     });
   }
+
   , destroy: function(req, res) {
     var id = req.param('id');
     User.destroy(id, function (error, destroyed) {
@@ -43,6 +46,7 @@ module.exports = {
       res.ok();
     });
   }
+  
   , create: function(req, res) {
     var data = req.params.all();
     User.create(data, function (error, created) {

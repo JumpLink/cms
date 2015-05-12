@@ -1,4 +1,8 @@
 module.exports = {
+  
+  setup: function(req, res) {
+    res.ok();
+  },
 
   all: function (req, res, next) {
     SetupService.generateAll(function(err, result) {

@@ -8,6 +8,34 @@
 var path = require('path');
 
 module.exports = {
+
+  setup: function(req, res) {
+    GalleryService.generateThumbnailsFromFilesystem(function(error, message) {
+      if(error) return res.json(error);
+      async.waterfall([
+        function destroyAll(callback){
+          sails.log.debug("destroyAll");
+          Gallery.destroy({}, function (error, destroyed) {
+            sails.log.debug(destroyed);
+            callback(error);
+          });
+        },
+        function getNewSetup (callback){
+          GalleryService.getFilesFromFilesystem(callback);
+        },
+        function createNewSetup (newValues, callback){
+          sails.log.debug("createNewSetup");
+          // https://github.com/caolan/async#map
+          async.map(newValues, Gallery.create, callback);
+        },
+      ], function (err, result) {
+        sails.log.debug("done");
+        if(err) return res.json(err);
+        else res.json(result);
+      });
+    });
+  },
+  
   upload: function (req, res) {
     sails.log.debug(req.file);
 
@@ -50,33 +78,6 @@ module.exports = {
     Gallery.update({id:id},data).exec(function update(err,updated){
       Gallery.publishUpdate(updated[0].id, updated[0]);
       res.json(updated);
-    });
-  },
-
-  setup: function(req, res) {
-    GalleryService.generateThumbnailsFromFilesystem(function(error, message) {
-      if(error) return res.json(error);
-      async.waterfall([
-        function destroyAll(callback){
-          sails.log.debug("destroyAll");
-          Gallery.destroy({}, function (error, destroyed) {
-            sails.log.debug(destroyed);
-            callback(error);
-          });
-        },
-        function getNewSetup (callback){
-          GalleryService.getFilesFromFilesystem(callback);
-        },
-        function createNewSetup (newValues, callback){
-          sails.log.debug("createNewSetup");
-          // https://github.com/caolan/async#map
-          async.map(newValues, Gallery.create, callback);
-        },
-      ], function (err, result) {
-        sails.log.debug("done");
-        if(err) return res.json(err);
-        else res.json(result);
-      });
     });
   },
 

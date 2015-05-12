@@ -6,9 +6,14 @@
  */
 
 module.exports = {
+  setup: function(req, res) {
+    res.ok();
+  },
+
 	get: function(req, res, next) {
     res.ok(req.getLocale());
   },
+  
   catalog: function(req, res, next) {
     var lang = req.param('lang') ? req.param('lang') : req.getLocale();
     var catalog = req.getCatalog(lang);

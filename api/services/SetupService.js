@@ -141,6 +141,17 @@ module.exports = {
     ], cb);
   }
   , generateAll: function (cb) {
+
+    var getKeys = function (obj) {
+      var keys = [];
+      for(var k in obj) keys.push(k);
+        return keys;
+    }
+
+    var controllers = getKeys(sails.controllers);
+    sails.log.info("sails.controllers", controllers);
+
+
     async.series([
       SetupService.generateUsers,
       SetupService.generateMembers,

@@ -9,6 +9,10 @@ var fs = require('fs');
 
 
 module.exports = {
+  setup: function(req, res) {
+    res.ok();
+  },
+  
   send: function(req, res, next) {
     var html = '';
     var from = req.param('from');

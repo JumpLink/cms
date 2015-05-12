@@ -15,11 +15,70 @@
  * @docs        :: http://sailsjs.org/#!documentation/controllers
  */
 
+// var actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
+
 module.exports = {
+  setup: function(req, res) {
+    res.ok();
+  },
 
   // warn this creates each time a new id
   replace: function (req, res, next) {
-    ModelService.updateOrCreateResponse('Content', 'name', req, res, next)
+
+    var query = {
+      where: {
+        name: req.param('name'),
+        site: req.session.uri.domain
+      }
+    };
+    // ModelService.updateOrCreateResponse('Content', 'name', req, res, next);
+    // ModelService.updateOrCreateQueryResponse('Content', query, req, res, next);
+    var data = req.params.all();
+    delete data.id;
+    if(!data.site) data.site = req.session.uri.domain;
+
+    sails.log.debug("query", query);
+    sails.log.debug("data", data);
+
+    ModelService.updateOrCreate('Content', data, query, function (err, result) {
+      if (err) {
+        sails.log.error(err);
+        return res.serverError(err);
+      } else {
+        sails.log.info("content "+req.param('name')+" saved");
+        res.status(201);
+        return res.json(result);
+       }
+    });
+
+  },
+
+
+
+  find: function (req, res) {
+
+    var query = {
+      where: {
+        name: req.param('name'),
+        site: req.session.uri.domain
+      }
+    };
+
+    sails.log.debug("query", query)
+
+    Content.findOne(query).exec(function found(err, found) {
+      if (err) return callback(err);
+      if (found instanceof Array) found = found[0];
+
+      // not found
+      if (UtilityService.isUndefined(found) || UtilityService.isUndefined(found.id) || found.id === null) {
+        res.notFound(query.where);
+      } else {
+        sails.log.debug("found", found);
+        res.json(found);
+      }
+    });
+
   }
 
   /**

@@ -30,18 +30,18 @@ module.exports.policies = {
 
   ViewController: {
     // express-useragent is a simple ExpressJS user-agent middleware exposing user-agent details to your application and views: https://github.com/biggora/express-useragent
-    'signin': "useragent",
-    'singlePageBootstrap': "useragent",
-    'updateBrowser': "useragent",
-    'legacy': "useragent"
+    // 'signin': "useragent",
+    // 'singlePageBootstrap': "useragent",
+    // 'updateBrowser': "useragent",
+    // 'legacy': "useragent"
   },
   
   ThemeController: {
     // express-useragent is a simple ExpressJS user-agent middleware exposing user-agent details to your application and views: https://github.com/biggora/express-useragent
-    'signin': "useragent",
-    'modern': "useragent",
-    'updateBrowser': "useragent",
-    'fallback': "useragent",
+    // 'signin': "useragent",
+    // 'modern': "useragent",
+    // 'updateBrowser': "useragent",
+    // 'fallback': "useragent",
     'assets': true
   },
 

@@ -9,6 +9,65 @@
  * http://sailsjs.org/#/documentation/reference/sails.config/sails.config.http.html
  */
 
+// (c) http://www.primaryobjects.com/CMS/Article145
+function domain(hostName) {
+    var domain = hostName;
+    
+    if (hostName != null) {
+        var parts = hostName.split('.').reverse();
+        
+    if (parts != null && parts.length > 1) {
+        domain = parts[1] + '.' + parts[0];
+            
+        if (hostName.toLowerCase().indexOf('.co.uk') != -1
+                && parts.length > 2) {
+          domain = parts[2] + '.' + domain;
+        }
+    }
+    }
+    
+    return domain;
+}
+
+// parseUri 1.2.2
+// (c) Steven Levithan <stevenlevithan.com>
+// MIT License
+
+function parseUri (str) {
+  var o   = parseUri.options,
+    m   = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
+    uri = {},
+    i   = 14;
+
+  while (i--) uri[o.key[i]] = m[i] || "";
+
+  uri[o.q.name] = {};
+  uri[o.key[12]].replace(o.q.parser, function ($0, $1, $2) {
+    if ($1) uri[o.q.name][$1] = $2;
+  });
+
+  uri.domain = domain(uri.host);
+
+  return uri;
+};
+
+parseUri.options = {
+  strictMode: false,
+  key: ["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"],
+  q:   {
+    name:   "queryKey",
+    parser: /(?:^|&)([^&=]*)=?([^&]*)/g
+  },
+  parser: {
+    strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
+    loose:  /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
+  }
+};
+
+
+var useragent = require('express-useragent');
+// var vhost = require('vhost');
+
 module.exports.http = {
 
   /****************************************************************************
@@ -21,7 +80,7 @@ module.exports.http = {
   *                                                                           *
   ****************************************************************************/
 
-  // middleware: {
+  middleware: {
 
   /***************************************************************************
   *                                                                          *
@@ -30,23 +89,24 @@ module.exports.http = {
   *                                                                          *
   ***************************************************************************/
 
-    // order: [
-    //   'startRequestTimer',
-    //   'cookieParser',
-    //   'session',
-    //   'myRequestLogger',
-    //   'bodyParser',
-    //   'handleBodyParserError',
-    //   'compress',
-    //   'methodOverride',
-    //   'poweredBy',
-    //   '$custom',
-    //   'router',
-    //   'www',
-    //   'favicon',
-    //   '404',
-    //   '500'
-    // ],
+    order: [
+      'startRequestTimer',
+      'cookieParser',
+      'session',
+      'uri',
+      'useragent',
+      'bodyParser',
+      'handleBodyParserError',
+      'compress',
+      'methodOverride',
+      'poweredBy',
+      '$custom',
+      'router',
+      'www',
+      'favicon',
+      '404',
+      '500'
+    ],
 
   /****************************************************************************
   *                                                                           *
@@ -71,7 +131,19 @@ module.exports.http = {
 
     // bodyParser: require('skipper')
 
-  // },
+    // express-useragent is a simple ExpressJS user-agent middleware exposing user-agent details to your application and views: https://github.com/biggora/express-useragent
+    useragent: useragent.express(),
+
+
+    uri: function (req, res, next) {
+      // sails.log.debug(req.protocol + '://' + req.get('host') + req.originalUrl);
+      // sails.log.info(parseUri(req.protocol + '://' + req.get('host') + req.originalUrl));
+      req.session.uri = parseUri(req.protocol + '://' + req.get('host') + req.originalUrl);
+      req.session.uri.protocol = req.protocol;
+      return next();
+    }
+
+  }
 
   /***************************************************************************
   *                                                                          *

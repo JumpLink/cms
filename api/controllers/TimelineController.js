@@ -5,6 +5,7 @@ var TIMELINEFILEDIR = path.normalize(__dirname+'/../../.tmp/public/files/timelin
 var BACKUPTIMELINEFILEDIR = path.normalize(__dirname+'/../../assets/files/timeline');
 
 module.exports = {
+
   setup: function (req, res, next) {
     SetupService.generateTimeline(function(err, result) {
       sails.log.debug("done");
@@ -14,6 +15,7 @@ module.exports = {
         res.json(result);
     });
   }
+
   , update: function (req, res, next) {
     var id = req.param('id');
     var data = req.params.all();
@@ -22,6 +24,7 @@ module.exports = {
       res.json(updated);
     });
   }
+  
   , upload: function (req, res) {
     sails.log.debug(req.file);
 

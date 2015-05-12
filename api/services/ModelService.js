@@ -1,24 +1,29 @@
 var extend = require('node.extend');
 
-var updateOrCreateResponse = function (modelName, findBy, req, res, next) {
+// var updateOrCreateResponse = function (modelName, findBy, req, res, next) {
 
-  // Locate and validate name parameter
-  var query = {};
-  query[findBy] = req.param(findBy);
-  var data = req.params.all();
-  if (!findBy) {
-    return res.badRequest('No findBy provided.', findBy);
-  }
-  sails.log.debug("query", query);
-  sails.log.debug("data", data);
+//   // Locate and validate name parameter
+//   var query = {};
+//   query[findBy] = req.param(findBy);
+//   updateOrCreateQueryResponse (modelName, query, req, res, next);
+// }
 
-  updateOrCreate(modelName, data, query, function (err, result) {
-     if (err) { sails.log.error(err); return res.serverError(err); }
-     res.status(201);
-     return res.json(result);
-  });
+// var updateOrCreateQueryResponse = function (modelName, query, req, res, next) {
 
-}
+//   // Locate and validate name parameter
+//   if (!query) {
+//     return res.badRequest('No query provided.', query);
+//   }
+//   var data = req.params.all();
+//   sails.log.debug("data", data);
+
+//   updateOrCreate(modelName, data, query, function (err, result) {
+//      if (err) { sails.log.error(err); return res.serverError(err); }
+//      res.status(201);
+//      return res.json(result);
+//   });
+
+// }
 
 var updateOrCreate = function (modelName, data, query, callback, extendFound) {
   // sails.log.debug("updateOrCreate", modelName, data, id);
@@ -127,7 +132,8 @@ var updateOrCreateEach = function (modelName, datas, propertyName, callback, ext
 
 module.exports = {
   updateOrCreate: updateOrCreate,
-  updateOrCreateResponse: updateOrCreateResponse,
+  // updateOrCreateResponse: updateOrCreateResponse,
+  // updateOrCreateQueryResponse: updateOrCreateQueryResponse,
   // replace: replace,
   updateEach: updateEach,
   updateOrCreateEach: updateOrCreateEach

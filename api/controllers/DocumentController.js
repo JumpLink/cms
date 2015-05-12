@@ -11,6 +11,10 @@ var fs = require('fs');
 var UPLOADFOLDER =  __dirname+'/../../.tmp/uploads';
 
 module.exports = {
+  setup: function(req, res) {
+    res.ok();
+  },
+  
   /**
    * `OdfController.create()`
    */
