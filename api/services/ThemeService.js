@@ -150,8 +150,8 @@ var getThemeForFile = function (filepath, cb) {
  * if file not found try next theme,
  * if file was not found in any theme try general folder
  */
-var getThemeRootPathForFile = function (host, filepath, cb) {
-  MultisiteService.getSiteAssetsDirname(host, filepath, function(err, dirname){
+var getDirnameForAssetspath = function (host, filepath, cb) {
+  MultisiteService.getSiteDirname(host, filepath, function(err, dirname){
     if(!err) {
       // sails.log.debug("File found in site dirname.", dirname);
       cb(null, dirname);
@@ -162,7 +162,7 @@ var getThemeRootPathForFile = function (host, filepath, cb) {
           var rootpath = getRootPathOfThemeDirname(theme.dirname);
           cb(null, rootpath);
         } else {
-          MultisiteService.getFallbackAssetsDirname(filepath, function(err, dirname){
+          MultisiteService.getFallbackDirname(filepath, function(err, dirname){
             if(!err) {
               sails.log.warn("File not found in any site or theme but in fallback path!", dirname);
               cb(null, dirname);
@@ -249,7 +249,7 @@ module.exports = {
   , getThemeForFile: getThemeForFile
   , getRootPathOfThemeDirname: getRootPathOfThemeDirname
   , getThemeByDirname: getThemeByDirname
-  , getThemeRootPathForFile: getThemeRootPathForFile
+  , getDirnameForAssetspath: getDirnameForAssetspath
   , getThemeFullPathForFile: getThemeFullPathForFile
   , view: view
   , getController: getController

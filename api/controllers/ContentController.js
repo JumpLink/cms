@@ -56,28 +56,36 @@ module.exports = {
 
 
   find: function (req, res) {
+    var site, query;
 
-    var query = {
-      where: {
-        name: req.param('name'),
-        site: MultisiteService.getCurrentSiteConfig(req.session.uri.host).name
+    MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+      if(err) {
+        return res.serverError(err);
       }
-    };
 
-    // sails.log.debug("query", query)
+      query = {
+        where: {
+          name: req.param('name'),
+          site: config.name
+        }
+      };
 
-    Content.findOne(query).exec(function found(err, found) {
-      if (err) return callback(err);
-      if (found instanceof Array) found = found[0];
+      // sails.log.debug("query", query)
 
-      // not found
-      if (UtilityService.isUndefined(found) || UtilityService.isUndefined(found.id) || found.id === null) {
-        res.notFound(query.where);
-      } else {
-        // sails.log.debug("found", found);
-        res.json(found);
-      }
+      Content.findOne(query).exec(function found(err, found) {
+        if (err) return res.serverError(err);
+        if (found instanceof Array) found = found[0];
+
+        // not found
+        if (UtilityService.isUndefined(found) || UtilityService.isUndefined(found.id) || found.id === null) {
+          res.notFound(query.where);
+        } else {
+          // sails.log.debug("found", found);
+          res.json(found);
+        }
+      });
     });
+
 
   }
 
