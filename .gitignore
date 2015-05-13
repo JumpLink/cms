@@ -1,6 +1,6 @@
 # uploaded images
-public/assets/images/members
-public/assets/files
+public/sites/*
+!public/sites/fallback
 
 # Logs
 logs

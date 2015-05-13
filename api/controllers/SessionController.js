@@ -9,6 +9,11 @@ var bcrypt = require('bcrypt');
 
 module.exports = {
 
+  setup: function(req, res) {
+    res.ok();
+  }
+
+
   // unsubscribe: function (req, res, next) {
   //   sails.log.debug("unsubscribe");
   //   if(req.session.authenticated) {
@@ -18,7 +23,7 @@ module.exports = {
   //   }
   // }
 
-  subscribe: function (req, res, next) {
+  , subscribe: function (req, res, next) {
 
     sails.log.debug("join");
 

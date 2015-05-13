@@ -28,17 +28,17 @@ module.exports = {
     var query = {
       where: {
         name: req.param('name'),
-        site: req.session.uri.domain
+        site: MultisiteService.getCurrentSiteConfig(req.session.uri.host).name
       }
     };
     // ModelService.updateOrCreateResponse('Content', 'name', req, res, next);
     // ModelService.updateOrCreateQueryResponse('Content', query, req, res, next);
     var data = req.params.all();
     delete data.id;
-    if(!data.site) data.site = req.session.uri.domain;
+    if(!data.site) data.site = MultisiteService.getCurrentSiteConfig(req.session.uri.host).name;
 
-    sails.log.debug("query", query);
-    sails.log.debug("data", data);
+    // sails.log.debug("query", query);
+    // sails.log.debug("data", data);
 
     ModelService.updateOrCreate('Content', data, query, function (err, result) {
       if (err) {
@@ -60,11 +60,11 @@ module.exports = {
     var query = {
       where: {
         name: req.param('name'),
-        site: req.session.uri.domain
+        site: MultisiteService.getCurrentSiteConfig(req.session.uri.host).name
       }
     };
 
-    sails.log.debug("query", query)
+    // sails.log.debug("query", query)
 
     Content.findOne(query).exec(function found(err, found) {
       if (err) return callback(err);
@@ -74,7 +74,7 @@ module.exports = {
       if (UtilityService.isUndefined(found) || UtilityService.isUndefined(found.id) || found.id === null) {
         res.notFound(query.where);
       } else {
-        sails.log.debug("found", found);
+        // sails.log.debug("found", found);
         res.json(found);
       }
     });

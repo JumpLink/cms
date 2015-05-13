@@ -30,7 +30,7 @@
 
 var local_config = require('./local.json');
 
-local_config.paths = local_config.paths || { public: './public' };
+// local_config.paths = local_config.paths || { public: './public' };
 
 
 /***************************************************************************

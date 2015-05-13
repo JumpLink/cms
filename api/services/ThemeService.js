@@ -5,7 +5,9 @@
 var fs = require('fs-extra'); // https://github.com/jprichardson/node-fs-extra
 var path = require("path");
 var THEME_DIR = path.resolve(sails.config.paths.public, 'themes');
-sails.log.debug("path.resolve(sails.config.paths", sails.config.paths);
+// sails.log.debug("path.resolve(sails.config.paths", sails.config.paths);
+
+// TODO move to global
 var INFO_FILENAME = "theme.json";
 
 // Get an array of found theme dirnames
@@ -95,7 +97,7 @@ var getThemeByDirname = function (dirname, callback) {
       var theme = themes[i];
       if(themes.dirname === dirname) found = true;
       if (found) { 
-        sails.log.debug("theme FOUND", dirname);
+        // sails.log.debug("theme FOUND", dirname);
         return cb(null, theme);
       }
     }
@@ -142,24 +144,35 @@ var getThemeForFile = function (filepath, cb) {
 }
 
 /**
- * find file in theme with the heigest priority,
- * if file not found try next theme.
- * If file was found callback the rootpath of founded file in theme.
+ * TODO move this to mew AssetService / AssetController ?!
+ * Search file in site in current site folder, if file was not found find file in theme with the heigest priority,
+ * if file was found callback the rootpath of founded file,
+ * if file not found try next theme,
+ * if file was not found in any theme try general folder
  */
-var getThemeRootPathForFile = function (filepath, cb) {
-  getThemeForFile (filepath, function (err, theme) {
-    if(!err && theme) {
-      var rootpath = getRootPathOfThemeDirname(theme.dirname);
-      cb(null, rootpath);
+var getThemeRootPathForFile = function (host, filepath, cb) {
+  MultisiteService.getSiteAssetsDirname(host, filepath, function(err, dirname){
+    if(!err) {
+      // sails.log.debug("File found in site dirname.", dirname);
+      cb(null, dirname);
     } else {
-      var general_path = path.join(sails.config.paths.public, filepath);
-      if(fs.existsSync(general_path)) {
-        sails.log.warn("File not found in any theme but in general folder!", general_path);
-        cb(null, sails.config.paths.public);
-      } else {
-        sails.log.debug(err, general_path);
-        cb(err, sails.config.paths.public);
-      }
+      getThemeForFile (filepath, function (err, theme) {
+        if(!err && theme) {
+          // sails.log.debug("File found in theme but not in site dirname.", theme);
+          var rootpath = getRootPathOfThemeDirname(theme.dirname);
+          cb(null, rootpath);
+        } else {
+          MultisiteService.getFallbackAssetsDirname(filepath, function(err, dirname){
+            if(!err) {
+              sails.log.warn("File not found in any site or theme but in fallback path!", dirname);
+              cb(null, dirname);
+            } else {
+              sails.log.error(err, dirname);
+              cb(err, dirname);
+            }
+          });
+        }
+      });
     }
   });
 }

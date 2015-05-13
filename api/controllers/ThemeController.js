@@ -112,7 +112,7 @@ var assets = function (req, res, next, filepath) {
     var rootpath = ThemeService.getRootPathOfThemeDirname(req.param('theme'));
     return res.sendfile(req.path,  {root: rootpath});
   } else {
-    ThemeService.getThemeRootPathForFile(filepath, function (err, rootpath) {
+    ThemeService.getThemeRootPathForFile(req.session.uri.host, filepath, function (err, rootpath) {
       if(err || rootpath === null) {
         sails.log.error(err, filepath);
         return res.serverError(err, filepath);

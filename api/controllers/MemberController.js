@@ -1,7 +1,3 @@
-var path = require('path');
-var fs = require('fs-extra'); // Node.js: extra methods for the fs object: https://github.com/jprichardson/node-fs-extra
-var MEMBER_FILE_DIR = path.resolve(sails.config.paths.public, 'assets/images/members');
-
 module.exports = {
   setup: function (req, res, next) {
     SetupService.generateMembers(function(err, result) {
@@ -36,22 +32,20 @@ module.exports = {
       if (err) {
         sails.log.error(err);
         return res.serverError(err);
-      }
+      } else {
 
-      // mkdir -p
-      fs.mkdirs(MEMBER_FILE_DIR, function(err){
-        if (err) return res.serverError(err);
-        else {
-          async.map(files, MemberService.convertFileIterator, function(err, files){
-            var result = {
-              message: files.length + ' file(s) uploaded successfully!',
-              files: files
-            };
-            sails.log.debug(result);
-            return res.json(result);
-          });
-        }
-      });
+        var site = MultisiteService.getCurrentSiteConfig(req.session.uri.host).name;
+        // for bind see http://stackoverflow.com/questions/20882892/pass-extra-argument-to-async-map
+        async.map(files, MemberService.convertFileIterator.bind(null, site), function(err, files) {
+          var result = {
+            message: files.length + ' file(s) uploaded successfully!',
+            files: files
+          };
+          sails.log.debug(result);
+          return res.json(result);
+        });
+
+      }
     });
   }
 }
