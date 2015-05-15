@@ -63,82 +63,91 @@ module.exports = {
   // try to create an authenticated session
   , create: function(req, res, next) {
 
-    // Check for email and password in params sent via the form, if none
-    // redirect the browser back to the sign-in form.
-    if (!req.param('email') || !req.param('password')) {
-      // return next({error: ["Password doesn't match password confirmation."]});
+    MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
 
-      var usernamePasswordRequiredError = [{
-        name: 'usernamePasswordRequired',
-        message: 'You must enter both a username and password.'
-      }]
-
-      // Remember that err is the object being passed down (a.k.a. flash.err), whose value is another object with
-      // the key of usernamePasswordRequiredError
-      req.session.flash = {
-        error: usernamePasswordRequiredError
+      if(err) {
+        req.session.flash = {
+          error: err
+        }
       }
 
-      return res.redirect('signin');
-    }
+      // Check for email and password in params sent via the form, if none
+      // redirect the browser back to the sign-in form.
+      if (!req.param('email') || !req.param('password')) {
+        // return next({error: ["Password doesn't match password confirmation."]});
 
-    // Try to find the user by there email address.
-    // findOneByEmail() is a dynamic finder in that it searches the model by a particular attribute.
-    // User.findOneByEmail(req.param('email')).done(function(err, user) {
-    User.findOneByEmail(req.param('email'), function foundUser(err, user) {
-      if (err) {
-        return res.badRequest(err);
-      }
-      console.log(user);
-      // If no user is found...
-      if (!user) {
-        var noAccountError = [{
-          name: 'noAccount',
-          message: 'The email address ' + req.param('email') + ' not found.'
+        var usernamePasswordRequiredError = [{
+          name: 'usernamePasswordRequired',
+          message: 'You must enter both a username and password.'
         }]
 
+        // Remember that err is the object being passed down (a.k.a. flash.err), whose value is another object with
+        // the key of usernamePasswordRequiredError
         req.session.flash = {
-          error: noAccountError
+          error: usernamePasswordRequiredError
         }
 
         return res.redirect('signin');
       }
 
-      console.log(user.password);
-      // Compare password from the form params to the encrypted password of the user found.
-      bcrypt.compare(req.param('password'), user.password, function(err, valid) {
-        if (err) return next(err);
-
-        // If the password from the form doesn't match the password from the database...
-        if (!valid) {
-          var usernamePasswordMismatchError = [{
-            name: 'usernamePasswordMismatch',
-            message: 'The email or password that you entered is incorrect.'
+      // Try to find the user by there email address.
+      // findOneByEmail() is a dynamic finder in that it searches the model by a particular attribute.
+      // User.findOneByEmail(req.param('email')).done(function(err, user) {
+      User.findOne({email: req.param('email'), site: config.name}, function foundUser(err, user) {
+        if (err) {
+          return res.badRequest(err);
+        }
+        sails.log.debug(user);
+        // If no user is found...
+        if (!user) {
+          var noAccountError = [{
+            name: 'noAccount',
+            message: 'The email address ' + req.param('email') + ' not found.'
           }]
 
           req.session.flash = {
-            error: usernamePasswordMismatchError
+            error: noAccountError
           }
 
           return res.redirect('signin');
         }
 
-        // Log user in
-        req.session.authenticated = true;
-        req.session.User = user;
+        // sails.log.debug(user.password);
+        // Compare password from the form params to the encrypted password of the user found.
+        bcrypt.compare(req.param('password'), user.password, function(err, valid) {
+          if (err) return next(err);
 
-        delete user.password; // TODO do this in model?
-        //return res.json({authenticated:true,user:user});
+          // If the password from the form doesn't match the password from the database...
+          if (!valid) {
+            var usernamePasswordMismatchError = [{
+              name: 'usernamePasswordMismatch',
+              message: 'The email or password that you entered is incorrect.'
+            }]
 
-        // TODO
-        // if(req.session.lastUrl) {
-        //   var url = req.session.lastUrl;
-        //   delete req.session.lastUrl;
-        //   return res.redirect(url);
-        // }
+            req.session.flash = {
+              error: usernamePasswordMismatchError
+            }
 
-        return res.redirect('/');
+            return res.redirect('signin');
+          }
 
+          // Log user in
+          req.session.authenticated = true;
+          req.session.User = user;
+
+          delete user.password; // TODO do this in model?
+          //return res.json({authenticated:true,user:user});
+
+          // TODO
+          // if(req.session.lastUrl) {
+          //   var url = req.session.lastUrl;
+          //   delete req.session.lastUrl;
+          //   return res.redirect(url);
+          // }
+
+          return res.redirect('/');
+
+        });
       });
     });
   },

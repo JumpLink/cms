@@ -101,14 +101,9 @@ module.exports = {
   },
 
   find: function (req, res) {
-    var site, query;
-
     MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
-      if(err) {
-        return res.serverError(err);
-      }
-
-      query = {
+      if(err) { return res.serverError(err); }
+      var query = {
         where: {
           site: config.name
         }
@@ -116,7 +111,6 @@ module.exports = {
 
       Timeline.find(query).exec(function found(err, found) {
         if (err) return res.serverError(err);
-
         // not found
         if (UtilityService.isUndefined(found) || !UtilityService.isArray(found)) {
           res.notFound(query.where);

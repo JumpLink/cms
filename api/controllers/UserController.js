@@ -28,12 +28,16 @@ module.exports = {
   }
 
   , update: function (req, res, next) {
-    var id = req.param('id');
-    var data = req.params.all();
-    User.update({id:id},data).exec(function update(error, updated){
-      if(error) return res.serverError(error);
-      User.publishUpdate(updated[0].id, updated[0]);
-      res.json(updated);
+    MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+      if(err) { return res.serverError(err); }
+      var id = req.param('id');
+      var data = req.params.all();
+      data.site = config.name;
+      User.update({id:id},data).exec(function update(error, updated){
+        if(error) return res.serverError(error);
+        User.publishUpdate(updated[0].id, updated[0]);
+        res.json(updated);
+      });
     });
   }
 
@@ -48,12 +52,38 @@ module.exports = {
   }
   
   , create: function(req, res) {
-    var data = req.params.all();
-    User.create(data, function (error, created) {
-      if(error) return res.serverError(error);
-      User.publishCreate(created);
-      sails.log.debug(created);
-      res.ok();
+    MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+      if(err) { return res.serverError(err); }
+      var data = req.params.all();
+      data.site = config.name;
+      User.create(data, function (error, created) {
+        if(error) return res.serverError(error);
+        User.publishCreate(created);
+        sails.log.debug(created);
+        res.ok();
+      });
+    });
+  }
+
+  , find: function (req, res) {
+    var query;
+    MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+      if(err) { return res.serverError(err); }
+      query = {
+        where: {
+          site: config.name
+        }
+      };
+      User.find(query).exec(function found(err, found) {
+        if (err) return res.serverError(err);
+        // not found
+        if (UtilityService.isUndefined(found) || !UtilityService.isArray(found)) {
+          res.notFound(query.where);
+        } else {
+          sails.log.debug("found", found);
+          res.json(found);
+        }
+      });
     });
   }
 };

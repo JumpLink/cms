@@ -28,6 +28,17 @@ module.exports = {
     email: {
       type: "email"
       , required: true
+      // , unique: true // composite keys not supported: https://github.com/balderdashy/waterline/issues/221
+    },
+    site: {
+      type: "string"
+      , required: true
+      // , unique: true // composite keys not supported: https://github.com/balderdashy/waterline/issues/221
+    },
+    // WORKAROUND http://stackoverflow.com/questions/24923750/sails-js-composite-unique-field
+    key: {
+      type: 'string'
+      , required: true
       , unique: true
     },
     name: {
@@ -49,5 +60,9 @@ module.exports = {
   // Lifecycle Callbacks
   , beforeCreate: beforeUpdateCreate
   , beforeUpdate: beforeUpdateCreate
+  , beforeValidation : function(values,cb) {
+    values.key = values.site+values.email;
+    cb();
+  }
 
 };

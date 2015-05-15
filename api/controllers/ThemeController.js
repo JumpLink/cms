@@ -107,7 +107,7 @@ var modern = function(req, res, next) {
  */
 var assets = function (req, res, next, filepath) {
   //sails.log.debug(req.path);
-  var filepath = filepath || req.path;
+  var filepath = decodeURIComponent(filepath || req.path);
   if(req.param('theme')) {
     var rootpath = ThemeService.getRootPathOfThemeDirname(req.param('theme'));
     return res.sendfile(req.path,  {root: rootpath});
