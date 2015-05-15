@@ -7,3 +7,6 @@
 [submodule "public/themes/bugwelder"]
 	path = public/themes/bugwelder
 	url = git@github.com:JumpLink/cms-material-theme.git
+[submodule "node_modules/magento"]
+	path = node_modules/magento
+	url = git@github.com:JumpLink/node-magento.git

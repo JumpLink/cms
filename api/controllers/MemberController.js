@@ -52,23 +52,24 @@ module.exports = {
         return res.serverError(err);
       } else {
 
-        var site = MultisiteService.getCurrentSiteConfig(req.session.uri.host).name;
-        // for bind see http://stackoverflow.com/questions/20882892/pass-extra-argument-to-async-map
-        async.map(files, MemberService.convertFileIterator.bind(null, site), function(err, files) {
-          var result = {
-            message: files.length + ' file(s) uploaded successfully!',
-            files: files
-          };
-          sails.log.debug(result);
-          return res.json(result);
+        MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+          if(err) { return res.serverError(err); }
+          // for bind see http://stackoverflow.com/questions/20882892/pass-extra-argument-to-async-map
+          async.map(files, MemberService.convertFileIterator.bind(null, config.name), function(err, files) {
+            var result = {
+              message: files.length + ' file(s) uploaded successfully!',
+              files: files
+            };
+            // sails.log.debug(result);
+            return res.json(result);
+          });
         });
-
       }
     });
   },
 
   find: function (req, res) {
-    var site, query;
+    var query;
 
     MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
       if(err) { return res.serverError(err); }
