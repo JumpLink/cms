@@ -77,7 +77,9 @@ var modern = function(req, res, next) {
     
     return ThemeService.getThemeWithHighestPriority(function(err, currentTheme) {
       var filepath = currentTheme.modernview;
-      return ThemeService.view(filepath, res, {force: force, url: req.path, authenticated: req.session.authenticated === true, user: user});
+      MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+        return ThemeService.view(filepath, res, {force: force, url: req.path, authenticated: req.session.authenticated === true, user: user, site: config.name});
+      });
     });
   }
 

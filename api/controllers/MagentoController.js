@@ -77,6 +77,48 @@ module.exports = {
     });
   },
 
+  catalog_product_stock_list: function (req, res, next) {
+
+    sails.log.debug("magento/catalog_product_stock_list");
+
+    MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+      if(err) { sails.log.error(err); return res.serverError(err); }
+      var magento = require('magento')(config.magento);
+      var id = req.param('id');
+      //var data = req.params.all();
+      sails.log.debug(id);
+
+      magento.xmlrpc.manual.init(function(err) {
+        if(err) { sails.log.error(err); return res.serverError(err); }
+        magento.xmlrpc.auto.catalog.product.stock.list(id, function (err, result) {
+          if(err) { sails.log.error(err); return res.serverError(err); }
+          sails.log.debug(result);
+          res.json(result);
+        });
+      });
+    });
+  },
+
+  catalog_product_stock_update: function (req, res, next) {
+
+    sails.log.debug("magento/catalog_product_stock_update");
+
+    MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+      if(err) { sails.log.error(err); return res.serverError(err); }
+      var magento = require('magento')(config.magento);
+      var data = req.params.all();
+      sails.log.debug(data);
+
+      magento.xmlrpc.manual.init(function(err) {
+        if(err) { sails.log.error(err); return res.serverError(err); }
+        magento.xmlrpc.auto.catalog.product.stock.update(data.id, data, function (err, result) {
+          if(err) { sails.log.error(err); return res.serverError(err); }
+          sails.log.debug(result);
+          res.json(result);
+        });
+      });
+    });
+  },
 
 };
 
