@@ -14,14 +14,15 @@ var available = function (req, res, next) {
   });
 }
 var infos = function (req, res, next) {
-  ThemeService.getThemesSortedByPriority(function (err, themes) {
+  ThemeService.getThemesSortedByPriority(req, function (err, themes) {
     if(err) return res.serverError(err);
     res.json(themes);
   });
 }
 
+// find from database and isert priority from database
 var find = function (req, res, next) {
-  ThemeService.getThemesSortedByPriority(function (err, themes) {
+  ThemeService.getThemesSortedByPriority(req, function (err, themes) {
     if(err) return res.serverError(err);
     return res.json({available: themes});
   });
@@ -30,7 +31,7 @@ var find = function (req, res, next) {
 var updateOrCreate = function (req, res, next) {
   var data = req.params.all();
   sails.log.debug(data);
-  ThemeService.updateOrCreate(data, function (err, result) {
+  ThemeService.updateOrCreate(req, data, function (err, result) {
     if(err) return res.serverError(err);
     return res.json(result);
   });
@@ -39,28 +40,28 @@ var updateOrCreate = function (req, res, next) {
 var updateOrCreateEach = function (req, res, next) {
   var data = req.params.all();
   sails.log.debug(data);
-  ThemeService.updateOrCreateEach(data, function (err, result) {
+  ThemeService.updateOrCreateEach(req, data, function (err, result) {
     if(err) return res.serverError(err);
     return res.json(result);
   });
 }
 
 var fallback = function (req, res, next, force) {
-  ThemeService.getController('FallbackController', function (err, FallbackController) {
+  ThemeService.getController(req, 'FallbackController', function (err, FallbackController) {
     if(err) return res.serverError(err);
     else return FallbackController.fallback(req, res, next, force);
   });
 }
 
 var signin = function (req, res, next, force) {
-  ThemeService.getController('FallbackController', function (err, FallbackController) {
+  ThemeService.getController(req, 'FallbackController', function (err, FallbackController) {
     if(err) return res.serverError(err);
     else return FallbackController.signin(req, res, next, force);
   });
 }
 
 var updateBrowser = function (req, res, next, force) {
-  ThemeService.getController('FallbackController', function (err, FallbackController) {
+  ThemeService.getController(req, 'FallbackController', function (err, FallbackController) {
     if(err) return res.serverError(err);
     else return FallbackController.updateBrowser(req, res, next, force);
   });
@@ -75,10 +76,10 @@ var modern = function(req, res, next) {
     var user = "{}";
     if(typeof req.session.user != 'undefined') user = JSON.stringify(req.session.user);
     
-    return ThemeService.getThemeWithHighestPriority(function(err, currentTheme) {
+    return ThemeService.getThemeWithHighestPriority(req, function(err, currentTheme) {
       var filepath = currentTheme.modernview;
       MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
-        return ThemeService.view(filepath, res, {force: force, url: req.path, authenticated: req.session.authenticated === true, user: user, site: config.name});
+        return ThemeService.view(req, filepath, res, {force: force, url: req.path, authenticated: req.session.authenticated === true, user: user, site: config.name});
       });
     });
   }
@@ -114,7 +115,7 @@ var assets = function (req, res, next, filepath) {
     var rootpath = ThemeService.getRootPathOfThemeDirname(req.param('theme'));
     return res.sendfile(req.path,  {root: rootpath});
   } else {
-    ThemeService.getDirnameForAssetspath(req.session.uri.host, filepath, function (err, rootpath) {
+    ThemeService.getDirnameForAssetspath(req, filepath, function (err, rootpath) {
       if(err || rootpath === null) {
         sails.log.error(err, filepath);
         return res.serverError(err, filepath);

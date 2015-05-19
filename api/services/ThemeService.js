@@ -25,8 +25,9 @@ var getAvailableThemes = function (cb) {
 }
 
 // set Priority from Database
-var setPriority = function (theme, cb) {
-  var query = {'dirname': theme.dirname};
+var setPriority = function (site, theme, cb) {
+  
+  var query = {'dirname': theme.dirname, site: site};
   // sails.log.debug('setPriority', query);
   global.Theme.findOne(query).exec(function found(err, found) {
     // sails.log.debug('found', found);
@@ -37,6 +38,7 @@ var setPriority = function (theme, cb) {
     }
     cb(null, theme);
   });
+
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
@@ -45,49 +47,65 @@ var sortByPriority = function(themes, inverse) {
 }
 
 // get Theme info from local json file of each found theme
-var getThemesSortedByPriority = function (cb) {
-  getAvailableThemes(function (availableThemes) {
-    var iterator = function (theme, cb) {
-      var themePath = THEME_DIR+"/"+theme;
-      var themeInfoPath = themePath+"/"+INFO_FILENAME;
-      fs.readJson(themeInfoPath, function(err, themeInfo) {
-        if(err) {return  sails.log.error(err); cb(err);}
-        // themeInfo.path = themePath;
-        themeInfo.dirname = theme;
-        // themeInfo.info = themeInfoPath;
-        setPriority(themeInfo, function (err, theme) {
-          return cb(err, theme);
+var getThemesSortedByPriority = function (req, cb) {
+  // sails.log.debug("req", req);
+  MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+    getAvailableThemes(function (availableThemes) {
+      var iterator = function (theme, cb) {
+        var themePath = THEME_DIR+"/"+theme;
+        var themeInfoPath = themePath+"/"+INFO_FILENAME;
+        fs.readJson(themeInfoPath, function(err, themeInfo) {
+          if(err) {return  sails.log.error(err); cb(err);}
+          // themeInfo.path = themePath;
+          themeInfo.dirname = theme;
+          themeInfo.site = config.name
+          // themeInfo.info = themeInfoPath;
+          setPriority(themeInfo.site, themeInfo, function (err, theme) {
+            return cb(err, theme);
+          });
         });
+      }
+      async.map(availableThemes, iterator, function (err, result) {
+        if(err) return cb(err);
+        result = sortByPriority(result, false);
+        return cb(err, result);
       });
-    }
-    async.map(availableThemes, iterator, function (err, result) {
-      if(err) return cb(err);
-      result = sortByPriority(result, false);
-      return cb(err, result);
     });
   });
 }
 
-var getThemeWithHighestPriority = function (callback) {
-  getThemesSortedByPriority(function (err, themes) {
+var getThemeWithHighestPriority = function (req, callback) {
+  getThemesSortedByPriority(req, function (err, themes) {
     if(err) callback(err);
     else if(!UtilityService.isArray(themes)) callback("themes is not an array");
     else callback(null, themes[0]);
   });
 }
 
-var updateOrCreate = function(theme, cb) {
-  ModelService.updateOrCreate('Theme', theme, {'dirname': theme.dirname}, cb);
+var updateOrCreate = function(req, theme, cb) {
+  MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+    if(err) cb(err);
+    theme.site = config.name;
+    ModelService.updateOrCreate('Theme', theme, {'dirname': theme.dirname}, cb);
+  });
 }
 
-var updateOrCreateEach = function(themes, cb) {
-  ModelService.updateOrCreateEach('Theme', themes, 'dirname', cb);
+var updateOrCreateEach = function(req, themes, cb) {
+  MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+    if(err) cb(err);
+    for (var i = theme.length - 1; i >= 0; i--) {
+      theme[i].site = config.name;
+    };
+    ModelService.updateOrCreateEach('Theme', themes, 'dirname', cb);
+  });
+  
 }
 
 var getRootPathOfThemeDirname = function (dirname, cb) {
  return path.normalize(THEME_DIR+"/"+dirname);
 }
 
+// WARN: This functions gets the information from filesystem, not from database
 var getThemeByDirname = function (dirname, callback) {
   getAvailableThemes(function (themes) {
     
@@ -115,9 +133,9 @@ var getThemeByDirname = function (dirname, callback) {
  * the file with a lower priority will be used instead,
  * and so on..
  */
-var getThemeForFile = function (filepath, cb) {
+var getThemeForFile = function (req, filepath, cb) {
   
-  getThemesSortedByPriority(function (err, themes) {
+  getThemesSortedByPriority(req, function (err, themes) {
     // sails.log.debug("getThemeForFile", themes);
     
     var found = false;
@@ -150,13 +168,13 @@ var getThemeForFile = function (filepath, cb) {
  * if file not found try next theme,
  * if file was not found in any theme try general folder
  */
-var getDirnameForAssetspath = function (host, filepath, cb) {
-  MultisiteService.getSiteDirname(host, filepath, function(err, dirname){
+var getDirnameForAssetspath = function (req, filepath, cb) {
+  MultisiteService.getSiteDirname(req.session.uri.host, filepath, function(err, dirname){
     if(!err) {
       // sails.log.debug("File found in site dirname.", dirname);
       cb(null, dirname);
     } else {
-      getThemeForFile (filepath, function (err, theme) {
+      getThemeForFile (req, filepath, function (err, theme) {
         if(!err && theme) {
           // sails.log.debug("File found in theme but not in site dirname.", theme);
           var rootpath = getRootPathOfThemeDirname(theme.dirname);
@@ -181,8 +199,8 @@ var getDirnameForAssetspath = function (host, filepath, cb) {
  * find file in theme with the possible heigest found priority
  * and callback this path
  */
-var getThemeFullPathForFile = function (filepath, cb) {
-  getThemeForFile (filepath, function (err, theme) {
+var getThemeFullPathForFile = function (req, filepath, cb) {
+  getThemeForFile (req, filepath, function (err, theme) {
     if(!err && theme) {
       var rootPath = getRootPathOfThemeDirname(theme.dirname);
       var fullpath = path.join(rootPath, filepath);
@@ -197,8 +215,8 @@ var getThemeFullPathForFile = function (filepath, cb) {
  * Render view from theme with the highest priority,
  * if view not found try next theme.
  */
-var view = function (filepath, res, locals) {
-  getThemeFullPathForFile(filepath, function (err, fullpath) {
+var view = function (req, filepath, res, locals) {
+  getThemeFullPathForFile(req, filepath, function (err, fullpath) {
     if(err) { sails.log.error(err); return res.serverError(err); }
     else {
       // fullpath = path.join('../', fullpath); // WORKAROUND root of view for themes
@@ -212,8 +230,8 @@ var view = function (filepath, res, locals) {
  * Load javascript module from api subfolder from theme with the highest priority,
  * if module not found try next theme.
  */
-var getApiModule = function (filepath, callback) {
-  getThemeFullPathForFile(filepath, function (err, fullpath) {
+var getApiModule = function (req, filepath, callback) {
+  getThemeFullPathForFile(req, filepath, function (err, fullpath) {
     if(err) { return callback(err); }
     else {
       // fullpath = path.join('../../', fullpath); // WORKAROUND root of controllers / servides for themes
@@ -226,9 +244,9 @@ var getApiModule = function (filepath, callback) {
  * Load controller from theme with the highest priority,
  * if controller not found try next theme.
  */
-var getController = function (name, callback) {
+var getController = function (req, name, callback) {
   var filepath = "api/controllers/"+name+".js";
-  getApiModule(filepath, callback);
+  getApiModule(req, filepath, callback);
 }
 
 /**
@@ -237,7 +255,7 @@ var getController = function (name, callback) {
  */
 var getService = function (name, callback) {
   var filepath = "api/services/"+name+".js";
-  getApiModule(filepath, callback);
+  getApiModule(req, filepath, callback);
 }
 
 module.exports = {
