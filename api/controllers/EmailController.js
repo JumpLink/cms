@@ -7,7 +7,6 @@
 
 var fs = require('fs');
 
-
 module.exports = {
   setup: function(req, res) {
     res.ok();

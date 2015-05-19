@@ -22,24 +22,16 @@ module.exports = {
     res.ok();
   },
 
-  // warn this creates each time a new id
   replace: function (req, res, next) {
-
     var query = {
       where: {
         name: req.param('name'),
         site: MultisiteService.getCurrentSiteConfig(req.session.uri.host).name
       }
     };
-    // ModelService.updateOrCreateResponse('Content', 'name', req, res, next);
-    // ModelService.updateOrCreateQueryResponse('Content', query, req, res, next);
     var data = req.params.all();
     delete data.id;
     if(!data.site) data.site = MultisiteService.getCurrentSiteConfig(req.session.uri.host).name;
-
-    // sails.log.debug("query", query);
-    // sails.log.debug("data", data);
-
     ModelService.updateOrCreate('Content', data, query, function (err, result) {
       if (err) {
         sails.log.error(err);
@@ -50,28 +42,19 @@ module.exports = {
         return res.json(result);
        }
     });
-
   },
 
-
-
   find: function (req, res) {
-    var site, query;
-
+    var query;
     MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
-      if(err) {
-        return res.serverError(err);
-      }
-
+      if(err) { return res.serverError(err); }
       query = {
         where: {
           name: req.param('name'),
           site: config.name
         }
       };
-
       // sails.log.debug("query", query)
-
       Content.findOne(query).exec(function found(err, found) {
         if (err) return res.serverError(err);
         if (found instanceof Array) found = found[0];
@@ -85,8 +68,18 @@ module.exports = {
         }
       });
     });
+  },
 
-
+  export: function (req, res) {
+    MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+      if(err) { return res.serverError(err); }
+      var query = { where: { site: config.name }};
+      Content.find(query).exec(function found(err, found) {
+        if (err) return res.serverError(err);
+        if (UtilityService.isUndefined(found) || !found instanceof Array) { res.notFound(query.where); }
+        else { res.json(found); }
+      });
+    });
   }
 
   /**

@@ -112,19 +112,24 @@ var updateEach = function (modelName, datas, callback) {
 //   async.each(datas, iterator, callback);
 // }
 
-var updateOrCreateEach = function (modelName, datas, propertyName, callback, extendFound) {
+var updateOrCreateEach = function (modelName, datas, propertyNames, callback, extendFound) {
   if (!modelName) {
     return callback('No model name provided.');
   }
   if (!datas) {
     return callback('No data provided.');
   }
-  if (!propertyName) {
-    return callback('No property name provided.');
+  if (!propertyNames) {
+    return callback('No property names provided.');
+  }
+  if (!Array.isArray(propertyNames)) {
+    return callback('"propertyNames" is not an array.');
   }
   var iterator = function (data, callback) {
     var query = {};
-    query[propertyName] = data[propertyName];
+    for (var i = propertyNames.length - 1; i >= 0; i--) {
+      query[propertyNames[i]] = data[propertyName];
+    };
     updateOrCreate(modelName, data, query, callback, extendFound)
   }
   async.mapSeries(datas, iterator, callback);

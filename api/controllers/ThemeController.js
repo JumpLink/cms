@@ -30,7 +30,7 @@ var find = function (req, res, next) {
 
 var updateOrCreate = function (req, res, next) {
   var data = req.params.all();
-  sails.log.debug(data);
+  // sails.log.debug(data);
   ThemeService.updateOrCreate(req, data, function (err, result) {
     if(err) return res.serverError(err);
     return res.json(result);
@@ -39,7 +39,7 @@ var updateOrCreate = function (req, res, next) {
 
 var updateOrCreateEach = function (req, res, next) {
   var data = req.params.all();
-  sails.log.debug(data);
+  // sails.log.debug(data);
   ThemeService.updateOrCreateEach(req, data, function (err, result) {
     if(err) return res.serverError(err);
     return res.json(result);
@@ -92,7 +92,7 @@ var modern = function(req, res, next) {
   if(req.query.force)
     force = req.query.force;
 
-  sails.log.debug('force', force);
+  // sails.log.debug('force', force);
 
   if(UseragentService.isModern(req, force)) {
     return ok (req, res, next, force);
