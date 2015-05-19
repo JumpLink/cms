@@ -139,17 +139,22 @@ module.exports = {
           //return res.json({authenticated:true,user:user});
 
           // TODO
-          // if(req.session.lastUrl) {
-          //   var url = req.session.lastUrl;
-          //   delete req.session.lastUrl;
-          //   return res.redirect(url);
-          // }
-
-          return res.redirect('/');
+          if(req.session.lastUrl) {
+            var url = req.session.lastUrl;
+            delete req.session.lastUrl;+
+            sails.log.debug("redirect to last url: ",url);
+            res.redirect(url);
+          } else {
+            res.redirect('');
+          }
 
         });
       });
     });
+  },
+
+  authenticated: function(req, res, next) {
+    return res.json(req.session.authenticated === true);
   },
 
   destroy: function(req, res, next) {
