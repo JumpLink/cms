@@ -93,8 +93,8 @@ var updateOrCreate = function(req, theme, cb) {
 var updateOrCreateEach = function(req, themes, cb) {
   MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
     if(err) cb(err);
-    for (var i = theme.length - 1; i >= 0; i--) {
-      theme[i].site = config.name;
+    for (var i = themes.length - 1; i >= 0; i--) {
+      themes[i].site = config.name;
     };
     ModelService.updateOrCreateEach('Theme', themes, 'dirname', cb);
   });
