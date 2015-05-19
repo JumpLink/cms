@@ -8,9 +8,9 @@
 module.exports = {
 
 
-  find: function (req, res, next) {
+  catalog_product_list: function (req, res, next) {
 
-    sails.log.debug("magento/find");
+    sails.log.debug("magento/catalog_product_list");
 
     MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
       if(err) { sails.log.error(err); return res.serverError(err); }
@@ -31,9 +31,9 @@ module.exports = {
     });
   },
 
-  findImage: function (req, res, next) {
+  catalog_product_attribute_media_list: function (req, res, next) {
 
-    sails.log.debug("magento/findImage");
+    sails.log.debug("magento/catalog_product_attribute_media_list");
 
     MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
       if(err) { sails.log.error(err); return res.serverError(err); }
@@ -54,9 +54,9 @@ module.exports = {
     });
   },
 
-  findInfo: function (req, res, next) {
+  catalog_product_info: function (req, res, next) {
 
-    sails.log.debug("magento/findInfo");
+    sails.log.debug("magento/catalog_product_info");
 
     MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
       if(err) { sails.log.error(err); return res.serverError(err); }
@@ -69,6 +69,30 @@ module.exports = {
       magento.xmlrpc.manual.init(function(err) {
         if(err) { sails.log.error(err); return res.serverError(err); }
         magento.xmlrpc.auto.catalog.product.info(id, storeview, function (err, result) {
+          if(err) { sails.log.error(err); return res.serverError(err); }
+          sails.log.debug(result);
+          res.json(result);
+        });
+      });
+    });
+  },
+
+  catalog_product_update: function (req, res, next) {
+
+    sails.log.debug("magento/catalog_product_update");
+
+    MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+      if(err) { sails.log.error(err); return res.serverError(err); }
+      var magento = require('magento')(config.magento);
+      var data = req.params.all();
+      var productData = data.product;
+      var product_id_or_sku = data.id || data.sku;
+      var storeView = data.storeview || null;// "shop_de";
+      sails.log.debug(product_id_or_sku, storeView, productData);
+
+      magento.xmlrpc.manual.init(function(err) {
+        if(err) { sails.log.error(err); return res.serverError(err); }
+        magento.xmlrpc.auto.catalog.product.update(product_id_or_sku, productData, storeView, function (err, result) {
           if(err) { sails.log.error(err); return res.serverError(err); }
           sails.log.debug(result);
           res.json(result);
@@ -109,9 +133,12 @@ module.exports = {
       var data = req.params.all();
       sails.log.debug(data);
 
+      if(typeof data.product === 'undefined') { sails.log.error("data.product is 'undefined'"); return res.serverError("data.product is 'undefined'"); }
+      if(typeof data.id === 'undefined') { sails.log.error("data.id is 'undefined'"); return res.serverError("data.id is 'undefined'"); }
+
       magento.xmlrpc.manual.init(function(err) {
         if(err) { sails.log.error(err); return res.serverError(err); }
-        magento.xmlrpc.auto.catalog.product.stock.update(data.id, data, function (err, result) {
+        magento.xmlrpc.auto.catalog.product.stock.update(data.id, data.product, function (err, result) {
           if(err) { sails.log.error(err); return res.serverError(err); }
           sails.log.debug(result);
           res.json(result);
