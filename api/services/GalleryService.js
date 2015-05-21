@@ -68,8 +68,8 @@ var removeFromFilesystem = function(site, file, cb) {
   });
 };
 
-var prepearFileForDatabase = function (site, file, cb) {
-  //sails.log.debug("prepearFileForDatabase", site, file);
+var prepearFileForDatabase = function (bind, file, cb) {
+  //sails.log.debug("prepearFileForDatabase", bind.site, file);
   // get information about thumb
   easyimg.info(path.join(file.dirname, file.thumb)).then(
     function(thumbInfo) {
@@ -80,7 +80,7 @@ var prepearFileForDatabase = function (site, file, cb) {
         function(originalInfo) {
           delete originalInfo.path;
           //sails.log.debug(originalInfo);
-          cb(null, {original:originalInfo, thumb:thumbInfo, site:site});
+          cb(null, {original:originalInfo, thumb:thumbInfo, site:bind.site});
         }, function (err) {
           cb(err);
         }
@@ -91,9 +91,19 @@ var prepearFileForDatabase = function (site, file, cb) {
   );
 }
 
-var prepearFilesForDatabase = function (site, files, cb) {
-  //sails.log.debug("prepearFilesForDatabase", site, files);
-  async.map(files, prepearFileForDatabase.bind(null, site), cb);
+var prepearFilesForDatabase = function (site, files, images, cb) {
+  // sails.log.debug("prepearFilesForDatabase", site, files);
+  // get max position
+  var last_position = UtilityService.max(images, 'position');
+  sails.log.debug("last_position", last_position);
+  async.map(files, prepearFileForDatabase.bind(null, {site:site}), function(err, files) {
+    if(err) cb(err);
+    for (var i = files.length - 1; i >= 0; i--) {
+      last_position++;
+      files[i].position = last_position;
+    };
+    cb(null, files);
+  });
 };
 
 module.exports = {

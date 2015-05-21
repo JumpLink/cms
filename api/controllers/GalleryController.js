@@ -78,48 +78,64 @@ module.exports = {
       if (err) { sails.log.error(err); return res.serverError(err); }
       MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
         if(err) { sails.log.error(err); return res.serverError(err); }
-        // for bind see http://stackoverflow.com/questions/20882892/pass-extra-argument-to-async-map
-        async.map(files, GalleryService.convertFileIterator.bind(null, config.name), function(err, files) {
-          if(err) { sails.log.error(err); return res.serverError(err); }
-          GalleryService.prepearFilesForDatabase(config.name, files, function (err, files) {
+        // find all images for this site
+        Gallery.find({site: config.name}).exec(function found(err, images) {
+          if (err) return res.serverError(err);
+          if (UtilityService.isUndefined(images) || !UtilityService.isArray(images)) { res.notFound(); }
+          // for bind see http://stackoverflow.com/questions/20882892/pass-extra-argument-to-async-map
+          async.map(files, GalleryService.convertFileIterator.bind(null, config.name), function(err, files) {
             if(err) { sails.log.error(err); return res.serverError(err); }
-            // sails.log.debug(files);
-            Gallery.create(files, function(err, files) {
-              if(err) return res.serverError(err);
-              files.forEach(function(file, index) {
-                // TODO not broadcast / fired why?!
-                Gallery.publishCreate(file);
-                sails.log.debug("Gallery.publishCreate(file);", file);
-              });
+            GalleryService.prepearFilesForDatabase(config.name, files, images, function (err, files) {
+              if(err) { sails.log.error(err); return res.serverError(err); }
               // sails.log.debug(files);
-              res.json(files);
+              Gallery.create(files, function(err, files) {
+                if(err) return res.serverError(err);
+                files.forEach(function(file, index) {
+                  // TODO not broadcast / fired why?!
+                  Gallery.publishCreate(file);
+                  sails.log.debug("Gallery.publishCreate(file);", file);
+                });
+                // sails.log.debug(files);
+                res.json(files);
+              });
             });
           });
         });
+
       });
     });
   }
 
   , find: function (req, res) {
-    var query;
 
+    // TODO to be shure all positions are okay, maybe remove this function
+    var fixPosition = function (images) {
+      for (var i = 0; i < images.length; i++) {
+          images[i].position = i;
+      };
+      return images;
+    };
+
+    var query;
     MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
       if(err) { return res.serverError(err); }
 
       query = {
         where: {
           site: config.name
-        }
+        },
+        sort: 'position'
       };
 
-      Gallery.find(query).exec(function found(err, found) {
+      Gallery.find(query).exec(function found(err, images) {
         if (err) return res.serverError(err);
         // not found
-        if (UtilityService.isUndefined(found) || !UtilityService.isArray(found)) {
+        if (UtilityService.isUndefined(images) || !UtilityService.isArray(images)) {
           res.notFound(query.where);
         } else {
-          // sails.log.debug("found", found);
-          res.json(found);
+          // sails.log.debug("images", images);
+          images = fixPosition(images);
+          res.json(images);
         }
       });
     });
@@ -134,10 +150,10 @@ module.exports = {
         if (err) return res.serverError(err);
         GalleryService.removeFromFilesystem(conf.name, file, function(err) {
           if(err) return res.serverError(err);
-          Gallery.destroy({id:id, }, function (err, destroyed) {
+          Gallery.destroy({id:id, site:conf.name}, function (err, destroyed) {
             Gallery.publishDestroy(id);
             if(err) return res.serverError(err);
-            sails.log.debug(destroyed);
+            // sails.log.debug(destroyed);
             res.ok();
           });
         });

@@ -6,6 +6,16 @@ var extend = require('node.extend'); // https://github.com/dreamerslab/node.exte
 // server compatibility to angular functions
 // TODO outsource to node-angular?
 
+// http://stackoverflow.com/questions/6449611/how-to-check-whether-a-value-is-a-number-in-javascript-or-jquery
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+// http://stackoverflow.com/questions/4020796/finding-the-max-value-of-an-attribute-in-an-array-of-objects
+var max = function (array, key) {
+  return Math.max.apply(Math,array.map(function(o){ if(isNumber) return o[key]; else 0}))
+}
+
 var isDefined = function(value) {
   return !underscore.isUndefined(value);
 };
@@ -15,6 +25,14 @@ var $filter = function(filtername) {
     case 'orderBy':
       return underscore.sortBy;
   }
+}
+
+var invertOrder = function (array) {
+  var result = [];
+  for (var i = array.length - 1; i >= 0; i--) {
+    result.push(array[i]);
+  };
+  return result;
 }
 
 // http://stackoverflow.com/questions/18112204/get-all-directories-within-directory-nodejs
@@ -87,4 +105,7 @@ module.exports = {
   , sortArrayByProperty: sortArrayByProperty
   , extend: extend
   , isArray: underscore.isArray
+  , invertOrder: invertOrder
+  , max: max
+  , isNumber: isNumber
 };

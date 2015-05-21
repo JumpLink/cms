@@ -38,6 +38,12 @@ var momentise = function(events) {
   return events;
 }
 
+var transform = function(events) {
+  events = split(momentise(sort(events)));
+  events.before = UtilityService.invertOrder(events.before);
+  return events;
+}
+
 var merge = function(unknown, before, after) {
   if(UtilityService.isUndefined(unknown))
     unknown = [];
@@ -53,4 +59,5 @@ module.exports = {
   , sort: sort
   , merge: merge
   , momentise: momentise
+  , transform: transform
 }
