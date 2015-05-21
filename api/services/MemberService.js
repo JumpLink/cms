@@ -48,26 +48,23 @@ var generateThumbnail = function (site, file, callback) {
       });
     }
   });
-
-
 }
 
 var convertFileIterator = function (site, file, callback) {
   file.uploadedAs = path.basename(file.fd);
-
   file.savedTo = path.join(SITES_FOLDER, site, sails.config.paths.members, file.uploadedAs);
+  file.dirname = path.dirname(file.savedTo);
 
-  fs.mkdirs(path.dirname(file.savedTo), function(err){
+  fs.mkdirs(file.dirname, function(err){
     if (err) callback(err);
-    // move file to puplic path
     fs.move(file.fd, file.savedTo, function(err){
       if (err) callback(err);
       else {
         sails.log.debug("moved file: "+file.fd+" -> "+file.savedTo);
-        // copy file to backup path
         generateThumbnail(site, file, function (err) {
           if (err) callback(err);
-          else callback(null, file);
+          sails.log.debug(file);
+          callback(null, file);
         });
       }
     });
