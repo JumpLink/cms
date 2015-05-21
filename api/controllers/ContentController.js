@@ -23,24 +23,27 @@ module.exports = {
   },
 
   replace: function (req, res, next) {
-    var query = {
-      where: {
-        name: req.param('name'),
-        site: MultisiteService.getCurrentSiteConfig(req.session.uri.host).name
-      }
-    };
-    var data = req.params.all();
-    delete data.id;
-    if(!data.site) data.site = MultisiteService.getCurrentSiteConfig(req.session.uri.host).name;
-    ModelService.updateOrCreate('Content', data, query, function (err, result) {
-      if (err) {
-        sails.log.error(err);
-        return res.serverError(err);
-      } else {
-        sails.log.info("content "+req.param('name')+" saved");
-        res.status(201);
-        return res.json(result);
-       }
+    MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+      if(err) { return res.serverError(err); }
+      var query = {
+        where: {
+          name: req.param('name'),
+          site: config.name
+        }
+      };
+      var data = req.params.all();
+      delete data.id;
+      if(!data.site) data.site = MultisiteService.getCurrentSiteConfig(req.session.uri.host).name;
+      ModelService.updateOrCreate('Content', data, query, function (err, result) {
+        if (err) {
+          sails.log.error(err);
+          return res.serverError(err);
+        } else {
+          sails.log.info("content "+req.param('name')+" saved");
+          res.status(201);
+          return res.json(result);
+         }
+      });
     });
   },
 
