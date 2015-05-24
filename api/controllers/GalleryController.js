@@ -108,14 +108,6 @@ module.exports = {
 
   , find: function (req, res) {
 
-    // TODO to be shure all positions are okay, maybe remove this function
-    var fixPosition = function (images) {
-      for (var i = 0; i < images.length; i++) {
-          images[i].position = i;
-      };
-      return images;
-    };
-
     var query;
     MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
       if(err) { return res.serverError(err); }
@@ -134,7 +126,9 @@ module.exports = {
           res.notFound(query.where);
         } else {
           // sails.log.debug("images", images);
-          images = fixPosition(images);
+
+          // TODO to be shure all positions are okay, maybe remove this function
+          images = UtilityService.fixPosition(images);
           res.json(images);
         }
       });

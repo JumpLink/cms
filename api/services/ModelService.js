@@ -1,30 +1,5 @@
 var extend = require('node.extend');
 
-// var updateOrCreateResponse = function (modelName, findBy, req, res, next) {
-
-//   // Locate and validate name parameter
-//   var query = {};
-//   query[findBy] = req.param(findBy);
-//   updateOrCreateQueryResponse (modelName, query, req, res, next);
-// }
-
-// var updateOrCreateQueryResponse = function (modelName, query, req, res, next) {
-
-//   // Locate and validate name parameter
-//   if (!query) {
-//     return res.badRequest('No query provided.', query);
-//   }
-//   var data = req.params.all();
-//   sails.log.debug("data", data);
-
-//   updateOrCreate(modelName, data, query, function (err, result) {
-//      if (err) { sails.log.error(err); return res.serverError(err); }
-//      res.status(201);
-//      return res.json(result);
-//   });
-
-// }
-
 var updateOrCreate = function (modelName, data, query, callback, extendFound) {
   // sails.log.debug("updateOrCreate", modelName, data, id);
   // sails.log.debug("global[modelName]", global[modelName]);
@@ -103,15 +78,6 @@ var updateEach = function (modelName, datas, callback) {
   async.map(datas, iterator, callback);
 }
 
-// var updateOrCreateEach = function(modelName, datas, findBy, callback, extendFound) {
-//   var iterator =  function (data, cb) {
-//     var query = {};
-//     query[findBy] = data[findBy];
-//     updateOrCreate(modelName, data, query, cb, extendFound);
-//   }
-//   async.each(datas, iterator, callback);
-// }
-
 var updateOrCreateEach = function (modelName, datas, propertyNames, callback, extendFound) {
   if (!modelName) {
     return callback('No model name provided.');
@@ -128,7 +94,7 @@ var updateOrCreateEach = function (modelName, datas, propertyNames, callback, ex
   var iterator = function (data, callback) {
     var query = {};
     for (var i = propertyNames.length - 1; i >= 0; i--) {
-      query[propertyNames[i]] = data[propertyName];
+      query[propertyNames[i]] = data[propertyNames[i]];
     };
     updateOrCreate(modelName, data, query, callback, extendFound)
   }
@@ -137,9 +103,7 @@ var updateOrCreateEach = function (modelName, datas, propertyNames, callback, ex
 
 module.exports = {
   updateOrCreate: updateOrCreate,
-  // updateOrCreateResponse: updateOrCreateResponse,
-  // updateOrCreateQueryResponse: updateOrCreateQueryResponse,
-  // replace: replace,
+  replace: replace,
   updateEach: updateEach,
   updateOrCreateEach: updateOrCreateEach
 }

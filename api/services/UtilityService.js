@@ -94,7 +94,12 @@ var sortArrayByProperty = function(array, propertyName, inverse) {
   return array;
 }
 
-
+var fixPosition = function (obj) {
+  for (var i = 0; i < obj.length; i++) {
+      obj[i].position = i;
+  };
+  return obj;
+};
 
 module.exports = {
   isUndefined: underscore.isUndefined
@@ -108,4 +113,5 @@ module.exports = {
   , invertOrder: invertOrder
   , max: max
   , isNumber: isNumber
+  , fixPosition: fixPosition
 };

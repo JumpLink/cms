@@ -50,6 +50,7 @@ var sortByPriority = function(themes, inverse) {
 var getThemesSortedByPriority = function (req, cb) {
   // sails.log.debug("req", req);
   MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+    if(err) cb(err);
     getAvailableThemes(function (availableThemes) {
       var iterator = function (theme, cb) {
         var themePath = THEME_DIR+"/"+theme;
