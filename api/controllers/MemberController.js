@@ -28,7 +28,7 @@ module.exports = {
       var data = req.params.all();
       data.site = config.name;
       var id = data.id || req.param('id');
-      Member.update({id:id, site: site},data).exec(function update(err, updated) {
+      Member.update({id:id, site: data.site}, data).exec(function update(err, updated) {
         // Member.publishUpdate(updated[0].id, updated[0]);
         sails.log.debug("updated", updated);
         res.json(updated);

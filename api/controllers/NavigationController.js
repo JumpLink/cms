@@ -20,6 +20,7 @@ module.exports = {
           sails.log.error(err);
           return res.serverError(err);
         } else {
+          sails.log.debug("NavigationController: Save", result);
           sails.log.info("Navigation "+req.param('page')+" saved");
           res.status(201);
           return res.json(result);
@@ -41,11 +42,13 @@ module.exports = {
       var data = req.params.all();
       delete data.id;
       data.site = config.name;
+      sails.log.debug("NavigationController: Try to save", data);
       ModelService.updateOrCreate('Navigation', data, query, function (err, result) {
         if (err) {
           sails.log.error(err);
           return res.serverError(err);
         } else {
+          sails.log.debug("NavigationController: Save", data);
           sails.log.info("Navigation "+req.param('page')+" saved");
           res.status(201);
           return res.json(result);
@@ -62,11 +65,13 @@ module.exports = {
         where: {
           page: req.param('page'),
           site: config.name
-        }
+        },
+        sort: 'position'
       };
       // sails.log.debug("query", query)
       Navigation.find(query).exec(function found(err, navs) {
         if (err || UtilityService.isUndefined(navs) || !navs instanceof Array) return res.serverError({error:err, query:query});
+        navs = UtilityService.fixPosition(navs);
         res.json(navs);
       });
     });
