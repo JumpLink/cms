@@ -1,36 +1,43 @@
 var extend = require('node.extend');
 
 var updateOrCreate = function (modelName, data, query, callback, extendFound) {
-  // sails.log.debug("updateOrCreate", modelName, data, id);
+  sails.log.debug("updateOrCreate", modelName, data);
   // sails.log.debug("global[modelName]", global[modelName]);
 
   if (typeof query == 'undefined') {
-    return callback('No query provided.');
+    return callback('ModelService: No query provided.');
   }
   if (!data) {
-    return callback('No data provided.');
+    return callback('ModelService: No data provided.');
   }
 
   // Otherwise, find and destroy the global[modelName] in question
   global[modelName].findOne(query).exec(function found(err, found) {
-    if (err) return callback(err);
+    if (err) {
+      sails.log.error("ModelService: Error on findOne on updateOrCreate:", err);
+      return callback(err);
+    }
     if (found instanceof Array) found = found[0];
     // not found
     if (UtilityService.isUndefined(found) || UtilityService.isUndefined(found.id) || found.id === null) {
       global[modelName].create(data).exec(function created (err, data) {
-        if (err) return callback(err);
-        // sails.log.debug("created", err, data);
-        global[modelName].publishCreate(data);
-        return callback(null, data);
+        if (err) {
+          sails.log.error("ModelService: Error on create on updateOrCreate:", err);
+          return callback(err);
+        } else {
+          // sails.log.debug("created", err, data);
+          global[modelName].publishCreate(data);
+          callback(null, data);
+        }
       });
     } else {
       data.id = found.id;
       // sails.log.debug("found", found);
       if(extendFound) {
-        sails.log.error("found", found);
-        sails.log.error("data", data);
+        sails.log.debug("found", found);
+        sails.log.debug("data", data);
         data = extend(found, data);
-        sails.log.error("extended", data);
+        sails.log.debug("extended", data);
       }
 
       global[modelName].update(data.id, data).exec(function updated (err, data) {
@@ -38,7 +45,7 @@ var updateOrCreate = function (modelName, data, query, callback, extendFound) {
         if (data instanceof Array) data = data[0];
         // sails.log.debug("update", err, data);
         global[modelName].publishUpdate(data.id, data);
-        return callback(null, data);
+        callback(null, data);
       });
     }
   });
@@ -47,7 +54,7 @@ var updateOrCreate = function (modelName, data, query, callback, extendFound) {
 var replace = function (modelName, data, callback) {
 
   if (!data) {
-    return callback('No data provided.');
+    return callback('ModelService: No data provided.');
   }
 
   global[modelName].destroy({}).exec(function destroyed (err, destroyResult) {
@@ -62,11 +69,11 @@ var replace = function (modelName, data, callback) {
 
 var updateEach = function (modelName, datas, callback) {
   if (!datas) {
-    return callback('No data provided.');
+    return callback('ModelService: No data provided.');
   }
   var iterator = function (data, callback) {
     if (!data.id) {
-      return callback('No data provided.');
+      return callback('ModelService: No data provided.');
     }
     global[modelName].update(data.id, data).exec(function updated (err, data) {
       if (err) return callback(err);
@@ -80,16 +87,16 @@ var updateEach = function (modelName, datas, callback) {
 
 var updateOrCreateEach = function (modelName, datas, propertyNames, callback, extendFound) {
   if (!modelName) {
-    return callback('No model name provided.');
+    return callback('ModelService: No model name provided.');
   }
   if (!datas) {
-    return callback('No data provided.');
+    return callback('ModelService: No data provided.');
   }
   if (!propertyNames) {
-    return callback('No property names provided.');
+    return callback('ModelService: No property names provided.');
   }
   if (!Array.isArray(propertyNames)) {
-    return callback('"propertyNames" is not an array.');
+    return callback('ModelService: "propertyNames" is not an array.');
   }
   var iterator = function (data, callback) {
     var query = {};

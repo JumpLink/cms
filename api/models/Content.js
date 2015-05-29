@@ -1,12 +1,12 @@
 
-var fixContent = function(content, cb) {
-  if(!content.name || content.name === "") {
+var fixName = function(name, title, cb) {
+  if(!name || name === "") {
     var re = new RegExp("^[a-zA-Z]$");
-    content.name = content.title.toLowerCase().replace(/[^a-zA-Z]+/g, '');
-    $log.debug("set content.name to", content.name);
+    name = title.toLowerCase().replace(/[^a-zA-Z]+/g, '');
+    sails.log.debug("set name to", name);
   }
-  if(cb) cb(null, content);
-  else return content;
+  if(cb) cb(null, name);
+  else return name;
 }
 
 module.exports = {
@@ -38,7 +38,7 @@ module.exports = {
     },
     content: {
       type: "string"
-      , required: true
+      , required: false
     },
     position: {
       type: "number"
@@ -52,7 +52,7 @@ module.exports = {
 
   // Lifecycle Callbacks
   , beforeValidation : function(values, cb) {
-    values = fixContent(values);
+    values.name = fixName(values.name, values.title);
     values.key = values.site+"."+values.page+"."+values.name;
     cb();
   }

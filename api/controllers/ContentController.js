@@ -36,7 +36,7 @@ module.exports = {
 
       ModelService.updateOrCreateEach('Content', datas, ['page', 'site', 'name'], function (err, result) {
         if (err) {
-          sails.log.error(err);
+          sails.log.error("ContentController: Error on updateOrCreateEach:", err);
           return res.serverError(err);
         } else {
           sails.log.info("Content "+req.param('page')+" saved");
@@ -93,6 +93,11 @@ module.exports = {
         },
         sort: 'position'
       };
+
+      if(req.param('type')) {
+        query.where.type = req.param('type');
+      }
+
       // sails.log.debug("query", query)
       Content.find(query).exec(function found (err, contents) {
         if (err) return res.serverError(err);
@@ -117,6 +122,11 @@ module.exports = {
           site: conf.name
         }
       };
+
+      if(req.param('type')) {
+        query.where.type = req.param('type');
+      }
+      
       // sails.log.debug("query", query)
       Content.findOne(query).exec(function found (err, content) {
         if (err) return res.serverError(err);
