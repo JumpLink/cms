@@ -106,9 +106,61 @@ var prepearFilesForDatabase = function (site, files, images, cb) {
   });
 };
 
+var find = function (query, cb) {
+
+  if(!query.sort) query.sort = 'position';
+
+  Gallery.find(query).exec(function found(err, images) {
+    if (err) return cb(err);
+    if (UtilityService.isUndefined(images) || !UtilityService.isArray(images)) {
+      cb("not found");
+    } else {
+      images = UtilityService.fixPosition(images);
+      cb(null, images);
+    }
+  });
+}
+
+/*
+ *  { images: [], content: "", .. } => {"contentname1": {}, "contentname3": {}, ..}
+ */
+var convertImageArrayToObject = function (images) {
+  sails.log.debug(images);
+  var result = {};
+  for (var i = images.length - 1; i >= 0; i--) {
+    result[images[i].content] = images[i].images;
+  };
+  return result;
+}
+
+var findForContent = function (content, cb) {
+  var query = {
+    where: {
+      site: content.site,
+      content: content.name,
+      page: content.page
+    }
+  };
+  find(query, function (err, images) {
+    if (err) return cb(err);
+    else {
+      result = {
+        images: images,
+        site: content.site,
+        content: content.name,
+        page: content.page
+      }
+      cb(null, result);
+    }
+  });
+};
+
 module.exports = {
   generateThumbnail: generateThumbnail
   , convertFileIterator: convertFileIterator
   , prepearFilesForDatabase: prepearFilesForDatabase
-  ,removeFromFilesystem: removeFromFilesystem
+  , removeFromFilesystem: removeFromFilesystem
+  , find: find
+  , findForContent: findForContent
+  , convertImageArrayToObject: convertImageArrayToObject
 }

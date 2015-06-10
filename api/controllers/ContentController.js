@@ -34,6 +34,12 @@ module.exports = {
         datas[i].page = page;
       };
 
+      var queryParams = ['page', 'site', 'name'];
+
+      if(req.param('type')) {
+        queryParams.push('type');
+      }
+
       ModelService.updateOrCreateEach('Content', datas, ['page', 'site', 'name'], function (err, result) {
         if (err) {
           sails.log.error("ContentController: Error on updateOrCreateEach:", err);
@@ -63,6 +69,11 @@ module.exports = {
           site: conf.name
         }
       };
+
+      if(req.param('type')) {
+        query.where.type = req.param('type');
+      }
+
       var data = req.params.all();
       delete data.id;
       data.site = conf.name;
@@ -108,6 +119,48 @@ module.exports = {
     });
   },
 
+  findAllWithImage: function (req, res) {
+
+    var page = req.param('page');
+    var type = req.param('type');
+
+    // var query;
+    MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, conf) {
+      if(err) { return res.serverError(err); }
+      var site = conf.name;
+      ContentService.resolveAllWithImage(page, site, type, function (err, data) {
+        if(err) { return res.serverError(err); }
+        res.json({contents:data.contents, images:data.images});
+      });
+
+      // query = {
+      //   where: {
+      //     page: ,
+      //     site: conf.name
+      //   },
+      //   sort: 'position'
+      // };
+
+      // if(req.param('type')) {
+      //   query.where.type = req.param('type');
+      // }
+
+      // // sails.log.debug("query", query)
+      // Content.find(query).exec(function found (err, contents) {
+      //   if (err) return res.serverError(err);
+      //   // TODO maybe remove this and make shure the positions are okay on client site
+      //   contents = UtilityService.fixPosition(contents);
+
+      //   async.map(contents, GalleryService.findForContent, function(err, imagesForEachContent) {
+      //     if (err) return res.serverError(err);
+      //     imagesForEachContent = GalleryService.convertImageArrayToObject(imagesForEachContent);
+      //     res.json({contents:contents, images:imagesForEachContent});
+      //   });
+      // });
+
+    });
+  },
+
   /**
    * Usually used for pages with fixed content blocks (get one content block by name).
    */
@@ -126,7 +179,7 @@ module.exports = {
       if(req.param('type')) {
         query.where.type = req.param('type');
       }
-      
+
       // sails.log.debug("query", query)
       Content.findOne(query).exec(function found (err, content) {
         if (err) return res.serverError(err);
@@ -160,6 +213,11 @@ module.exports = {
       var name = req.param('name');
       if(name) {
         query.where.name = name;
+      }
+      
+      var type = req.param('type');
+      if(type) {
+        query.where.type = type;
       }
 
       console.log("destroy content", query);

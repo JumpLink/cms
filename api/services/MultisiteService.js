@@ -45,7 +45,7 @@ module.exports = {
   // TODO move this to mew AssetService / AssetController ?!
   getSiteDirname: function (host, filepath, cb) {
     // sails.log.debug("host", host, "filepath", filepath);
-    var config = MultisiteService.getCurrentSiteConfig(host);
+    // var config = MultisiteService.getCurrentSiteConfig(host);
 
     MultisiteService.getCurrentSiteConfig(host, function (err, config) {
       if(err) {

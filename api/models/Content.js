@@ -48,6 +48,10 @@ module.exports = {
       type: "string"
       , required: false
     },
+    type: {
+      type: "string"
+      , required: false
+    },
   }
 
   // Lifecycle Callbacks

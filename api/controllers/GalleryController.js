@@ -53,6 +53,7 @@ module.exports = {
 
   , update: function (req, res, next) {
     MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+      if(err) { sails.log.error(err); return res.serverError(err); }
       var data = req.params.all();
       data.site = config.name;
       var id = data.id || req.param('id');
@@ -65,7 +66,9 @@ module.exports = {
   }
   
   , upload: function (req, res) {
-    sails.log.debug(req.file);
+    // sails.log.debug(req.file);
+
+    sails.log.error("TODO also save page and content");
 
     // WORKAROUND for BUG https://github.com/balderdashy/skipper/issues/36
     if(req._fileparser.form.bytesExpected > 10000000) {
@@ -79,9 +82,8 @@ module.exports = {
       MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
         if(err) { sails.log.error(err); return res.serverError(err); }
         // find all images for this site
-        Gallery.find({site: config.name}).exec(function found(err, images) {
+        GalleryService.find({where: {site: config.name}}).exec(function found(err, images) {
           if (err) return res.serverError(err);
-          if (UtilityService.isUndefined(images) || !UtilityService.isArray(images)) { res.notFound(); }
           // for bind see http://stackoverflow.com/questions/20882892/pass-extra-argument-to-async-map
           async.map(files, GalleryService.convertFileIterator.bind(null, config.name), function(err, files) {
             if(err) { sails.log.error(err); return res.serverError(err); }
@@ -115,22 +117,16 @@ module.exports = {
       query = {
         where: {
           site: config.name
-        },
-        sort: 'position'
+        }
       };
 
-      Gallery.find(query).exec(function found(err, images) {
-        if (err) return res.serverError(err);
-        // not found
-        if (UtilityService.isUndefined(images) || !UtilityService.isArray(images)) {
-          res.notFound(query.where);
-        } else {
-          // sails.log.debug("images", images);
+      if(req.param('content')) {
+        query.where.content = req.param('content');
+      }
 
-          // TODO to be shure all positions are okay, maybe remove this function
-          images = UtilityService.fixPosition(images);
-          res.json(images);
-        }
+      GalleryService.find(query, function (err, images) {
+        if (err) return res.serverError(err);
+        else res.json(images);
       });
     });
   }
