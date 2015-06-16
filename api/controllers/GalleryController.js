@@ -82,7 +82,7 @@ module.exports = {
       MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
         if(err) { sails.log.error(err); return res.serverError(err); }
         // find all images for this site
-        GalleryService.find({where: {site: config.name}}).exec(function found(err, images) {
+        GalleryService.find({where: {site: config.name}}, function found(err, images) {
           if (err) return res.serverError(err);
           // for bind see http://stackoverflow.com/questions/20882892/pass-extra-argument-to-async-map
           async.map(files, GalleryService.convertFileIterator.bind(null, config.name), function(err, files) {
@@ -98,7 +98,7 @@ module.exports = {
                   sails.log.debug("Gallery.publishCreate(file);", file);
                 });
                 // sails.log.debug(files);
-                res.json(files);
+                res.json({files:files, images:images});
               });
             });
           });
