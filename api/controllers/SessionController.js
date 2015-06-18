@@ -25,7 +25,7 @@ module.exports = {
 
   , subscribe: function (req, res, next) {
 
-    sails.log.debug("join");
+    // sails.log.debug("join");
 
     if(req.session.authenticated) {
       sails.log.info("authenticated");
@@ -97,7 +97,7 @@ module.exports = {
         if (err) {
           return res.badRequest(err);
         }
-        sails.log.debug(user);
+        // sails.log.debug(user);
         // If no user is found...
         if (!user) {
           var noAccountError = [{
@@ -158,7 +158,7 @@ module.exports = {
   },
 
   destroy: function(req, res, next) {
-    sails.log.debug("logout");
+    sails.log.info("logout");
 
     if (typeof(req.params.id) === "undefined")
       var id = req.session.User.id;
@@ -173,7 +173,7 @@ module.exports = {
         return next(error);
       }
       else if (user) {
-        sails.log.debug(user);
+        // sails.log.debug(user);
         // Wipe out the session (log out)
         //req.session.destroy(); Uncomment to not destroy socket session
         req.session.authenticated = false;

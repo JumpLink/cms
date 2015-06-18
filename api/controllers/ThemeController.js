@@ -71,7 +71,7 @@ var modern = function(req, res, next) {
 
   var ok = function (req, res, next, force) {
 
-    sails.log.info(req.session);
+    // sails.log.info(req.session);
     // TODO fix user
     var user = "{}";
     if(typeof req.session.user != 'undefined') user = JSON.stringify(req.session.user);

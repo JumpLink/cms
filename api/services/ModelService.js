@@ -1,7 +1,7 @@
 var extend = require('node.extend');
 
 var updateOrCreate = function (modelName, data, query, callback, extendFound) {
-  sails.log.debug("updateOrCreate", modelName, data);
+  // sails.log.debug("updateOrCreate", modelName, data);
   // sails.log.debug("global[modelName]", global[modelName]);
 
   if (typeof query == 'undefined') {
@@ -34,10 +34,10 @@ var updateOrCreate = function (modelName, data, query, callback, extendFound) {
       data.id = found.id;
       // sails.log.debug("found", found);
       if(extendFound) {
-        sails.log.debug("found", found);
-        sails.log.debug("data", data);
+        // sails.log.debug("found", found);
+        // sails.log.debug("data", data);
         data = extend(found, data);
-        sails.log.debug("extended", data);
+        // sails.log.debug("extended", data);
       }
 
       global[modelName].update(data.id, data).exec(function updated (err, data) {

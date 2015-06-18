@@ -148,7 +148,7 @@ var getThemeForFile = function (req, filepath, cb) {
       var fullpath = path.join(rootpath, filepath);
       var found = fs.existsSync(fullpath);
       if (found) { 
-        sails.log.debug(fullpath);
+        // sails.log.debug(fullpath);
         return cb(null, theme);
       } else {
         // sails.log.debug("file NOT found", fullpath);
@@ -221,7 +221,7 @@ var view = function (req, filepath, res, locals) {
     if(err) { sails.log.error(err); return res.serverError(err); }
     else {
       // fullpath = path.join('../', fullpath); // WORKAROUND root of view for themes
-      sails.log.debug("fullpath", fullpath);
+      // sails.log.debug("fullpath", fullpath);
       return res.view(fullpath, locals);
     }
   });

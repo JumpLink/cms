@@ -220,13 +220,13 @@ module.exports = {
         query.where.type = type;
       }
 
-      console.log("destroy content", query);
+      // sails.log.debug"destroy content", query);
       Content.findOne(query).exec(function found(err, content) {
         if (err) return res.serverError(err);
         Content.destroy({id:content.id, site:conf.name}, function (err, destroyed) {
           Content.publishDestroy(content.id);
           if(err) return res.serverError(err);
-          sails.log.debug(destroyed, content);
+          sails.log.info(destroyed, content);
           res.ok();
         });
       });

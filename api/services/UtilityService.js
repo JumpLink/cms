@@ -20,10 +20,13 @@ var isDefined = function(value) {
   return !underscore.isUndefined(value);
 };
 
+// server compatibility to angular functions
+// TODO auslagern in eigene Library
 var $filter = function(filtername) {
   switch (filtername) {
     case 'orderBy':
       return underscore.sortBy;
+    break;
   }
 }
 

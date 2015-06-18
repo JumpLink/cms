@@ -1,7 +1,7 @@
 module.exports = {
   setup: function (req, res, next) {
     SetupService.generateMembers(function(err, result) {
-      sails.log.debug("done");
+      // sails.log.debug("done");
       if(err)
         res.json(err);
       else
@@ -16,7 +16,7 @@ module.exports = {
       data.site = config.name;
       Member.create(data).exec(function create(err, created) {
         // Member.publisCreate(created[0].id, created[0]);
-        sails.log.debug("created", created);
+        sails.log.info("created", created);
         res.json(created);
       });
     });
@@ -30,14 +30,14 @@ module.exports = {
       var id = data.id || req.param('id');
       Member.update({id:id, site: data.site}, data).exec(function update(err, updated) {
         // Member.publishUpdate(updated[0].id, updated[0]);
-        sails.log.debug("updated", updated);
+        sails.log.info("updated", updated);
         res.json(updated);
       });
     });
   }
   
   , upload: function (req, res) {
-    sails.log.debug(req.file);
+    // sails.log.debug(req.file);
 
     // WORKAROUND for BUG https://github.com/balderdashy/skipper/issues/36
     if(req._fileparser.form.bytesExpected > 10000000) {
@@ -86,7 +86,7 @@ module.exports = {
         if (UtilityService.isUndefined(found) || !UtilityService.isArray(found)) {
           res.notFound(query.where);
         } else {
-          sails.log.debug("found", found);
+          // sails.log.debug("found", found);
           res.json(found);
         }
       });
