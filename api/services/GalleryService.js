@@ -32,29 +32,29 @@ var SITES_FOLDER = path.resolve(sails.config.paths.public, sails.config.paths.si
 //   });
 // }
 
-var convertFileIterator = function (site, file, callback) {
-  thumbnailOptions = {width: 280, path: sails.config.paths.gallery};
-  FileService.convertFileIterator(site, file, sails.config.paths.gallery, thumbnailOptions, callback);
-  // file.uploadedAs = path.basename(file.fd);
-  // file.savedTo = path.join(SITES_FOLDER, site, sails.config.paths.gallery, file.uploadedAs);
-  // file.dirname = path.dirname(file.savedTo);
+// var convertFileIterator = function (site, file, callback) {
+//   thumbnailOptions = {width: 280, path: sails.config.paths.gallery};
+//   FileService.convertFileIterator(site, file, sails.config.paths.gallery, thumbnailOptions, callback);
+//   // file.uploadedAs = path.basename(file.fd);
+//   // file.savedTo = path.join(SITES_FOLDER, site, sails.config.paths.gallery, file.uploadedAs);
+//   // file.dirname = path.dirname(file.savedTo);
 
-  // fs.mkdirs(file.dirname, function(err){
-  //   if (err) callback(err);
-  //   // move file to puplic path
-  //   fs.move(file.fd, file.savedTo, function(err){
-  //     if (err) callback(err);
-  //     else {
-  //       sails.log.debug("moved file: "+file.fd+" -> "+file.savedTo);
-  //       generateThumbnail(site, file, function (err) {
-  //         if (err) callback(err);
-  //         // sails.log.debug(file);
-  //         callback(null, file);
-  //       });
-  //     }
-  //   });
-  // });
-}
+//   // fs.mkdirs(file.dirname, function(err){
+//   //   if (err) callback(err);
+//   //   // move file to puplic path
+//   //   fs.move(file.fd, file.savedTo, function(err){
+//   //     if (err) callback(err);
+//   //     else {
+//   //       sails.log.debug("moved file: "+file.fd+" -> "+file.savedTo);
+//   //       generateThumbnail(site, file, function (err) {
+//   //         if (err) callback(err);
+//   //         // sails.log.debug(file);
+//   //         callback(null, file);
+//   //       });
+//   //     }
+//   //   });
+//   // });
+// }
 
 var removeFromFilesystem = function(site, file, cb) {
   var gallery_dirname = path.join(SITES_FOLDER, site, sails.config.paths.gallery);
@@ -159,8 +159,8 @@ var findForContent = function (content, cb) {
 
 module.exports = {
   // generateThumbnail: generateThumbnail
-  convertFileIterator: convertFileIterator
-  , prepearFilesForDatabase: prepearFilesForDatabase
+  // convertFileIterator: convertFileIterator
+  prepearFilesForDatabase: prepearFilesForDatabase
   , removeFromFilesystem: removeFromFilesystem
   , find: find
   , findForContent: findForContent

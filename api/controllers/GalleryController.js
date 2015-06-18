@@ -64,49 +64,80 @@ module.exports = {
       });
     });
   }
-  
+
   , upload: function (req, res) {
-    // sails.log.debug(req.file);
-
-    sails.log.error("TODO also save page and content");
-
-    // WORKAROUND for BUG https://github.com/balderdashy/skipper/issues/36
-    if(req._fileparser.form.bytesExpected > 10000000) {
-      sails.log.error('File exceeds maxSize. Aborting.');
-      req.connection.destroy();
-      return res.end('File exceeds maxSize. Aborting.'); // This doesn't actually get sent, so you can skip this line.
-    }
-
-    req.file("file").upload(function (err, files) {
-      if (err) { sails.log.error(err); return res.serverError(err); }
-      MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
-        if(err) { sails.log.error(err); return res.serverError(err); }
-        // find all images for this site
-        GalleryService.find({where: {site: config.name}}, function found(err, images) {
-          if (err) return res.serverError(err);
-          // for bind see http://stackoverflow.com/questions/20882892/pass-extra-argument-to-async-map
-          async.map(files, GalleryService.convertFileIterator.bind(null, config.name), function(err, files) {
-            if(err) { sails.log.error(err); return res.serverError(err); }
-            GalleryService.prepearFilesForDatabase(config.name, files, images, function (err, files) {
-              if(err) { sails.log.error(err); return res.serverError(err); }
-              // sails.log.debug(files);
-              Gallery.create(files, function(err, files) {
-                if(err) return res.serverError(err);
-                files.forEach(function(file, index) {
-                  // TODO not broadcast / fired why?!
-                  Gallery.publishCreate(file);
-                  sails.log.debug("Gallery.publishCreate(file);", file);
-                });
-                // sails.log.debug(files);
-                res.json({files:files, images:images});
-              });
+    thumbnailOptions = {width: 280, path: sails.config.paths.gallery};
+    FileService.upload(req, sails.config.paths.gallery, thumbnailOptions, function (err, result) {
+      if(err) return res.serverError(err);
+      sails.log.debug("GalleryController: file upload result", result);
+      var files = result.files;
+      var site = result.site;
+      // find all images for this site
+      GalleryService.find({where: {site: site}}, function found(err, images) {
+        if (err) return res.serverError(err);
+        GalleryService.prepearFilesForDatabase(site, files, images, function (err, files) {
+          if(err) { sails.log.error(err); return res.serverError(err); }
+          sails.log.debug("GalleryService: prepear files for database result", files);
+          Gallery.create(files, function(err, files) {
+            if(err) return res.serverError(err);
+            files.forEach(function(file, index) {
+              // TODO not broadcast / fired why?!
+              Gallery.publishCreate(file);
+              sails.log.debug("Gallery.publishCreate(file);", file);
+            });
+            res.json({
+              message: files.length + ' file(s) uploaded successfully!',
+              files:files,
+              images:images
             });
           });
         });
-
       });
     });
   }
+  
+  // , upload: function (req, res) {
+  //   // sails.log.debug(req.file);
+
+  //   sails.log.error("TODO also save page and content");
+
+  //   // WORKAROUND for BUG https://github.com/balderdashy/skipper/issues/36
+  //   if(req._fileparser.form.bytesExpected > 10000000) {
+  //     sails.log.error('File exceeds maxSize. Aborting.');
+  //     req.connection.destroy();
+  //     return res.end('File exceeds maxSize. Aborting.'); // This doesn't actually get sent, so you can skip this line.
+  //   }
+
+  //   req.file("file").upload(function (err, files) {
+  //     if (err) { sails.log.error(err); return res.serverError(err); }
+  //     MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+  //       if(err) { sails.log.error(err); return res.serverError(err); }
+  //       // find all images for this site
+  //       GalleryService.find({where: {site: config.name}}, function found(err, images) {
+  //         if (err) return res.serverError(err);
+  //         // for bind see http://stackoverflow.com/questions/20882892/pass-extra-argument-to-async-map
+  //         async.map(files, GalleryService.convertFileIterator.bind(null, config.name), function(err, files) {
+  //           if(err) { sails.log.error(err); return res.serverError(err); }
+  //           GalleryService.prepearFilesForDatabase(config.name, files, images, function (err, files) {
+  //             if(err) { sails.log.error(err); return res.serverError(err); }
+  //             // sails.log.debug(files);
+  //             Gallery.create(files, function(err, files) {
+  //               if(err) return res.serverError(err);
+  //               files.forEach(function(file, index) {
+  //                 // TODO not broadcast / fired why?!
+  //                 Gallery.publishCreate(file);
+  //                 sails.log.debug("Gallery.publishCreate(file);", file);
+  //               });
+  //               // sails.log.debug(files);
+  //               res.json({files:files, images:images});
+  //             });
+  //           });
+  //         });
+  //       });
+
+  //     });
+  //   });
+  // }
 
   , find: function (req, res) {
 

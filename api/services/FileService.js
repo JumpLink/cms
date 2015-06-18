@@ -79,7 +79,8 @@ var upload = function (req, relativePathInSiteFolder, thumbnailOptions, cb) {
         }, function(err, files) {
           var result = {
             message: files.length + ' file(s) uploaded successfully!',
-            files: files
+            files: files,
+            site: config.name
           };
           return cb(null, result);
         });
