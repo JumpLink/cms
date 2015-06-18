@@ -44,38 +44,6 @@ module.exports = {
     });
   }
 
-  // , upload: function (req, res) {
-  //   // sails.log.debug(req.file);
-
-  //   // WORKAROUND for BUG https://github.com/balderdashy/skipper/issues/36
-  //   if(req._fileparser.form.bytesExpected > 10000000) {
-  //     sails.log.error('File exceeds maxSize. Aborting.');
-  //     req.connection.destroy();
-  //     return res.end('File exceeds maxSize. Aborting.'); // This doesn't actually get sent, so you can skip this line.
-  //   }
-
-  //   req.file("file").upload(function (err, files) {
-  //     if (err) {
-  //       sails.log.error(err);
-  //       return res.serverError(err);
-  //     } else {
-
-  //       MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
-  //         if(err) { return res.serverError(err); }
-  //         // for bind see http://stackoverflow.com/questions/20882892/pass-extra-argument-to-async-map
-  //         async.map(files, MemberService.convertFileIterator.bind(null, config.name), function(err, files) {
-  //           var result = {
-  //             message: files.length + ' file(s) uploaded successfully!',
-  //             files: files
-  //           };
-  //           // sails.log.debug(result);
-  //           return res.json(result);
-  //         });
-  //       });
-  //     }
-  //   });
-  // }
-
   , find: function (req, res) {
     var query;
 

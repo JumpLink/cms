@@ -18,7 +18,7 @@ var send = function (host, from, to, subject, text, html, attachments, callback)
     var mailOptions = {
       from: from          //'Fred Foo ✔ <foo@blurdybloop.com>',     // sender address
       , to: to            //'pascal@jumplink.eu'                    // list of receivers
-      , subject: Subject  //'Aufnahmeantrag',                       // Subject line
+      , subject: subject  //'Aufnahmeantrag',                       // Subject line
       , text: text        // 'Hello world',                         // plaintext body
       , html: html        //'<b>Hello world</b>'                    // html body
       , attachments: attachments
