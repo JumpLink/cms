@@ -58,6 +58,7 @@ module.exports = {
   , beforeValidation : function(values, cb) {
     values.name = fixName(values.name, values.title);
     values.key = values.site+"."+values.page+"."+values.name;
+    values.position = Number(values.position); // WORKAROUND
     cb();
   }
 
