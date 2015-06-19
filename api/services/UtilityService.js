@@ -99,7 +99,7 @@ var sortArrayByProperty = function(array, propertyName, inverse) {
 
 var fixPosition = function (obj) {
   for (var i = 0; i < obj.length; i++) {
-      obj[i].position = i;
+      obj[i].position = i+1;
   };
   return obj;
 };
