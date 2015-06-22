@@ -5,8 +5,13 @@ module.exports = {
   },
 
   find: function (req, res, next) {
-    res.json({
-      'paths': sails.config.paths
+    MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, siteConf) {
+      if(err) { return res.serverError(err); }
+      res.json({
+        'paths': sails.config.paths,
+        'email': siteConf.email.address,
+        'host': req.session.uri.host
+      });
     });
   }
 };

@@ -28,21 +28,14 @@ module.exports.policies = {
 
   '*': 'sessionAuth',
 
-  ViewController: {
-  },
-  
-  ThemeController: {
-    'assets': true
-  },
-
-  SessionController: {
-    'create': true,
-    'subscribe': true,
-    'authenticated': true
+  ConfigController: {
+    'find': true
   },
 
   ContentController: {
     'find': true,
+    'findAll': true,
+    'findAllWithImage': true
   },
 
   DocumentController: {
@@ -61,13 +54,56 @@ module.exports.policies = {
     'findOne': true,
   },
 
+  LocaleController: {
+
+  },
+
+  MagentoController: {
+
+  },
+
   MemberController: {
     'find': true,
+  },
+
+  NavigationController: {
+    'find': true
+  },
+
+  SessionController: {
+    'create': true,
+    'subscribe': true,
+    'authenticated': true
+  },
+
+  SetupController: {
+
+  },
+
+  ThemeController: {
+    'assets': true,
+    'likeAssets': true,
+    'signin': true,
+    'modern': true,
+    'fallback': true
   },
 
   TimelineController: {
     'find': true,
   },
+  
+  UserController: {
+    'find': true,
+  },
+
+  VWHeritageController: {
+    'find': true,
+  }
+
+
+
+
+
 
 
   /***************************************************************************

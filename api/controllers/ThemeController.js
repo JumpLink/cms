@@ -79,7 +79,7 @@ var modern = function(req, res, next) {
     return ThemeService.getThemeWithHighestPriority(req, function(err, currentTheme) {
       var filepath = currentTheme.modernview;
       MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
-        return ThemeService.view(req, filepath, res, {force: force, url: req.path, authenticated: req.session.authenticated === true, user: user, site: config.name});
+        return ThemeService.view(req, filepath, res, {force: force, url: req.path, authenticated: req.session.authenticated === true, user: user, site: config.name, config: {paths: sails.config.paths, environment: sails.config.environment}});
       });
     });
   }
