@@ -1,12 +1,16 @@
 var getPrimaryVersion = function (req) {
   var primaryVersion = 0;
   var firstDotIndex = -1;
-  if(typeof req.useragent.Version !== 'undefined')
-    firstDotIndex = req.useragent.Version.indexOf('.');
-  if(firstDotIndex < 0)
-    primaryVersion = req.useragent.Version;
-  else
-    primaryVersion = req.useragent.Version.substr(0, firstDotIndex);
+  // primaryVersion = Number(req.useragent.version);
+  if(typeof(req.useragent.version) !== 'undefined') {
+    firstDotIndex = req.useragent.version.indexOf('.');
+    if(firstDotIndex < 0)
+      primaryVersion = req.useragent.version;
+    else
+      primaryVersion = req.useragent.version.substr(0, firstDotIndex);
+  }
+
+
   return primaryVersion;
 }
 

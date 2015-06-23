@@ -223,6 +223,7 @@ module.exports = {
       // sails.log.debug"destroy content", query);
       Content.findOne(query).exec(function found(err, content) {
         if (err) return res.serverError(err);
+        if (typeof(content) === 'undefined') return res.notFound();
         Content.destroy({id:content.id, site:conf.name}, function (err, destroyed) {
           Content.publishDestroy(content.id);
           if(err) return res.serverError(err);
