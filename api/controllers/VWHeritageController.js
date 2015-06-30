@@ -10,14 +10,14 @@ module.exports = {
 
   catalog_product_list: function (req, res, next) {
 
-    sails.log.debug("vwheritage/catalog_product_list");
+    sails.log.debug("[VWHeritageController]", "vwheritage/catalog_product_list");
 
     MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
       if(err) { sails.log.error(err); return res.serverError(err); }
       var vwheritage = require('heritage')(config.vwheritage);
       vwheritage.auto.catalog.product.list(function (err, result) {
         if(err) { sails.log.error(err); return res.serverError(err); }
-        sails.log.debug(result);
+        // sails.log.debug(result);
         res.json(result);
       });
     });
@@ -25,7 +25,7 @@ module.exports = {
 
   catalog_product_info: function (req, res, next) {
 
-    sails.log.debug("vwheritage/catalog_product_info");
+    sails.log.debug("[VWHeritageController]", "vwheritage/catalog_product_info");
 
     MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
       if(err) { sails.log.error(err); return res.serverError(err); }
@@ -35,7 +35,7 @@ module.exports = {
       if(err) { sails.log.error(err); return res.serverError(err); }
       vwheritage.auto.catalog.product.infoById(id, function (err, result) {
         if(err) { sails.log.error(err); return res.serverError(err); }
-        sails.log.debug(result);
+        // sails.log.debug(result);
         res.json(result);
       });
     });
@@ -43,7 +43,7 @@ module.exports = {
 
   catalog_product_images: function (req, res, next) {
 
-    sails.log.debug("vwheritage/catalog_product_images");
+    sails.log.debug("[VWHeritageController]", "vwheritage/catalog_product_images");
 
     MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
       if(err) { sails.log.error(err); return res.serverError(err); }
@@ -55,7 +55,7 @@ module.exports = {
       if(err) { sails.log.error(err); return res.serverError(err); }
       vwheritage.auto.catalog.product.images(id, function (err, result) {
         if(err) { sails.log.error("[VWHeritageController]", err); return res.serverError(err); }
-        sails.log.debug("[VWHeritageController]", result);
+        // sails.log.debug("[VWHeritageController]", result);
         res.json(result);
       });
     });
@@ -63,7 +63,7 @@ module.exports = {
 
   catalog_product_infos: function (req, res, next) {
 
-    sails.log.debug("vwheritage/catalog_product_infos");
+    sails.log.debug("[VWHeritageController]", "vwheritage/catalog_product_infos");
 
     MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
       if(err) { sails.log.error(err); return res.serverError(err); }
@@ -73,7 +73,7 @@ module.exports = {
       if(err) { sails.log.error(err); return res.serverError(err); }
       vwheritage.auto.catalog.product.info(skus, function (err, result) {
         if(err) { sails.log.error(err); return res.serverError(err); }
-        sails.log.debug(result);
+        // sails.log.debug(result);
         res.json(result);
       });
     });

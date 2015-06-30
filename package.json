@@ -1,11 +1,10 @@
 {
-  "name": "invoice",
+  "name": "jumplink-cms",
   "private": true,
-  "version": "0.0.0",
-  "description": "a Sails application",
+  "version": "0.1.0",
+  "description": "JumpLink CMS",
   "keywords": [],
   "dependencies": {
-    "angular-route": "^1.2.17-build.163.1",
     "bcrypt": "^0.8.*",
     "captains-log": "^0.11.11",
     "easyimage": "^2.0.3",
@@ -44,8 +43,8 @@
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/jumplink/invoice.git"
+    "url": "git://github.com/jumplink/cms.git"
   },
-  "author": "jumplink",
+  "author": "Pascal Garber <pascal@jumplink.eu>",
   "license": "MIT"
 }

@@ -28,6 +28,10 @@ module.exports.policies = {
 
   '*': 'sessionAuth',
 
+  CMSController: {
+    'infoUser': true
+  },
+
   ConfigController: {
     'find': true
   },
