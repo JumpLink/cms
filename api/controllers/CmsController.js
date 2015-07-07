@@ -17,48 +17,26 @@
 
 // var actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
 
-var path = require('path');
-var package = require('../../package.json');
-
 module.exports = {
 
   /*
    * Info about CMS that can readed by normal users
    */
   infoUser: function(req, res) {
-    var info = {
-      version: package.version,
-      license: package.license,
-      runtime: {
-        title: process.title,
-        version: process.version
-      },
-    };
-
-    sails.log.debug(info);
-    res.json(info);
+    CmsService.infoUser(function (error, result) {
+      sails.log.debug(result);
+      res.json(result);
+    });
   },
 
   /*
    * Info about CMS only for super admins
    */
   infoAdmin: function(req, res) {
-    var info = package;
-
-    info.path = process.mainModule.filename,
-    info.dirname = path.dirname(process.mainModule.filename),
-
-    info.runtime = {
-      title: process.title,
-      version: process.version,
-      versions: process.versions,
-      arch: process.arch,
-      platform: process.platform,
-      execPath: process.execPath,
-    };
-
-    sails.log.debug(info);
-    res.json(info);
+    CmsService.infoAdmin(function (error, result) {
+      sails.log.debug(result);
+      res.json(result);
+    });
   }
 
 };
