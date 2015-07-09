@@ -9,7 +9,7 @@ var infoUser = function (callback) {
     version: package.version,
     license: package.license,
     runtime: {
-      title: process.title,
+      title: path.basename(process.title),
       version: process.version
     },
     config: {
