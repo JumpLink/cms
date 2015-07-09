@@ -5,13 +5,9 @@ module.exports = {
   },
 
   find: function (req, res, next) {
-    MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, siteConf) {
+    ConfigService.getForCurrentSite(req.session.uri.host, function (err, conf) {
       if(err) { return res.serverError(err); }
-      res.json({
-        'paths': sails.config.paths,
-        'email': siteConf.email.address,
-        'host': req.session.uri.host
-      });
+      res.json(conf);
     });
   }
 };

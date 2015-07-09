@@ -12,6 +12,10 @@ var infoUser = function (callback) {
       title: process.title,
       version: process.version
     },
+    config: {
+      environment: sails.config.environment,
+      port: sails.config.port,
+    }
   };
 
   return callback(null, info);
@@ -23,8 +27,9 @@ var infoUser = function (callback) {
 var infoAdmin = function (callback) {
   var info = package;
 
-  info.path = process.mainModule.filename,
-  info.dirname = path.dirname(process.mainModule.filename),
+  info.path = process.mainModule.filename;
+  info.dirname = path.dirname(process.mainModule.filename);
+  info.config = sails.config;
 
   info.runtime = {
     title: process.title,
