@@ -7,6 +7,8 @@ var getForCurrentSite = function (host, callback) {
       'host': host
     };
 
+    sails.log.debug("[ConfigService.js] getForCurrentSite", result);
+
     callback(null, result);
   });
 }

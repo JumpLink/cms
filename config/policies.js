@@ -42,6 +42,10 @@ module.exports.policies = {
     'findAllWithImage': true
   },
 
+  DocsController: {
+    '*': true
+  },
+
   DocumentController: {
     'upload': true,
     'convert': true,
