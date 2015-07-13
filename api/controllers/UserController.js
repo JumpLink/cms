@@ -53,11 +53,17 @@ module.exports = {
   
   , create: function(req, res) {
     MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
-      if(err) { return res.serverError(err); }
+      if(err) { 
+        sails.log.error("[controllers/UserController.js]", err);
+        return res.serverError(err);
+      }
       var data = req.params.all();
       data.site = config.name;
       User.create(data, function (error, created) {
-        if(error) return res.serverError(error);
+        if(error) {
+          sails.log.error("[controllers/UserController.js]", error);
+          return res.serverError(error);
+        }
         User.publishCreate(created);
         sails.log.debug(created);
         res.ok();

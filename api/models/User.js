@@ -12,8 +12,11 @@ var beforeUpdateCreate = function(values, next) {
   if(typeof(values.password) === "undefined") {
     next();
   } else {
-    bcrypt.hash(values.password, 10, function(err, hash) {
-      if(err) return next(err);
+    bcrypt.hash(values.password, null, null, function(err, hash) {
+      if(err) {
+        sails.log.error("[models/User.js]", err);
+        return next(err);
+      }
       values.password = hash;
       next();
     });

@@ -6,6 +6,8 @@ module.exports = {
    * Get the corrent Site config from local.json that matchs the current host domain 
    */
   getCurrentSiteConfig: function (host, cb) {
+
+    sails.log.debug("[services/MultisiteService] Get current site config for host: "+host);
     
     var found = false;
     for (var i = sails.config.sites.length - 1; i >= 0 && !found; i--) {
