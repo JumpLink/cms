@@ -6,7 +6,7 @@
  * @docs    :: http://sailsjs.org/#!documentation/models
  */
 
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcrypt-nodejs');
 
 var beforeUpdateCreate = function(values, next) {
   if(typeof(values.password) === "undefined") {

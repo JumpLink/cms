@@ -5,7 +5,7 @@
   "description": "JumpLink CMS",
   "keywords": [],
   "dependencies": {
-    "bcrypt": "^0.8.*",
+    "bcrypt-nodejs": "0.0.3",
     "captains-log": "^0.11.11",
     "dox": "^0.8.0",
     "easyimage": "^2.0.3",
