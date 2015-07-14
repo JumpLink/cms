@@ -7,7 +7,7 @@ module.exports = {
    */
   getCurrentSiteConfig: function (host, cb) {
 
-    sails.log.debug("[services/MultisiteService] Get current site config for host: "+host);
+    // sails.log.debug("[services/MultisiteService] Get current site config for host: "+host);
     
     var found = false;
     for (var i = sails.config.sites.length - 1; i >= 0 && !found; i--) {
@@ -18,16 +18,16 @@ module.exports = {
         var pattern = new RegExp(regex, 'g');
 
         if(pattern.test(host)) {
-          // sails.log.debug("Match! "+pattern+" ("+sails.config.sites[i].domains[k]+") <=> "+host);
+          // sails.log.debug("[services/MultisiteService.js] Match! "+pattern+" ("+sails.config.sites[i].domains[k]+") <=> "+host);
           found = true;
           if (cb) return cb(null, sails.config.sites[i]);
           else return sails.config.sites[i];
         } else {
-          // sails.log.debug("No match! "+pattern+" ("+sails.config.sites[i].domains[k]+") <=> "+host);
+          // sails.log.debug("[services/MultisiteService.js] No match! "+pattern+" ("+sails.config.sites[i].domains[k]+") <=> "+host);
         }
       };
     };
-    if (cb) return cb("No site for host "+host+" in local.json defined!");
+    if (cb) return cb("[services/MultisiteService.js] No site for host "+host+" in local.json defined!");
     else return null;
   },
 

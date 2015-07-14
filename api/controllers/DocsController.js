@@ -11,18 +11,14 @@ var path = require('path');     // https://nodejs.org/api/path.html
 // https://github.com/caolan/async
 
 module.exports = {
-
   controllers: function(req, res) {
-
     DocsService.parseDirname(sails.config.paths.controllers, function (err, jsDocObjs) {
-
       if(err) return res.serverError(err);
       res.json(jsDocObjs);
     });
   },
 
   models: function(req, res) {
-    res.json(sails);
     DocsService.parseDirname(sails.config.paths.models, function (err, jsDocObjs) {
 
       if(err) return res.serverError(err);
@@ -31,20 +27,27 @@ module.exports = {
   },
 
   services: function(req, res) {
-    res.json(sails);
     DocsService.parseDirname(sails.config.paths.services, function (err, jsDocObjs) {
-
       if(err) return res.serverError(err);
       res.json(jsDocObjs);
     });
   },
 
   responses: function(req, res) {
-    res.json(sails);
     DocsService.parseDirname(sails.config.paths.responses, function (err, jsDocObjs) {
-
       if(err) return res.serverError(err);
       res.json(jsDocObjs);
+    });
+  },
+
+  overview: function(req, res) {
+    res.json({
+      'sites': [
+        'controllers',
+        'models',
+        'services',
+        'responses'
+      ]
     });
   },
 };
