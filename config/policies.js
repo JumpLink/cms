@@ -102,7 +102,7 @@ module.exports.policies = {
   
   UserController: {
     'find': true,
-    'setup': true
+    'setup': 'sessionAuthDev'
   },
 
   VWHeritageController: {
