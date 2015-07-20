@@ -1,0 +1,40 @@
+{
+  "environment": "development",
+  "port": 1337,
+  "hookTimeout": 100000,
+  "paths": {
+    "public": "./public",
+    "fallback": "fallback",
+    "sites": "sites",
+    "members": "assets/images/members",
+    "gallery": "assets/images/gallery",
+    "timeline": "assets/files/timeline",
+    "files": "assets/files",
+    "uploads": "uploads"
+  },
+  "sites":[
+    {
+      "name": "bootstrap",
+      "domains": [
+        "bootstrap"
+      ],
+      "email": {
+        "user": "mail@gmail.com",
+        "pass": "123456",
+	      "address": "mail@gmail.com"
+      },
+      "fallback": {
+        "theme": "nvc"
+      }
+    },
+    {
+      "name": "docs",
+      "domains": [
+        "docs"
+      ],
+      "fallback": {
+        "theme": "default_docs"
+      }
+    }
+  ]
+}
