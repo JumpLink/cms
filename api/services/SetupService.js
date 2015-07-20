@@ -2,7 +2,7 @@ var moment = require('moment');
 
 module.exports = {
   users: function (cb) {
-    cb(null, [{email:"admin@admin.org", name: "admin", color: "#000000", password: "cms-admin"}]);
+    cb(null, [{email:"admin@admin.org", name: "admin", color: "#000000", password: "cms-admin", site:'bootstrap'}]);
   },
   generateUsers: function (cb) {
     async.waterfall([

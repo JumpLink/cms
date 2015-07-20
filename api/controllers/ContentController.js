@@ -40,6 +40,8 @@ module.exports = {
         queryParams.push('type');
       }
 
+      sails.log.debug("ContentController.js:replaceAll", datas);
+
       ModelService.updateOrCreateEach('Content', datas, ['page', 'site', 'name'], function (err, result) {
         if (err) {
           sails.log.error("ContentController: Error on updateOrCreateEach:", err);
@@ -77,6 +79,9 @@ module.exports = {
       var data = req.params.all();
       delete data.id;
       data.site = conf.name;
+
+      sails.log.debug("ContentController.js:replace", data);
+      
       ModelService.updateOrCreate('Content', data, query, function (err, result) {
         if (err) {
           sails.log.error(err);

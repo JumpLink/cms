@@ -1,8 +1,15 @@
 
 var fixName = function(name, title, cb) {
+  // sails.log.debug("fixName");
+  // sails.log.debug("name:", name);
+  // sails.log.debug("title:", title);
+
+
   if(!name || name === "") {
     var re = new RegExp("^[a-zA-Z]$");
-    name = title.toLowerCase().replace(/[^a-zA-Z]+/g, '');
+    if(title) name = title.toLowerCase().replace(/[^a-zA-Z]+/g, '');
+    else sails.log.error("title not set");
+    
     sails.log.debug("set name to", name);
   }
   if(cb) cb(null, name);
@@ -56,6 +63,7 @@ module.exports = {
 
   // Lifecycle Callbacks
   , beforeValidation : function(values, cb) {
+    sails.log.debug("beforeValidation", values);
     values.name = fixName(values.name, values.title);
     values.key = values.site+"."+values.page+"."+values.name;
     values.position = Number(values.position); // WORKAROUND

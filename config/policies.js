@@ -102,6 +102,7 @@ module.exports.policies = {
   
   UserController: {
     'find': true,
+    'setup': true
   },
 
   VWHeritageController: {
