@@ -44,6 +44,10 @@ module.exports.policies = {
 
   DocsController: {
     'controllers': true,
+    'models': true,
+    'services': true,
+    'responses': true,
+    'available': true,
     'all': true
   },
 
