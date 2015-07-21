@@ -43,7 +43,8 @@ module.exports.policies = {
   },
 
   DocsController: {
-    '*': true
+    'controllers': true,
+    'all': true
   },
 
   DocumentController: {
