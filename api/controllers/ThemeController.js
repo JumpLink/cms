@@ -13,6 +13,10 @@ var available = function (req, res, next) {
     res.json(dirs);
   });
 }
+
+/**
+ * 
+ */
 var infos = function (req, res, next) {
   ThemeService.getThemesSortedByPriority(req, function (err, themes) {
     if(err) return res.serverError(err);
@@ -20,7 +24,9 @@ var infos = function (req, res, next) {
   });
 }
 
-// find from database and isert priority from database
+/**
+ * find from database and isert priority from database
+ */
 var find = function (req, res, next) {
   ThemeService.getThemesSortedByPriority(req, function (err, themes) {
     if(err) return res.serverError(err);
@@ -28,6 +34,9 @@ var find = function (req, res, next) {
   });
 }
 
+/**
+ * 
+ */
 var updateOrCreate = function (req, res, next) {
   var data = req.params.all();
   // sails.log.debug(data);
@@ -37,6 +46,9 @@ var updateOrCreate = function (req, res, next) {
   });
 }
 
+/**
+ * 
+ */
 var updateOrCreateEach = function (req, res, next) {
   var data = req.params.all();
   // sails.log.debug(data);
@@ -46,6 +58,9 @@ var updateOrCreateEach = function (req, res, next) {
   });
 }
 
+/**
+ * 
+ */
 var fallback = function (req, res, next, force) {
   ThemeService.getController(req, 'FallbackController', function (err, FallbackController) {
     if(err) return res.serverError(err);
@@ -53,6 +68,9 @@ var fallback = function (req, res, next, force) {
   });
 }
 
+/**
+ * 
+ */
 var signin = function (req, res, next, force) {
   ThemeService.getController(req, 'FallbackController', function (err, FallbackController) {
     if(err) return res.serverError(err);
@@ -60,6 +78,9 @@ var signin = function (req, res, next, force) {
   });
 }
 
+/**
+ * 
+ */
 var updateBrowser = function (req, res, next, force) {
   ThemeService.getController(req, 'FallbackController', function (err, FallbackController) {
     if(err) return res.serverError(err);
@@ -67,6 +88,9 @@ var updateBrowser = function (req, res, next, force) {
   });
 }
 
+/**
+ * 
+ */
 var modern = function(req, res, next) {
 
   var ok = function (req, res, next, force) {
@@ -134,7 +158,10 @@ var assets = function (req, res, next, filepath) {
 var likeAssets = function (req, res, next) {
   assets(req, res, next, path.join('/assets', req.path));
 }
- 
+
+/**
+ * 
+ */
 module.exports = {
   available: available
   , infos: infos
@@ -147,9 +174,4 @@ module.exports = {
   , modern: modern
   , assets: assets
   , likeAssets: likeAssets
-  /**
-   * Overrides for the settings in `config/controllers.js`
-   * (specific to ContentController)
-   */
-  , _config: {}
 };

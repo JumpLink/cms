@@ -6,7 +6,7 @@
  */
 
 /**
- * TODO
+ * 
  */
 var catalog_product_list = function (req, res, next) {
 
@@ -32,7 +32,7 @@ var catalog_product_list = function (req, res, next) {
 };
 
 /**
- * TODO
+ * 
  */
 var catalog_product_attribute_media_list = function (req, res, next) {
 
@@ -58,7 +58,7 @@ var catalog_product_attribute_media_list = function (req, res, next) {
 };
 
 /**
- * TODO
+ * 
  */
 var catalog_product_info = function (req, res, next) {
 
@@ -84,7 +84,7 @@ var catalog_product_info = function (req, res, next) {
 };
 
 /**
- * TODO
+ * 
  */
 var catalog_product_update = function (req, res, next) {
 
@@ -111,7 +111,7 @@ var catalog_product_update = function (req, res, next) {
 };
 
 /**
- * TODO
+ * 
  */
 var catalog_product_stock_list = function (req, res, next) {
 
@@ -136,7 +136,7 @@ var catalog_product_stock_list = function (req, res, next) {
 };
 
 /**
- * TODO
+ * 
  */
 var catalog_product_stock_update = function (req, res, next) {
 
@@ -162,6 +162,9 @@ var catalog_product_stock_update = function (req, res, next) {
   });
 };
 
+/**
+ * 
+ */
 module.exports = {
   catalog_product_list: catalog_product_list,
   catalog_product_attribute_media_list: catalog_product_attribute_media_list,

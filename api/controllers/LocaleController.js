@@ -1,23 +1,36 @@
 /**
- * TranslationController
+ * LocaleController
  *
- * @description :: Server-side logic for managing translations
+ * @description :: Server-side logic for managing localisation
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 
-module.exports = {
-  setup: function(req, res) {
-    res.ok();
-  },
+/**
+ * 
+ */
+var setup = function(req, res) {
+  res.ok();
+};
 
-	get: function(req, res, next) {
-    res.ok(req.getLocale());
-  },
-  
-  catalog: function(req, res, next) {
-    var lang = req.param('lang') ? req.param('lang') : req.getLocale();
-    var catalog = req.getCatalog(lang);
-    res.json(catalog);
-  },
+/**
+ * 
+ */
+var get = function(req, res, next) {
+  res.ok(req.getLocale());
+};
+
+/**
+ * 
+ */
+var catalog = function(req, res, next) {
+  var lang = req.param('lang') ? req.param('lang') : req.getLocale();
+  var catalog = req.getCatalog(lang);
+  res.json(catalog);
+};
+
+module.exports = {
+  setup:setup,
+  get:get,
+  catalog:catalog
 };
 

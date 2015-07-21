@@ -19,7 +19,7 @@ var infoUser = function (callback) {
   };
 
   return callback(null, info);
-}
+};
 
 /*
  * Info about CMS only for super admins
@@ -39,10 +39,12 @@ var infoAdmin = function (callback) {
     platform: process.platform,
     execPath: process.execPath,
   };
-
   return callback(null, info);
-}
+};
 
+/*!
+ * 
+ */
 module.exports = {
   infoUser:infoUser,
   infoAdmin:infoAdmin
