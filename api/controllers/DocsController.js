@@ -12,8 +12,10 @@ var path = require('path');     // https://nodejs.org/api/path.html
 /**
  * 
  */
-var controllers = function(req, res) {
-  DocsService.parseDirname('controllers', sails.config.paths.controllers, function (err, jsDocObjs) {
+var config = function(req, res) {
+  sails.log.debug(sails.config.paths);
+  var name = 'config';
+  DocsService.parseDirname(name, sails.config.paths[name], function (err, jsDocObjs) {
     if(err) return res.serverError(err);
     res.json(jsDocObjs);
   });
@@ -22,8 +24,21 @@ var controllers = function(req, res) {
 /**
  * 
  */
-var models = function(req, res) {
-  DocsService.parseDirname('models', sails.config.paths.models, function (err, jsDocObjs) {
+var controllers = function(req, res) {
+  var name = 'controllers';
+  DocsService.parseDirname(name, sails.config.paths[name], function (err, jsDocObjs) {
+    if(err) return res.serverError(err);
+    res.json(jsDocObjs);
+  });
+};
+
+/**
+ * 
+ */
+var policies = function(req, res) {
+  sails.log.debug(sails.config.paths);
+  var name = 'policies';
+  DocsService.parseDirname(name, sails.config.paths[name], function (err, jsDocObjs) {
     if(err) return res.serverError(err);
     res.json(jsDocObjs);
   });
@@ -33,7 +48,52 @@ var models = function(req, res) {
  * 
  */
 var services = function(req, res) {
-  DocsService.parseDirname('services', sails.config.paths.services, function (err, jsDocObjs) {
+  var name = 'services';
+  DocsService.parseDirname(name, sails.config.paths[name], function (err, jsDocObjs) {
+    if(err) return res.serverError(err);
+    res.json(jsDocObjs);
+  });
+};
+
+/**
+ * 
+ */
+var adapters = function(req, res) {
+  var name = 'adapters';
+  DocsService.parseDirname(name, sails.config.paths[name], function (err, jsDocObjs) {
+    if(err) return res.serverError(err);
+    res.json(jsDocObjs);
+  });
+};
+
+/**
+ * 
+ */
+var models = function(req, res) {
+  var name = 'models';
+  DocsService.parseDirname(name, sails.config.paths[name], function (err, jsDocObjs) {
+    if(err) return res.serverError(err);
+    res.json(jsDocObjs);
+  });
+};
+
+/**
+ * 
+ */
+var hooks = function(req, res) {
+  var name = 'hooks';
+  DocsService.parseDirname(name, sails.config.paths[name], function (err, jsDocObjs) {
+    if(err) return res.serverError(err);
+    res.json(jsDocObjs);
+  });
+};
+
+/**
+ * 
+ */
+var blueprints = function(req, res) {
+  var name = 'blueprints';
+  DocsService.parseDirname(name, sails.config.paths[name], function (err, jsDocObjs) {
     if(err) return res.serverError(err);
     res.json(jsDocObjs);
   });
@@ -43,10 +103,18 @@ var services = function(req, res) {
  * 
  */
 var responses = function(req, res) {
-  DocsService.parseDirname('responses', sails.config.paths.responses, function (err, jsDocObjs) {
+  var name = 'responses';
+  DocsService.parseDirname(name, sails.config.paths[name], function (err, jsDocObjs) {
     if(err) return res.serverError(err);
     res.json(jsDocObjs);
   });
+};
+
+/**
+ * 
+ */
+var views = function(req, res) {
+  res.json('TODO');
 };
 
 /**
@@ -68,10 +136,16 @@ var all = function(req, res) {
 };
 
 module.exports = {
+  config: config,
   controllers: controllers,
-  models: models,
+  policies: policies,
   services: services,
+  adapters: adapters,
+  models: models,
+  hooks: hooks,
+  blueprints: blueprints,
   responses: responses,
+  views: views,
   available: available,
   all: all
 };

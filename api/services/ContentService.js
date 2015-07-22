@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 
 /*
  * get all contents for page including images for each content.name 
@@ -29,6 +32,9 @@ var resolveAllWithImage = function(page, site, type, cb) {
   });
 };
 
+/**
+ * 
+ */
 module.exports = {
   resolveAllWithImage: resolveAllWithImage
 }

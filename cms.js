@@ -39,6 +39,9 @@ fs.exists('config/local.json', function(exists) {
   }
 });
 
+/**
+ * 
+ */
 var lift = function () {
   // Ensure a "local.json" can be loaded:
   try {
@@ -82,6 +85,9 @@ var lift = function () {
   sails.lift(rc('sails'));
 }
 
+/**
+ * 
+ */
 var startConfig = function () {
   log.error("TODO");
 }

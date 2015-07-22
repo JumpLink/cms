@@ -1,8 +1,15 @@
+/**
+ * 
+ */
+
 var dox = require('dox');       // https://github.com/tj/dox#programmatic-usage
 var fs = require('fs-extra');   // https://github.com/jprichardson/node-fs-extra
 var path = require('path');     // https://nodejs.org/api/path.html
 // https://github.com/caolan/async
 
+/**
+ * 
+ */
 var parseJsFile = function (jsFileObj, callback) {
   // sails.log.debug(jsFileObj);
   var dir = path.relative(__dirname+"/../..", jsFileObj.path);
@@ -16,6 +23,9 @@ var parseJsFile = function (jsFileObj, callback) {
   callback(null, jsDocObj);
 };
 
+/**
+ * 
+ */
 var readJSFile = function (jsFile, name, dirname, callback) {
   sails.log.debug("[DocsService:readJSFile]",jsFile);
   var filePath = path.join(dirname, jsFile);
@@ -30,14 +40,20 @@ var readJSFile = function (jsFile, name, dirname, callback) {
       data: jsData
     });
   });
-}
+};
 
+/**
+ * 
+ */
 var readJSFiles = function (jsFiles, name, dirname, callback) {
   async.map(jsFiles, function (jsFile, callback) {
     readJSFile(jsFile, name, dirname, callback);
   }, callback);
-}
+};
 
+/**
+ * 
+ */
 var parseDirname = function (name, dirname, callback) {
   async.waterfall([
     function getAllFiles(callback) {
@@ -61,17 +77,29 @@ var parseDirname = function (name, dirname, callback) {
       }, callback);
     },
   ], callback);
-}
+};
 
+/**
+ * 
+ */
 var available = function () {
   return [
+    'config',
     'controllers',
-    'models',
+    'policies',
     'services',
-    'responses'
+    'adapters',
+    'models',
+    'hooks',
+    'blueprints',
+    'responses',
+    'views'
   ]
-}
+};
 
+/**
+ * 
+ */
 var parseAll = function (cb) {
   var available = DocsService.available();
   async.map(available, function (name, cb) {
@@ -80,10 +108,13 @@ var parseAll = function (cb) {
       cb(err, {docs:jsDocObjs, name: name});
     });
   }, cb);
-}
+};
 
+/**
+ * 
+ */
 module.exports = {
   parseDirname: parseDirname,
   available: available,
   parseAll: parseAll
-}
+};

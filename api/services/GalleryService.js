@@ -1,3 +1,7 @@
+/**
+ * 
+ */
+
 var easyimg = require('easyimage');
 var underscore = require('underscore'); // http://documentcloud.github.io/underscore/
 var path = require('path');
@@ -5,6 +9,9 @@ var fs = require('fs-extra');
 
 var SITES_FOLDER = path.resolve(sails.config.paths.public, sails.config.paths.sites);
 
+/**
+ * 
+ */
 var removeFromFilesystem = function(site, file, cb) {
   var gallery_dirname = path.join(SITES_FOLDER, site, sails.config.paths.gallery);
   file.original.path = path.join(gallery_dirname, file.original.name);
@@ -19,6 +26,9 @@ var removeFromFilesystem = function(site, file, cb) {
   });
 };
 
+/**
+ * 
+ */
 var prepearFileForDatabase = function (bind, file, cb) {
   //sails.log.debug("prepearFileForDatabase", bind.site, file);
   // get information about thumb
@@ -40,8 +50,11 @@ var prepearFileForDatabase = function (bind, file, cb) {
       cb(err);
     }
   );
-}
+};
 
+/**
+ * 
+ */
 var prepearFilesForDatabase = function (site, files, images, cb) {
   // sails.log.debug("prepearFilesForDatabase", site, files);
   // get max position
@@ -57,10 +70,11 @@ var prepearFilesForDatabase = function (site, files, images, cb) {
   });
 };
 
+/**
+ * 
+ */
 var find = function (query, cb) {
-
   if(!query.sort) query.sort = 'position';
-
   Gallery.find(query).exec(function found(err, images) {
     if (err) return cb(err);
     if (UtilityService.isUndefined(images) || !UtilityService.isArray(images)) {
@@ -70,7 +84,7 @@ var find = function (query, cb) {
       cb(null, images);
     }
   });
-}
+};
 
 /*
  *  { images: [], content: "", .. } => {"contentname1": {}, "contentname3": {}, ..}
@@ -84,6 +98,9 @@ var convertImageArrayToObject = function (images) {
   return result;
 }
 
+/**
+ * 
+ */
 var findForContent = function (content, cb) {
   var query = {
     where: {
@@ -106,6 +123,9 @@ var findForContent = function (content, cb) {
   });
 };
 
+/**
+ * 
+ */
 module.exports = {
   prepearFilesForDatabase: prepearFilesForDatabase
   , removeFromFilesystem: removeFromFilesystem

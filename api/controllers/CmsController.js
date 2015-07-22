@@ -1,3 +1,10 @@
+/**
+ * Controller to get information about the CMS like Version, Runtime, etc.
+ */
+
+/**
+ * 
+ */
 var setup = function(req, res) {
   res.ok();
 };

@@ -43,10 +43,16 @@ module.exports.policies = {
   },
 
   DocsController: {
+    'config': true,
     'controllers': true,
-    'models': true,
+    'policies': true,
     'services': true,
+    'adapters': true,
+    'models': true,
+    'hooks': true,
+    'blueprints': true,
     'responses': true,
+    'views': true,
     'available': true,
     'all': true
   },

@@ -1,3 +1,10 @@
+/**
+ * The UseragentService makes use of and provides additional functions for [express-useragent](https://github.com/biggora/express-useragent) that was processed on server. 
+ */
+
+/**
+ * 
+ */
 var getPrimaryVersion = function (req) {
   var primaryVersion = 0;
   var firstDotIndex = -1;
@@ -9,11 +16,12 @@ var getPrimaryVersion = function (req) {
     else
       primaryVersion = req.useragent.version.substr(0, firstDotIndex);
   }
-
-
   return primaryVersion;
 }
 
+/**
+ * 
+ */
 var supported = function (req) {
 
   req.useragent.PrimaryVersion = getPrimaryVersion(req);
@@ -46,10 +54,16 @@ var supported = function (req) {
   return false;
 }
 
+/**
+ * 
+ */
 var isModern = function (req, force) {
   return (UseragentService.supported(req) || force == 'modern') && (force != 'fallback' && force != 'legacy' && force != 'noscript')
 }
 
+/**
+ * 
+ */
 module.exports = {
   supported:supported
   , isModern: isModern

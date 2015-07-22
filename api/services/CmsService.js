@@ -1,7 +1,7 @@
 var path = require('path');
 var package = require('../../package.json');
 
-/*
+/**
  * Info about CMS that can readed by normal users
  */
 var infoUser = function (callback) {
@@ -21,7 +21,7 @@ var infoUser = function (callback) {
   return callback(null, info);
 };
 
-/*
+/**
  * Info about CMS only for super admins
  */
 var infoAdmin = function (callback) {
@@ -42,7 +42,7 @@ var infoAdmin = function (callback) {
   return callback(null, info);
 };
 
-/*!
+/**
  * 
  */
 module.exports = {

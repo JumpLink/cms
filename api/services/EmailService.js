@@ -1,5 +1,12 @@
+/**
+ * 
+ */
+
 var nodemailer = require('nodemailer');
 
+/**
+ * 
+ */
 var send = function (host, from, to, subject, text, html, attachments, callback) {
 
   MultisiteService.getCurrentSiteConfig(host, function (err, config) {
@@ -36,6 +43,9 @@ var send = function (host, from, to, subject, text, html, attachments, callback)
   });
 }
 
+/**
+ * 
+ */
 module.exports = {
   send:send
 }

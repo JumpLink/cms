@@ -8,7 +8,6 @@
  * For more information on bootstrapping your app, check out:
  * http://sailsjs.org/#/documentation/reference/sails.config/sails.config.bootstrap.html
  */
-
 module.exports.bootstrap = function(cb) {
 
   // It's very important to trigger this callback method when you are finished

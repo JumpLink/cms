@@ -1,3 +1,7 @@
+/**
+ * 
+ */
+
 var easyimg = require('easyimage');
 var path = require('path');
 var fs = require('fs-extra');
@@ -5,6 +9,9 @@ var fs = require('fs-extra');
 // var UPLOAD_FOLDER =  path.resolve(sails.config.paths.tmp, sails.config.paths.uploads);
 var SITES_FOLDER = path.resolve(sails.config.paths.public, sails.config.paths.sites);
 
+/**
+ * 
+ */
 var generateThumbnail = function (site, file, options, callback) {
   file.thumb = "thumb_"+file.uploadedAs;
   var src = path.join(SITES_FOLDER, site, options.path, file.uploadedAs);
@@ -30,6 +37,9 @@ var generateThumbnail = function (site, file, options, callback) {
   });
 };
 
+/**
+ * 
+ */
 var convertFileIterator = function (site, file, relativePathInSiteFolder, thumbnailOptions, callback) {
   file.uploadedAs = path.basename(file.fd);
   file.savedTo = path.join(SITES_FOLDER, site, relativePathInSiteFolder, file.uploadedAs);
@@ -56,6 +66,9 @@ var convertFileIterator = function (site, file, relativePathInSiteFolder, thumbn
   });
 };
 
+/**
+ * 
+ */
 var upload = function (req, relativePathInSiteFolder, thumbnailOptions, cb) {
   // sails.log.debug(req.file);
 
@@ -89,7 +102,10 @@ var upload = function (req, relativePathInSiteFolder, thumbnailOptions, cb) {
   });
 };
 
+/**
+ * 
+ */
 module.exports = {
   convertFileIterator: convertFileIterator,
   upload: upload
-}
+};

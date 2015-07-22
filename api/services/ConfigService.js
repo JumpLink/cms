@@ -1,3 +1,10 @@
+/**
+ * 
+ */
+ 
+/**
+ * 
+ */
 var getForCurrentSite = function (host, callback) {
   MultisiteService.getCurrentSiteConfig(host, function (err, siteConf) {
     if(err) { return callback(err); }
@@ -13,6 +20,9 @@ var getForCurrentSite = function (host, callback) {
   });
 }
 
+/**
+ * 
+ */
 module.exports = {
   getForCurrentSite:getForCurrentSite
 }

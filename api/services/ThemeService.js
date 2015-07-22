@@ -7,10 +7,14 @@ var path = require("path");
 var THEME_DIR = path.resolve(sails.config.paths.public, 'themes');
 // sails.log.debug("path.resolve(sails.config.paths", sails.config.paths);
 
-// TODO move to global
+/**
+ * TODO move to global
+ */
 var INFO_FILENAME = "theme.json";
 
-// Get an array of found theme dirnames
+/**
+ * Get an array of found theme dirnames
+ */
 var getAvailableThemes = function (cb) {
   UtilityService.getDirs(THEME_DIR, function (dirs) {
     var iterator = function (dir, cb)  {
@@ -23,14 +27,18 @@ var getAvailableThemes = function (cb) {
     }
     async.filter(dirs, iterator, cb);
   });
-}
+};
 
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+/**
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+ */
 var sortByPriority = function(themes, inverse) {
   return UtilityService.sortArrayByProperty(themes, 'priority', inverse);
-}
+};
 
-// set Priority from Database
+/**
+ * Set Priority in theme parameter from Database and get it back in callback
+ */
 var setPriority = function (site, theme, cb) {
 
   var errors = [
@@ -54,9 +62,11 @@ var setPriority = function (site, theme, cb) {
     }
     cb(null, theme);
   });
-}
+};
 
-// set the priority of each theme
+/**
+ * Set Priority like setPriority but for each theme in themesWithInfo-array.
+ */
 var setPriorities = function (themesWithInfo, cb) {
 
   var prioritySum = 0;
@@ -82,7 +92,9 @@ var setPriorities = function (themesWithInfo, cb) {
 
 }
 
-// Get Falback Theme from local.json for site, used if no priority is found
+/**
+ * Get Falback Theme from local.json for site, used if no priority is found.
+ */
 var setPriorityForFallbackTheme = function (siteConfig, themes, callback) {
   var errors = [
     "[services/ThemeService.js] Error: Fallback theme is not defined in local.json"
@@ -100,8 +112,11 @@ var setPriorityForFallbackTheme = function (siteConfig, themes, callback) {
     themes[index].priority = 1;
     callback(null, themes, themes[index], index);
   });
-}
+};
 
+/**
+ * WARN: Gets the information from filesystem, not from database
+ */
 var setThemeInfos = function (siteConfig, availableThemes, callback) {
   var iterator = function (theme, cb) {
     var themePath = THEME_DIR+"/"+theme;
@@ -121,17 +136,22 @@ var setThemeInfos = function (siteConfig, availableThemes, callback) {
   async.map(availableThemes, iterator, function (err, themes) {
     callback(err, themes);
   });
-}
+};
 
+/**
+ * 
+ */
 var getAvailableThemesWithInfo = function (siteConfig, cb) {
   getAvailableThemes(function(themes) {
     setThemeInfos(siteConfig, themes, function (err, themes) {
       cb(err, themes);
     });
   });
-}
+};
 
-// get themes with info and sorted priority
+/**
+ * Get themes with info and sorted priority
+ */
 var getThemesSortedByPriority = function (req, cb) {
   sails.log.debug("[services/ThemeService.js] getThemesSortedByPriority");
   MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
@@ -155,8 +175,11 @@ var getThemesSortedByPriority = function (req, cb) {
       });
     });
   });
-}
+};
 
+/**
+ * 
+ */
 var getThemeWithHighestPriority = function (req, callback) {
   getThemesSortedByPriority(req, function (err, themes) {
     if(err) callback(err);
@@ -165,6 +188,9 @@ var getThemeWithHighestPriority = function (req, callback) {
   });
 }
 
+/**
+ * 
+ */
 var updateOrCreate = function(req, theme, cb) {
   MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
     if(err) cb(err);
@@ -173,6 +199,9 @@ var updateOrCreate = function(req, theme, cb) {
   });
 }
 
+/**
+ * 
+ */
 var updateOrCreateEach = function(req, themes, cb) {
   MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
     if(err) cb(err);
@@ -184,11 +213,16 @@ var updateOrCreateEach = function(req, themes, cb) {
   
 }
 
+/**
+ * 
+ */
 var getRootPathOfThemeDirname = function (dirname, cb) {
  return path.normalize(THEME_DIR+"/"+dirname);
 }
 
-// WARN: This functions gets the information from filesystem, not from database
+/**
+ * 
+ */
 var getThemeByDirnameFromThemes = function (themes, dirname, callback) {    
   var found = false;
 
@@ -225,7 +259,9 @@ var getThemeByDirnameFromThemes = function (themes, dirname, callback) {
   }
 }
 
-// WARN: This functions gets the information from filesystem, not from database
+/**
+ * 
+ */
 var getThemeByDirname = function (dirname, callback) {
   sails.log.debug("[services/ThemeService.js:getThemeByDirname]", dirname);
   getAvailableThemes(function (themes) {
@@ -364,6 +400,9 @@ var getService = function (name, callback) {
   getApiModule(req, filepath, callback);
 }
 
+/**
+ * 
+ */
 module.exports = {
   getAvailableThemes: getAvailableThemes
   , getThemesSortedByPriority: getThemesSortedByPriority
