@@ -1,8 +1,5 @@
 /**
- * TranslationController
- *
- * @description :: Server-side logic for managing translations
- * @help        :: See http://links.sailsjs.org/docs/controllers
+ * EmailController to send emails
  */
 
 var fs = require('fs');

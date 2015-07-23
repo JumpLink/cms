@@ -102,19 +102,110 @@ var available = function () {
  */
 var parseAll = function (cb) {
   var available = DocsService.available();
-  async.map(available, function (name, cb) {
+  async.mapSeries(available, function (name, cb) {
     var dirname = sails.config.paths[name];
     parseDirname(name, dirname, function(err, jsDocObjs){
       cb(err, {docs:jsDocObjs, name: name});
     });
-  }, cb);
+  }, function (err, docsArray) {
+    if(err) return cb(err);
+    var result = {};
+    // convert array to object
+    for (var i = 0; i < available.length; i++) {
+      result[available[i]] = docsArray[i];
+    };
+    cb(null, result);
+  });
 };
 
 /**
- * 
+ * Like oarseAll but called docs functions manuelly 
+ * @see DocsService.parseAll
+ */
+var parseAllManually = function (cb) {
+  async.waterfall([
+    function(callback) {
+      var name = 'config';
+      parseDirname(name, sails.config.paths[name], function(err, jsDocObjs){
+        callback(err, {docs:jsDocObjs, name: name});
+      });
+    },
+    function(config, callback) {
+      var name = 'controllers';
+      parseDirname(name, sails.config.paths[name], function(err, jsDocObjs){
+        callback(err, config, {docs:jsDocObjs, name: name});
+      });
+    },
+    function(config, controllers, callback) {
+      var name = 'policies';
+      parseDirname(name, sails.config.paths[name], function(err, jsDocObjs){
+        callback(err, config, controllers, {docs:jsDocObjs, name: name});
+      });
+    },
+    function(config, controllers, policies, callback) {
+      var name = 'services';
+      parseDirname(name, sails.config.paths[name], function(err, jsDocObjs){
+        callback(err, config, controllers, policies, {docs:jsDocObjs, name: name});
+      });
+    },
+    function(config, controllers, policies, services, callback) {
+      var name = 'adapters';
+      parseDirname(name, sails.config.paths[name], function(err, jsDocObjs){
+        callback(err, config, controllers, policies, services, {docs:jsDocObjs, name: name});
+      });
+    },
+    function(config, controllers, policies, services, adapters, callback) {
+      var name = 'models';
+      parseDirname(name, sails.config.paths[name], function(err, jsDocObjs){
+        callback(err, config, controllers, policies, services, adapters, {docs:jsDocObjs, name: name});
+      });
+    },
+    function(config, controllers, policies, services, adapters, models, callback) {
+      var name = 'hooks';
+      parseDirname(name, sails.config.paths[name], function(err, jsDocObjs){
+        callback(err, config, controllers, policies, services, adapters, models, {docs:jsDocObjs, name: name});
+      });
+    },
+    function(config, controllers, policies, services, adapters, models, hooks, callback) {
+      var name = 'blueprints';
+      parseDirname(name, sails.config.paths[name], function(err, jsDocObjs){
+        callback(err, config, controllers, policies, services, adapters, models, hooks, {docs:jsDocObjs, name: name});
+      });
+    },
+    function(config, controllers, policies, services, adapters, models, hooks, blueprints, callback) {
+      var name = 'responses';
+      parseDirname(name, sails.config.paths[name], function(err, jsDocObjs){
+        callback(err, config, controllers, policies, services, adapters, models, hooks, blueprints, {docs:jsDocObjs, name: name});
+      });
+    },
+    function(config, controllers, policies, services, adapters, models, hooks, blueprints, responses, callback) {
+      var name = 'views';
+      parseDirname(name, sails.config.paths[name], function(err, jsDocObjs){
+        callback(err, config, controllers, policies, services, adapters, models, hooks, blueprints, responses, {docs:jsDocObjs, name: name});
+      });
+    },
+  ], function (err, config, controllers, policies, services, adapters, models, hooks, blueprints, responses, views) {
+    cb(err, {
+      config: config,
+      controllers: controllers,
+      policies: policies,
+      services: services,
+      adapters: adapters,
+      models: models,
+      hooks: hooks,
+      blueprints: blueprints,
+      responses: responses,
+      views: views
+    });
+  });
+};
+
+/**
+ * The following functions are public
  */
 module.exports = {
   parseDirname: parseDirname,
   available: available,
-  parseAll: parseAll
+  parseAll: parseAll,
+  parseAllManually: parseAllManually
 };

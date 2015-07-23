@@ -1,87 +1,48 @@
 /**
- * HTTP Server Settings
- * (sails.config.http)
+ * Internationalization / Localization Settings
+ * (sails.config.i18n)
  *
- * Configuration for the underlying HTTP server in Sails.
- * Only applies to HTTP requests (not WebSockets)
+ * If your app will touch people from all over the world, i18n (or internationalization)
+ * may be an important part of your international strategy.
  *
- * For more information on configuration, check out:
- * http://sailsjs.org/#/documentation/reference/sails.config/sails.config.http.html
+ *
+ * For more informationom i18n in Sails, check out:
+ * http://sailsjs.org/#!/documentation/concepts/Internationalization
+ *
+ * For a complete list of i18n options, see:
+ * https://github.com/mashpie/i18n-node#list-of-configuration-options
+ *
+ *
  */
 
-module.exports.http = {
+/**
+ * Which locales are supported?
+ */
+var locales = ['en', 'es', 'fr', 'de'];
 
-  /****************************************************************************
-  *                                                                           *
-  * Express middleware to use for every Sails request. To add custom          *
-  * middleware to the mix, add a function to the middleware config object and *
-  * add its key to the "order" array. The $custom key is reserved for         *
-  * backwards-compatibility with Sails v0.9.x apps that use the               *
-  * `customMiddleware` config option.                                         *
-  *                                                                           *
-  ****************************************************************************/
+/**
+ * What is the default locale for the site? Note that this setting will be
+ * overridden for any request that sends an "Accept-Language" header (i.e.
+ * most browsers), but it's still useful if you need to localize the
+ * response for requests made by non-browser clients (e.g. cURL).
+ */
+var defaultLocale = 'en';
 
-  // middleware: {
+/**
+ * Automatically add new keys to locale (translation) files when they are
+ * encountered during a request?
+ */
+var updateFiles = true;
 
-  /***************************************************************************
-  *                                                                          *
-  * The order in which middleware should be run for HTTP request. (the Sails *
-  * router is invoked by the "router" middleware below.)                     *
-  *                                                                          *
-  ***************************************************************************/
+/**
+ * Path (relative to app root) of directory to store locale (translation)
+ * files in.
+ */
+var localesDirectory = '/config/locales';
 
-    // order: [
-    //   'startRequestTimer',
-    //   'cookieParser',
-    //   'session',
-    //   'myRequestLogger',
-    //   'bodyParser',
-    //   'handleBodyParserError',
-    //   'compress',
-    //   'methodOverride',
-    //   'poweredBy',
-    //   '$custom',
-    //   'router',
-    //   'www',
-    //   'favicon',
-    //   '404',
-    //   '500'
-    // ],
-
-  /****************************************************************************
-  *                                                                           *
-  * Example custom middleware; logs each request to the console.              *
-  *                                                                           *
-  ****************************************************************************/
-
-    // myRequestLogger: function (req, res, next) {
-    //     console.log("Requested :: ", req.method, req.url);
-    //     return next();
-    // }
-
-
-  /***************************************************************************
-  *                                                                          *
-  * The body parser that will handle incoming multipart HTTP requests. By    *
-  * default as of v0.10, Sails uses                                          *
-  * [skipper](http://github.com/balderdashy/skipper). See                    *
-  * http://www.senchalabs.org/connect/multipart.html for other options.      *
-  *                                                                          *
-  ***************************************************************************/
-
-    // bodyParser: require('skipper')
-
-  // },
-
-  /***************************************************************************
-  *                                                                          *
-  * The number of seconds to cache flat files on disk being served by        *
-  * Express static middleware (by default, these files are in `.tmp/public`) *
-  *                                                                          *
-  * The HTTP static cache is only active in a 'production' environment,      *
-  * since that's the only time Express will cache flat-files.                *
-  *                                                                          *
-  ***************************************************************************/
-
-  // cache: 31557600000
+module.exports.i18n = {
+  locales: locales,
+  defaultLocale: defaultLocale,
+  updateFiles: updateFiles,
+  localesDirectory: localesDirectory
 };

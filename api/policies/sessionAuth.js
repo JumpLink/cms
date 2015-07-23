@@ -7,7 +7,7 @@
  * @docs        :: http://sailsjs.org/#!documentation/policies
  *
  */
-module.exports = function(req, res, next) {
+var sessionAuth = function(req, res, next) {
 
   // User is allowed, proceed to the next policy,
   // or if this is the last policy, the controller  
@@ -19,3 +19,8 @@ module.exports = function(req, res, next) {
   // (default res.forbidden() behavior can be overridden in `config/403.js)
   return res.forbidden();
 };
+
+/**
+ * Make this policy available
+ */
+module.exports = sessionAuth;

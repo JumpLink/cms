@@ -1,6 +1,7 @@
 {
   "environment": "development",
   "port": 1337,
+  "secret": "3452eab56804ee3476ec53148be1b627",
   "hookTimeout": 100000,
   "paths": {
     "public": "./public",

@@ -1,10 +1,6 @@
 /**
- * DocumentController
- *
- * @description :: Server-side logic for managing documents
- * @help        :: See http://links.sailsjs.org/docs/controllers
+ * DocumentController to get the docs as json
  */
-
 var exec = require('child_process').exec;
 var path = require('path');
 var fs = require('fs');

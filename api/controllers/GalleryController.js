@@ -1,8 +1,5 @@
 /**
- * DocumentController
- *
- * @description :: Server-side logic for managing documents
- * @help        :: See http://links.sailsjs.org/docs/controllers
+ * GalleryController to find / update / upload / destroy images for galleries
  */
 
 var path = require('path');
@@ -137,6 +134,9 @@ var destroy = function(req, res) {
   });
 };
 
+/**
+ * 
+ */
 module.exports = {
   setup:setup,
   update:update,

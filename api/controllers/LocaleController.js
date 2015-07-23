@@ -28,6 +28,9 @@ var catalog = function(req, res, next) {
   res.json(catalog);
 };
 
+/**
+ * 
+ */
 module.exports = {
   setup:setup,
   get:get,

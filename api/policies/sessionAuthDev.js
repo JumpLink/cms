@@ -7,7 +7,7 @@
  * @docs        :: http://sailsjs.org/#!documentation/policies
  *
  */
-module.exports = function(req, res, next) {
+var sessionAuthDev = function(req, res, next) {
 
   // Allways allowed on development-mode
   if (sails.config.environment === 'development') {
@@ -18,3 +18,8 @@ module.exports = function(req, res, next) {
   // (default res.forbidden() behavior can be overridden in `config/403.js)
   return res.forbidden();
 };
+
+/**
+ * Make this policy available
+ */
+module.exports = sessionAuthDev;

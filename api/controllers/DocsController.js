@@ -125,7 +125,7 @@ var available = function(req, res) {
 };
 
 /**
- * 
+ * Get all docs they are list in `available`
  */
 var all = function(req, res) {
   sails.log.debug("[DocsController:all]");
@@ -135,6 +135,9 @@ var all = function(req, res) {
   });
 };
 
+/**
+ * 
+ */
 module.exports = {
   config: config,
   controllers: controllers,
