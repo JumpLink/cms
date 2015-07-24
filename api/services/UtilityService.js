@@ -1,24 +1,25 @@
 /**
- * 
+ * A collection of useful help functions.
  */
-
 var fs = require('fs-extra'); // https://github.com/jprichardson/node-fs-extra
 var path = require('path');
 var underscore = require('underscore'); // http://documentcloud.github.io/underscore/
 var extend = require('node.extend'); // https://github.com/dreamerslab/node.extend
 
-// server compatibility to angular functions
-// TODO outsource to node-angular?
 
 /**
- * http://stackoverflow.com/questions/6449611/how-to-check-whether-a-value-is-a-number-in-javascript-or-jquery
+ * check whether a value is a number
+ *
+ * @see http://stackoverflow.com/questions/6449611/how-to-check-whether-a-value-is-a-number-in-javascript-or-jquery
  */
 function isNumber(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 };
 
 /**
- * http://stackoverflow.com/questions/4020796/finding-the-max-value-of-an-attribute-in-an-array-of-objects
+ * Finding the max value of an attribute in an array of objects.
+ *
+ * @see http://stackoverflow.com/questions/4020796/finding-the-max-value-of-an-attribute-in-an-array-of-objects
  */
 var max = function (array, key) {
   return Math.max.apply(Math,array.map(function(o){ if(isNumber) return o[key]; else 0}))
@@ -32,8 +33,11 @@ var isDefined = function(value) {
 };
 
 /**
- * Server compatibility to angular functions.
- * TODO auslagern in eigene Library,
+ * Server compatibility filter to angular.
+ * Returns a (stably) sorted copy of list, ranked in ascending order by the results of running each value through iteratee.
+ * Iteratee may also be the string name of the property to sort by (eg. length).
+ *
+ * @see http://underscorejs.org/#sortBy
  */
 var $filter = function(filtername) {
   switch (filtername) {
@@ -44,7 +48,7 @@ var $filter = function(filtername) {
 };
 
 /**
- * 
+ * Invert the order of an array
  */
 var invertOrder = function (array) {
   var result = [];
@@ -55,8 +59,9 @@ var invertOrder = function (array) {
 }
 
 /**
- * http://stackoverflow.com/questions/18112204/get-all-directories-within-directory-nodejs
- * TODO outsource to path-extra or fs-extra?
+ * Get an array of dirs in path.
+ *
+ * @see: http://stackoverflow.com/questions/18112204/get-all-directories-within-directory-nodejs
  */
 var getDirsSync = function (srcpath) {
   return fs.readdirSync(srcpath).filter(function(file) {
@@ -65,7 +70,9 @@ var getDirsSync = function (srcpath) {
 };
 
 /**
- * Get an array of dirs in path
+ * Async version of getDirsSync
+ * 
+ * @see: UlilityService.getDirsSync
  */
 var getDirs = function(srcpath, cb) {
   fs.readdir(srcpath, function (err, files) {
@@ -87,7 +94,9 @@ var getDirs = function(srcpath, cb) {
 }
 
 /**
- * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+ * Sort an array by property 
+ *
+ * @see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
  */
 var sortArrayByProperty = function(array, propertyName, inverse) {
   if (inverse)
@@ -118,7 +127,8 @@ var sortArrayByProperty = function(array, propertyName, inverse) {
 }
 
 /**
- * 
+ * This functions sets a position property identical wit the current array index.
+ * Useful for objects they requiring a position property.
  */
 var fixPosition = function (obj) {
   for (var i = 0; i < obj.length; i++) {
@@ -128,7 +138,7 @@ var fixPosition = function (obj) {
 };
 
 /**
- * 
+ * The following functions are public.
  */
 module.exports = {
   isUndefined: underscore.isUndefined

@@ -15,7 +15,7 @@ var path = require('path');     // https://nodejs.org/api/path.html
 var config = function(req, res) {
   sails.log.debug(sails.config.paths);
   var name = 'config';
-  DocsService.parseDirname(name, sails.config.paths[name], function (err, jsDocObjs) {
+  DocsService.parseDirname(name, sails.config.paths[name], {}, function (err, jsDocObjs) {
     if(err) return res.serverError(err);
     res.json(jsDocObjs);
   });
@@ -26,7 +26,7 @@ var config = function(req, res) {
  */
 var controllers = function(req, res) {
   var name = 'controllers';
-  DocsService.parseDirname(name, sails.config.paths[name], function (err, jsDocObjs) {
+  DocsService.parseDirname(name, sails.config.paths[name], {}, function (err, jsDocObjs) {
     if(err) return res.serverError(err);
     res.json(jsDocObjs);
   });
@@ -38,7 +38,7 @@ var controllers = function(req, res) {
 var policies = function(req, res) {
   sails.log.debug(sails.config.paths);
   var name = 'policies';
-  DocsService.parseDirname(name, sails.config.paths[name], function (err, jsDocObjs) {
+  DocsService.parseDirname(name, sails.config.paths[name], {}, function (err, jsDocObjs) {
     if(err) return res.serverError(err);
     res.json(jsDocObjs);
   });
@@ -49,7 +49,7 @@ var policies = function(req, res) {
  */
 var services = function(req, res) {
   var name = 'services';
-  DocsService.parseDirname(name, sails.config.paths[name], function (err, jsDocObjs) {
+  DocsService.parseDirname(name, sails.config.paths[name], {}, function (err, jsDocObjs) {
     if(err) return res.serverError(err);
     res.json(jsDocObjs);
   });
@@ -60,7 +60,7 @@ var services = function(req, res) {
  */
 var adapters = function(req, res) {
   var name = 'adapters';
-  DocsService.parseDirname(name, sails.config.paths[name], function (err, jsDocObjs) {
+  DocsService.parseDirname(name, sails.config.paths[name], {}, function (err, jsDocObjs) {
     if(err) return res.serverError(err);
     res.json(jsDocObjs);
   });
@@ -71,7 +71,7 @@ var adapters = function(req, res) {
  */
 var models = function(req, res) {
   var name = 'models';
-  DocsService.parseDirname(name, sails.config.paths[name], function (err, jsDocObjs) {
+  DocsService.parseDirname(name, sails.config.paths[name], {}, function (err, jsDocObjs) {
     if(err) return res.serverError(err);
     res.json(jsDocObjs);
   });
@@ -82,7 +82,7 @@ var models = function(req, res) {
  */
 var hooks = function(req, res) {
   var name = 'hooks';
-  DocsService.parseDirname(name, sails.config.paths[name], function (err, jsDocObjs) {
+  DocsService.parseDirname(name, sails.config.paths[name], {}, function (err, jsDocObjs) {
     if(err) return res.serverError(err);
     res.json(jsDocObjs);
   });
@@ -93,7 +93,7 @@ var hooks = function(req, res) {
  */
 var blueprints = function(req, res) {
   var name = 'blueprints';
-  DocsService.parseDirname(name, sails.config.paths[name], function (err, jsDocObjs) {
+  DocsService.parseDirname(name, sails.config.paths[name], {}, function (err, jsDocObjs) {
     if(err) return res.serverError(err);
     res.json(jsDocObjs);
   });
@@ -104,7 +104,7 @@ var blueprints = function(req, res) {
  */
 var responses = function(req, res) {
   var name = 'responses';
-  DocsService.parseDirname(name, sails.config.paths[name], function (err, jsDocObjs) {
+  DocsService.parseDirname(name, sails.config.paths[name], {}, function (err, jsDocObjs) {
     if(err) return res.serverError(err);
     res.json(jsDocObjs);
   });
@@ -129,7 +129,7 @@ var available = function(req, res) {
  */
 var all = function(req, res) {
   sails.log.debug("[DocsController:all]");
-  DocsService.parseAll(function (err, jsDocObjs) {
+  DocsService.parseAll({}, function (err, jsDocObjs) {
     if(err) return res.serverError(err);
     res.json(jsDocObjs);
   });

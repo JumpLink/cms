@@ -1,14 +1,52 @@
 /**
- * 
+ * Service to parse the code and comments to generate documentation in json.
+ *
+ * @see: https://github.com/tj/dox#programmatic-usage
+ * @see: https://github.com/jprichardson/node-fs-extra
+ * @see: https://nodejs.org/api/path.html
+ * @see: http://adilapapaya.com/docs/highlight.js/#nodejs
+ * @see: https://github.com/caolan/async
  */
 
-var dox = require('dox');       // https://github.com/tj/dox#programmatic-usage
-var fs = require('fs-extra');   // https://github.com/jprichardson/node-fs-extra
-var path = require('path');     // https://nodejs.org/api/path.html
-// https://github.com/caolan/async
+var dox = require('dox');           // https://github.com/tj/dox#programmatic-usage
+var fs = require('fs-extra');       // https://github.com/jprichardson/node-fs-extra
+var path = require('path');         // https://nodejs.org/api/path.html
+var hljs = require('highlight.js'); // http://adilapapaya.com/docs/highlight.js/#nodejs
 
 /**
- * 
+ * Highlighting the parsed code.
+ *
+ * @param jsDocFolderObjs All documentation objects from a javascript files path
+ */
+var HighlightDocs = function (jsDocFolderObjs, options, callback) {
+  // sails.log.debug("[DocsService.HighlightDocs:jsDocFolderObjs]", jsDocFolderObjs, options);
+
+  async.map(jsDocFolderObjs, function(jsDocFileObj, callback) {
+    // sails.log.debug("[DocsService.HighlightDocs:jsDocFileObj]", JSON.stringify(jsDocFileObj, null, 2));
+    async.map(jsDocFileObj.dox, function(jsDocFuncsObj, callback) {
+      // sails.log.debug("[DocsService.HighlightDocs:jsDocFuncsObj]", jsDocFuncsObj);
+      if(UtilityService.isDefined(jsDocFuncsObj.code)) {
+        // sails.log.debug("[DocsService.HighlightDocs:jsDocFuncsObj]", jsDocFuncsObj.code);
+        if(options.lang) jsDocFuncsObj.highlight = hljs.highlight(options.lang, jsDocFuncsObj.code);
+        else jsDocFuncsObj.highlight = hljs.highlight(jsDocFuncsObj.code);
+        jsDocFuncsObj.code = jsDocFuncsObj.highlight.value;
+        // sails.log.debug("[DocsService.HighlightDocs:jsDocFileObj]", jsDocFuncsObj.code);
+      }
+      callback(null, jsDocFuncsObj);
+    }, function(err, dox) {
+      jsDocFileObj.dox = dox;
+      callback(err, jsDocFileObj);
+    });
+
+
+    
+  }, callback);
+
+  // callback(null, jsDocFolderObjs);
+};
+
+/**
+ * Generate the doc from the read JavaScript file
  */
 var parseJsFile = function (jsFileObj, callback) {
   // sails.log.debug(jsFileObj);
@@ -24,10 +62,19 @@ var parseJsFile = function (jsFileObj, callback) {
 };
 
 /**
- * 
+ * Just a simple sort function.
+ *
+ * @see UtilityService.$filter
+ */
+var sort = function(available) {
+  return UtilityService.$filter('orderBy')(available);
+}
+
+/**
+ * Read the JavaScript file
  */
 var readJSFile = function (jsFile, name, dirname, callback) {
-  sails.log.debug("[DocsService:readJSFile]",jsFile);
+  // sails.log.debug("[DocsService:readJSFile]",jsFile);
   var filePath = path.join(dirname, jsFile);
   var parsed = path.parse(filePath);
   fs.readFile(filePath, {encoding: 'utf-8'}, function (err, jsData) {
@@ -43,7 +90,7 @@ var readJSFile = function (jsFile, name, dirname, callback) {
 };
 
 /**
- * 
+ * Like readJSFile but first param is an array of files.
  */
 var readJSFiles = function (jsFiles, name, dirname, callback) {
   async.map(jsFiles, function (jsFile, callback) {
@@ -54,7 +101,7 @@ var readJSFiles = function (jsFiles, name, dirname, callback) {
 /**
  * 
  */
-var parseDirname = function (name, dirname, callback) {
+var parseDirname = function (name, dirname, options, callback) {
   async.waterfall([
     function getAllFiles(callback) {
       fs.readdir(dirname, function (err, files) {
@@ -76,14 +123,21 @@ var parseDirname = function (name, dirname, callback) {
         parseJsFile(jsFileObj, callback);
       }, callback);
     },
+    function (jsDocFolderObjs, callback) {
+      if(options.highlight) {
+        HighlightDocs(jsDocFolderObjs, options, callback);
+      } else {
+        callback(null, jsDocFolderObjs);
+      }
+    },
   ], callback);
 };
 
 /**
- * 
+ * Get all available docs sorted by name. 
  */
 var available = function () {
-  return [
+  return sort([
     'config',
     'controllers',
     'policies',
@@ -94,17 +148,17 @@ var available = function () {
     'blueprints',
     'responses',
     'views'
-  ]
+  ]);
 };
 
 /**
  * 
  */
-var parseAll = function (cb) {
+var parseAll = function (options, cb) {
   var available = DocsService.available();
   async.mapSeries(available, function (name, cb) {
     var dirname = sails.config.paths[name];
-    parseDirname(name, dirname, function(err, jsDocObjs){
+    parseDirname(name, dirname, options, function(err, jsDocObjs){
       cb(err, {docs:jsDocObjs, name: name});
     });
   }, function (err, docsArray) {
@@ -119,93 +173,10 @@ var parseAll = function (cb) {
 };
 
 /**
- * Like oarseAll but called docs functions manuelly 
- * @see DocsService.parseAll
- */
-var parseAllManually = function (cb) {
-  async.waterfall([
-    function(callback) {
-      var name = 'config';
-      parseDirname(name, sails.config.paths[name], function(err, jsDocObjs){
-        callback(err, {docs:jsDocObjs, name: name});
-      });
-    },
-    function(config, callback) {
-      var name = 'controllers';
-      parseDirname(name, sails.config.paths[name], function(err, jsDocObjs){
-        callback(err, config, {docs:jsDocObjs, name: name});
-      });
-    },
-    function(config, controllers, callback) {
-      var name = 'policies';
-      parseDirname(name, sails.config.paths[name], function(err, jsDocObjs){
-        callback(err, config, controllers, {docs:jsDocObjs, name: name});
-      });
-    },
-    function(config, controllers, policies, callback) {
-      var name = 'services';
-      parseDirname(name, sails.config.paths[name], function(err, jsDocObjs){
-        callback(err, config, controllers, policies, {docs:jsDocObjs, name: name});
-      });
-    },
-    function(config, controllers, policies, services, callback) {
-      var name = 'adapters';
-      parseDirname(name, sails.config.paths[name], function(err, jsDocObjs){
-        callback(err, config, controllers, policies, services, {docs:jsDocObjs, name: name});
-      });
-    },
-    function(config, controllers, policies, services, adapters, callback) {
-      var name = 'models';
-      parseDirname(name, sails.config.paths[name], function(err, jsDocObjs){
-        callback(err, config, controllers, policies, services, adapters, {docs:jsDocObjs, name: name});
-      });
-    },
-    function(config, controllers, policies, services, adapters, models, callback) {
-      var name = 'hooks';
-      parseDirname(name, sails.config.paths[name], function(err, jsDocObjs){
-        callback(err, config, controllers, policies, services, adapters, models, {docs:jsDocObjs, name: name});
-      });
-    },
-    function(config, controllers, policies, services, adapters, models, hooks, callback) {
-      var name = 'blueprints';
-      parseDirname(name, sails.config.paths[name], function(err, jsDocObjs){
-        callback(err, config, controllers, policies, services, adapters, models, hooks, {docs:jsDocObjs, name: name});
-      });
-    },
-    function(config, controllers, policies, services, adapters, models, hooks, blueprints, callback) {
-      var name = 'responses';
-      parseDirname(name, sails.config.paths[name], function(err, jsDocObjs){
-        callback(err, config, controllers, policies, services, adapters, models, hooks, blueprints, {docs:jsDocObjs, name: name});
-      });
-    },
-    function(config, controllers, policies, services, adapters, models, hooks, blueprints, responses, callback) {
-      var name = 'views';
-      parseDirname(name, sails.config.paths[name], function(err, jsDocObjs){
-        callback(err, config, controllers, policies, services, adapters, models, hooks, blueprints, responses, {docs:jsDocObjs, name: name});
-      });
-    },
-  ], function (err, config, controllers, policies, services, adapters, models, hooks, blueprints, responses, views) {
-    cb(err, {
-      config: config,
-      controllers: controllers,
-      policies: policies,
-      services: services,
-      adapters: adapters,
-      models: models,
-      hooks: hooks,
-      blueprints: blueprints,
-      responses: responses,
-      views: views
-    });
-  });
-};
-
-/**
  * The following functions are public
  */
 module.exports = {
   parseDirname: parseDirname,
   available: available,
-  parseAll: parseAll,
-  parseAllManually: parseAllManually
+  parseAll: parseAll
 };

@@ -99,7 +99,7 @@ var setPriorityForFallbackTheme = function (siteConfig, themes, callback) {
   var errors = [
     "[services/ThemeService.js] Error: Fallback theme is not defined in local.json"
   ]
-  sails.log.debug("[services/ThemeService.js] setPriorityForFallbackTheme");
+  // sails.log.debug("[services/ThemeService.js] setPriorityForFallbackTheme");
 
   if(UtilityService.isUndefined(siteConfig.fallback.theme)) {
     sails.log.error(errors[0], siteConfig);
@@ -153,7 +153,7 @@ var getAvailableThemesWithInfo = function (siteConfig, cb) {
  * Get themes with info and sorted priority
  */
 var getThemesSortedByPriority = function (req, cb) {
-  sails.log.debug("[services/ThemeService.js] getThemesSortedByPriority");
+  // sails.log.debug("[services/ThemeService.js] getThemesSortedByPriority");
   MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
     if(err) return cb(err);
     getAvailableThemesWithInfo(config, function (err, themesWithInfo) {
@@ -226,7 +226,7 @@ var getRootPathOfThemeDirname = function (dirname, cb) {
 var getThemeByDirnameFromThemes = function (themes, dirname, callback) {    
   var found = false;
 
-  sails.log.debug("[services/ThemeService.js:getThemeByDirnameFromThemes] themes:", themes);
+  // sails.log.debug("[services/ThemeService.js:getThemeByDirnameFromThemes] themes:", themes);
 
   for (var i = 0; i < themes.length && !found; i++) {
 
@@ -234,7 +234,7 @@ var getThemeByDirnameFromThemes = function (themes, dirname, callback) {
     if(typeof(themes[i]) === 'string') {
       if(themes[i] === dirname) {
         found = true;
-        sails.log.debug("[services/ThemeService.js:getThemeByDirnameFromThemes] "+themes[i]+" === "+dirname+": "+found);
+        // sails.log.debug("[services/ThemeService.js:getThemeByDirnameFromThemes] "+themes[i]+" === "+dirname+": "+found);
       }
     }
 
@@ -243,11 +243,11 @@ var getThemeByDirnameFromThemes = function (themes, dirname, callback) {
       if(themes[i].dirname === dirname) {
         found = true;
       }
-      sails.log.debug("[services/ThemeService.js:getThemeByDirnameFromThemes] "+themes[i].dirname+" === "+dirname+": "+found);
+      // sails.log.debug("[services/ThemeService.js:getThemeByDirnameFromThemes] "+themes[i].dirname+" === "+dirname+": "+found);
     }
 
     if (found) { 
-      sails.log.debug("theme FOUND", dirname);
+      // sails.log.debug("theme FOUND", dirname);
       return callback(null, themes[i], i);
     }
     
@@ -263,7 +263,7 @@ var getThemeByDirnameFromThemes = function (themes, dirname, callback) {
  * 
  */
 var getThemeByDirname = function (dirname, callback) {
-  sails.log.debug("[services/ThemeService.js:getThemeByDirname]", dirname);
+  // sails.log.debug("[services/ThemeService.js:getThemeByDirname]", dirname);
   getAvailableThemes(function (themes) {
     getThemeByDirnameFromThemes(themes, dirname, callback);
   });
