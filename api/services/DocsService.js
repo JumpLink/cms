@@ -26,11 +26,15 @@ var HighlightDocs = function (jsDocFolderObjs, options, callback) {
     async.map(jsDocFileObj.dox, function(jsDocFuncsObj, callback) {
       // sails.log.debug("[DocsService.HighlightDocs:jsDocFuncsObj]", jsDocFuncsObj);
       if(UtilityService.isDefined(jsDocFuncsObj.code)) {
-        // sails.log.debug("[DocsService.HighlightDocs:jsDocFuncsObj]", jsDocFuncsObj.code);
         if(options.lang) jsDocFuncsObj.highlight = hljs.highlight(options.lang, jsDocFuncsObj.code);
         else jsDocFuncsObj.highlight = hljs.highlight(jsDocFuncsObj.code);
         jsDocFuncsObj.code = jsDocFuncsObj.highlight.value;
-        // sails.log.debug("[DocsService.HighlightDocs:jsDocFileObj]", jsDocFuncsObj.code);
+
+        /**
+         * WORADOUND for bug: Maximum call stack size exceeded.
+         * I think is too thick
+         */
+        delete jsDocFuncsObj.highlight;
       }
       callback(null, jsDocFuncsObj);
     }, function(err, dox) {

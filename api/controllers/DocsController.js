@@ -129,7 +129,7 @@ var available = function(req, res) {
  */
 var all = function(req, res) {
   sails.log.debug("[DocsController:all]");
-  DocsService.parseAll({}, function (err, jsDocObjs) {
+  DocsService.parseAll({highlight: true, lang: 'javascript'}, function (err, jsDocObjs) {
     if(err) return res.serverError(err);
     res.json(jsDocObjs);
   });
