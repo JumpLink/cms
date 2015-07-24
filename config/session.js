@@ -19,8 +19,6 @@
 **/
 var secret = require('./local.json').secret;
 
-console.log(secret);
-
 /**
 * Apply session configs
 **/

@@ -116,6 +116,7 @@ module.exports.policies = {
   ThemeController: {
     'assets': true,
     'likeAssets': true,
+    'favicon': true,
     'signin': true,
     'modern': true,
     'fallback': true
