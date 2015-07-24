@@ -38,8 +38,10 @@ module.exports.routes = {
   '/fallback/*': 'ThemeController.fallback',
   
   '/assets/*': 'ThemeController.assets',
-  '/favicon.ico': 'ThemeController.likeAssets',
+  '/favicon.ico': 'ThemeController.favicon',
+  '/browserconfig.xml': 'ThemeController.favicon',
   '/robots.txt': 'ThemeController.likeAssets',
+
 
   /**
    * Custom routes here...

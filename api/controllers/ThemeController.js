@@ -153,10 +153,17 @@ var assets = function (req, res, next, filepath) {
 }
 
 /**
- * converts /favicon.ico and /robots.txt to /assets/favicon.ico and /assets/robots.txt so you can put it in your theme folder 
+ * converts robots.txt to /assets/robots.txt so you can put it in your theme folder 
  */
 var likeAssets = function (req, res, next) {
   assets(req, res, next, path.join('/assets', req.path));
+}
+
+/**
+ * converts /favicon.ico to /assets/favicons/favicon.ico so you can put it in your theme folder 
+ */
+var favicon = function (req, res, next) {
+  assets(req, res, next, path.join('/assets/favicons', req.path));
 }
 
 /**
@@ -174,4 +181,5 @@ module.exports = {
   , modern: modern
   , assets: assets
   , likeAssets: likeAssets
+  , favicon: favicon
 };

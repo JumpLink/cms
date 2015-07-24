@@ -11,7 +11,7 @@
 var useragent = require('express-useragent');
 
 /**
- * (c) http://www.primaryobjects.com/CMS/Article145
+ * @see http://www.primaryobjects.com/CMS/Article145
  */
 function domain(hostName) {
     var domain = hostName;
@@ -34,8 +34,10 @@ function domain(hostName) {
 
 /**
  * parseUri 1.2.2
- * (c) Steven Levithan <stevenlevithan.com>
+ * (c) Steven Levithan
  * MIT License
+ *
+ * @see http://stevenlevithan.com
  */
 function parseUri (str) {
   var o   = parseUri.options,
@@ -71,7 +73,7 @@ parseUri.options = {
 /**
  * The order in which middleware should be run for HTTP request. (the Sails
  * router is invoked by the "router" middleware below.)
- **/
+ */
 var order = [
   'startRequestTimer',
   'cookieParser',
@@ -92,17 +94,16 @@ var order = [
 ];
 
 /**
- * The body parser that will handle incoming multipart HTTP requests. By
- * default as of v0.10, Sails uses
- * [skipper](http://github.com/balderdashy/skipper). See
- * http://www.senchalabs.org/connect/multipart.html for other options.
+ * The body parser that will handle incoming multipart HTTP requests.
+ * By default as of v0.10, Sails uses [skipper](http://github.com/balderdashy/skipper).
+ * @see http://www.senchalabs.org/connect/multipart.html
  */
 // var bodyParser = require('skipper');
 
 /**
  * express-useragent is a simple ExpressJS user-agent middleware exposing user-agent details to your application and views.
  * More details on:
- * https://github.com/biggora/express-useragent
+ * @see https://github.com/biggora/express-useragent
  */
 var useragent = useragent.express();
 

@@ -12,14 +12,22 @@
  * http://sailsjs.org/#/documentation/reference/sails.config/sails.config.session.html
  */
 
+/**
+* Session secret is automatically generated when your new app is created
+* Replace at your own risk in production-- you will invalidate the cookies
+* of your users, forcing them to log in again.
+**/
+var secret = require('./local.json').secret;
+
+console.log(secret);
+
+/**
+* Apply session configs
+**/
 module.exports.session = {
 
-  /**
-  * Session secret is automatically generated when your new app is created
-  * Replace at your own risk in production-- you will invalidate the cookies
-  * of your users, forcing them to log in again.
-  **/
-  secret: require('./local.json').secret,
+
+  secret: secret,
 
   /**
    * Set the session cookie expire time The maxAge is set by milliseconds,
