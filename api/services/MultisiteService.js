@@ -7,9 +7,15 @@ var fs = require('fs'); // var fs = require('fs-extra');
 
 /**
  * Get the corrent Site config from local.json that matchs the current host domain 
+ *
+ * @param {string} host - The current host of the site this function was called.
+ * @param {siteConfCallback} [cb] - The callback that handles the response.
+ * @returns {object|null} Returns the result or null if no callback is set. 
  */
 var getCurrentSiteConfig = function (host, cb) {
-
+  var errors = [
+    "[services/MultisiteService.js] No site for host "+host+" in local.json defined!"
+  ];
   // sails.log.debug("[services/MultisiteService] Get current site config for host: "+host);
   
   var found = false;
@@ -30,9 +36,16 @@ var getCurrentSiteConfig = function (host, cb) {
       }
     };
   };
-  if (cb) return cb("[services/MultisiteService.js] No site for host "+host+" in local.json defined!");
+  if (cb) return cb(new Error(errors[0]));
   else return null;
 };
+
+/**
+ * getCurrentSiteConfig callback
+ * @callback siteConfCallback
+ * @param {string|null} error
+ * @param {object} config
+ */
 
 /**
  * TODO move this to mew AssetService / AssetController ?!
@@ -43,7 +56,7 @@ var getFallbackDirname = function (filepath, cb) {
   if(fs.existsSync(fullpath)) {
     cb(null, dirname);
   } else {
-    var err = "file not found in fallback assets dirname: "+fullpath;
+    var err = "[MultisiteService.getFallbackDirname] File not found in fallback assets dirname: "+fullpath;
     // sails.log.debug(err, fullpath);
     cb(err, dirname);
   }
@@ -58,7 +71,7 @@ var getSiteDirname = function (host, filepath, cb) {
 
   MultisiteService.getCurrentSiteConfig(host, function (err, config) {
     if(err) {
-      var err = "No site for host defined: "+host;
+      var err = "[MultisiteService.getSiteDirname] No site for host defined: "+host;
       cb(err, null);
     } else {
       var site = config.name;
@@ -68,7 +81,7 @@ var getSiteDirname = function (host, filepath, cb) {
       if(fs.existsSync(fullpath)) {
         cb(null, dirname);
       } else {
-        var err = "file not found in site assets dirname: "+fullpath;
+        var err = "[MultisiteService.getSiteDirname] File not found in site assets dirname: "+fullpath;
         // sails.log.debug(err, dirname);
         cb(err, null);
       }

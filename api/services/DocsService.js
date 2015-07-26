@@ -103,7 +103,7 @@ var readJSFiles = function (jsFiles, name, dirname, callback) {
 };
 
 /**
- * 
+ * Parse all docs from dirname.
  */
 var parseDirname = function (name, dirname, options, callback) {
   async.waterfall([
@@ -156,7 +156,7 @@ var available = function () {
 };
 
 /**
- * 
+ * Parse all available docs
  */
 var parseAll = function (options, cb) {
   var available = DocsService.available();

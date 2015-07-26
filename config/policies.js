@@ -43,20 +43,24 @@ module.exports.policies = {
   '*': 'sessionAuth',
 
   CMSController: {
+    'setup': 'sessionAuthDev',
     'infoUser': true
   },
 
   ConfigController: {
+    'setup': 'sessionAuthDev',
     'find': true
   },
 
   ContentController: {
+    'setup': 'sessionAuthDev',
     'find': true,
     'findAll': true,
     'findAllWithImage': true
   },
 
   DocsController: {
+    'setup': 'sessionAuthDev',
     'config': true,
     'controllers': true,
     'policies': true,
@@ -72,48 +76,61 @@ module.exports.policies = {
   },
 
   DocumentController: {
+    'setup': 'sessionAuthDev',
     'upload': true,
     'convert': true,
   },
 
   EmailController: {
+    'setup': 'sessionAuthDev',
     'send': true,
     'contact': true,
     'application': true,
   },
 
   GalleryController: {
+    'setup': 'sessionAuthDev',
     'find': true,
     'findOne': true,
   },
 
   LocaleController: {
-
+    'setup': 'sessionAuthDev',
   },
 
   MagentoController: {
-
+    'setup': 'sessionAuthDev',
   },
 
+  MarkdownController: {
+    'setup': 'sessionAuthDev',
+    'find': true
+  },
+
+
   MemberController: {
+    'setup': 'sessionAuthDev',
     'find': true,
   },
 
   NavigationController: {
+    'setup': 'sessionAuthDev',
     'find': true
   },
 
   SessionController: {
+    'setup': 'sessionAuthDev',
     'create': true,
     'subscribe': true,
     'authenticated': true
   },
 
   SetupController: {
-
+    '*': 'sessionAuthDev',
   },
 
   ThemeController: {
+    'setup': 'sessionAuthDev',
     'assets': true,
     'likeAssets': true,
     'favicon': true,
@@ -123,15 +140,17 @@ module.exports.policies = {
   },
 
   TimelineController: {
+    'setup': 'sessionAuthDev',
     'find': true,
   },
   
   UserController: {
+    'setup': 'sessionAuthDev',
     'find': true,
-    'setup': 'sessionAuthDev'
   },
 
   VWHeritageController: {
+    'setup': 'sessionAuthDev',
     'find': true,
   }
 };

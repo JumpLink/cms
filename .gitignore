@@ -1,6 +1,7 @@
 # uploaded images
 public/sites/*
 !public/sites/fallback
+!public/sites/docs
 
 # Logs
 logs

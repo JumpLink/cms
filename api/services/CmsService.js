@@ -1,3 +1,6 @@
+/**
+ * Info about CMS that can readed by normal users
+ */
 var path = require('path');
 var package = require('../../package.json');
 

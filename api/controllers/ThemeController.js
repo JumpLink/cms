@@ -1,5 +1,5 @@
 /**
- * @docs        :: http://sailsjs.org/#!documentation/controllers
+ * @see http://sailsjs.org/#!documentation/controllers
  */
 
 var path = require("path");
@@ -18,7 +18,7 @@ var available = function (req, res, next) {
  * 
  */
 var infos = function (req, res, next) {
-  ThemeService.getThemesSortedByPriority(req, function (err, themes) {
+  ThemeService.getThemesSortedByPriority(req.session.uri.host, function (err, themes) {
     if(err) return res.serverError(err);
     res.json(themes);
   });
@@ -28,7 +28,7 @@ var infos = function (req, res, next) {
  * find from database and isert priority from database
  */
 var find = function (req, res, next) {
-  ThemeService.getThemesSortedByPriority(req, function (err, themes) {
+  ThemeService.getThemesSortedByPriority(req.session.uri.host, function (err, themes) {
     if(err) return res.serverError(err);
     return res.json({available: themes});
   });
@@ -40,7 +40,7 @@ var find = function (req, res, next) {
 var updateOrCreate = function (req, res, next) {
   var data = req.params.all();
   // sails.log.debug(data);
-  ThemeService.updateOrCreate(req, data, function (err, result) {
+  ThemeService.updateOrCreate(req.session.uri.host, data, function (err, result) {
     if(err) return res.serverError(err);
     return res.json(result);
   });
@@ -52,7 +52,7 @@ var updateOrCreate = function (req, res, next) {
 var updateOrCreateEach = function (req, res, next) {
   var data = req.params.all();
   // sails.log.debug(data);
-  ThemeService.updateOrCreateEach(req, data, function (err, result) {
+  ThemeService.updateOrCreateEach(req.session.uri.host, data, function (err, result) {
     if(err) return res.serverError(err);
     return res.json(result);
   });
@@ -62,7 +62,7 @@ var updateOrCreateEach = function (req, res, next) {
  * 
  */
 var fallback = function (req, res, next, force) {
-  ThemeService.getController(req, 'FallbackController', function (err, FallbackController) {
+  ThemeService.getController(req.session.uri.host, 'FallbackController', function (err, FallbackController) {
     if(err) return res.serverError(err);
     else return FallbackController.fallback(req, res, next, force);
   });
@@ -72,7 +72,7 @@ var fallback = function (req, res, next, force) {
  * 
  */
 var signin = function (req, res, next, force) {
-  ThemeService.getController(req, 'FallbackController', function (err, FallbackController) {
+  ThemeService.getController(req.session.uri.host, 'FallbackController', function (err, FallbackController) {
     if(err) return res.serverError(err);
     else return FallbackController.signin(req, res, next, force);
   });
@@ -82,7 +82,7 @@ var signin = function (req, res, next, force) {
  * 
  */
 var updateBrowser = function (req, res, next, force) {
-  ThemeService.getController(req, 'FallbackController', function (err, FallbackController) {
+  ThemeService.getController(req.session.uri.host, 'FallbackController', function (err, FallbackController) {
     if(err) return res.serverError(err);
     else return FallbackController.updateBrowser(req, res, next, force);
   });
@@ -100,10 +100,10 @@ var modern = function(req, res, next) {
     var user = "{}";
     if(typeof req.session.user != 'undefined') user = JSON.stringify(req.session.user);
     
-    return ThemeService.getThemeWithHighestPriority(req, function(err, currentTheme) {
+    return ThemeService.getThemeWithHighestPriority(req.session.uri.host, function(err, currentTheme) {
       var filepath = currentTheme.modernview;
       MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
-        return ThemeService.view(req, filepath, res, {force: force, url: req.path, authenticated: req.session.authenticated === true, user: user, site: config.name, config: {paths: sails.config.paths, environment: sails.config.environment}});
+        return ThemeService.view(req.session.uri.host, filepath, res, {force: force, url: req.path, authenticated: req.session.authenticated === true, user: user, site: config.name, config: {paths: sails.config.paths, environment: sails.config.environment}});
       });
     });
   }
@@ -125,42 +125,36 @@ var modern = function(req, res, next) {
   }
 };
 
-
 /**
- * Loads asset files dynamically
- * First the file will be loaded from the theme with the highest priority,
- * if file was not found, it will be loaded from theme with lower piority and so on..
- * FIXME much javascript files not parsed as application/javascript
+ * Loads asset files dynamically.
+ * Function searchs file in site in current site folder,
+ * if no file was found, looks file in theme with the heigest priority.
+ * Otherwise it will be loaded from theme with lower piority and so on..
+ * If no priority is set, the fallback theme defined in local.json has the highest priority "1".
+ *
+ * @param {Object} req - The request object
+ * @param {string} [req.theme] - If set the asset is loaded from the passed theme
+ * @see ThemeService.getAssetsFile
  */
 var assets = function (req, res, next, filepath) {
-  //sails.log.debug(req.path);
   var filepath = decodeURIComponent(filepath || req.path);
-  if(req.param('theme')) {
-    var rootpath = ThemeService.getRootPathOfThemeDirname(req.param('theme'));
-    return res.sendfile(req.path,  {root: rootpath});
-  } else {
-    ThemeService.getDirnameForAssetspath(req, filepath, function (err, rootpath) {
-      if(err || rootpath === null) {
-        sails.log.error(err, filepath);
-        return res.serverError(err, filepath);
-      } else {
-        var fullpath = path.join(rootpath, filepath);
-        // sails.log.debug("fullpath", fullpath);
-        return res.sendfile(fullpath);
-      }
-    });
-  }
+  var theme = req.param('theme');
+  var force_site = req.param('force-site');
+  ThemeService.getAssetsFile(req.session.uri.host, filepath, {theme:theme, site:force_site}, function (err, fullpath) {
+    if(err) return res.serverError(err);
+    return res.sendfile(fullpath);
+  });
 }
 
 /**
- * converts robots.txt to /assets/robots.txt so you can put it in your theme folder 
+ * Converts robots.txt to /assets/robots.txt so you can put it in your theme folder.
  */
 var likeAssets = function (req, res, next) {
   assets(req, res, next, path.join('/assets', req.path));
 }
 
 /**
- * converts /favicon.ico to /assets/favicons/favicon.ico so you can put it in your theme folder 
+ * Converts /favicon.ico to /assets/favicons/favicon.ico so you can put it in your theme folder.
  */
 var favicon = function (req, res, next) {
   assets(req, res, next, path.join('/assets/favicons', req.path));

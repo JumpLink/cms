@@ -1,8 +1,9 @@
 /**
- * @docs        :: http://sailsjs.org/#!documentation/controllers
+ * @see http://sailsjs.org/#!documentation/controllers
+ * @see https://github.com/jprichardson/node-fs-extra
  */
 
-var fs = require('fs-extra'); // https://github.com/jprichardson/node-fs-extra
+var fs = require('fs-extra');
 var path = require("path");
 var THEME_DIR = path.resolve(sails.config.paths.public, 'themes');
 // sails.log.debug("path.resolve(sails.config.paths", sails.config.paths);
@@ -30,7 +31,7 @@ var getAvailableThemes = function (cb) {
 };
 
 /**
- * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+ * @see ttps://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
  */
 var sortByPriority = function(themes, inverse) {
   return UtilityService.sortArrayByProperty(themes, 'priority', inverse);
@@ -93,7 +94,8 @@ var setPriorities = function (themesWithInfo, cb) {
 }
 
 /**
- * Get Falback Theme from local.json for site, used if no priority is found.
+ * Get Fallback Theme from local.json for site, used if no priority is found.
+ * The fallback theme will have the priority `1`
  */
 var setPriorityForFallbackTheme = function (siteConfig, themes, callback) {
   var errors = [
@@ -101,7 +103,7 @@ var setPriorityForFallbackTheme = function (siteConfig, themes, callback) {
   ]
   // sails.log.debug("[services/ThemeService.js] setPriorityForFallbackTheme");
 
-  if(UtilityService.isUndefined(siteConfig.fallback.theme)) {
+  if(UtilityService.isUndefined(siteConfig.fallback) || UtilityService.isUndefined(siteConfig.fallback.theme)) {
     sails.log.error(errors[0], siteConfig);
     return callback(errors[0]);
   }
@@ -150,11 +152,11 @@ var getAvailableThemesWithInfo = function (siteConfig, cb) {
 };
 
 /**
- * Get themes with info and sorted priority
+ * Get themes with info sorted by priority.
  */
-var getThemesSortedByPriority = function (req, cb) {
+var getThemesSortedByPriority = function (host, cb) {
   // sails.log.debug("[services/ThemeService.js] getThemesSortedByPriority");
-  MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+  MultisiteService.getCurrentSiteConfig(host, function (err, config) {
     if(err) return cb(err);
     getAvailableThemesWithInfo(config, function (err, themesWithInfo) {
       setPriorities(themesWithInfo, function (err, themesWithPriority) {
@@ -180,8 +182,8 @@ var getThemesSortedByPriority = function (req, cb) {
 /**
  * 
  */
-var getThemeWithHighestPriority = function (req, callback) {
-  getThemesSortedByPriority(req, function (err, themes) {
+var getThemeWithHighestPriority = function (host, callback) {
+  getThemesSortedByPriority(host, function (err, themes) {
     if(err) callback(err);
     else if(!UtilityService.isArray(themes)) callback("themes is not an array");
     else callback(null, themes[0]);
@@ -191,8 +193,8 @@ var getThemeWithHighestPriority = function (req, callback) {
 /**
  * 
  */
-var updateOrCreate = function(req, theme, cb) {
-  MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+var updateOrCreate = function(host, theme, cb) {
+  MultisiteService.getCurrentSiteConfig(host, function (err, config) {
     if(err) cb(err);
     theme.site = config.name;
     ModelService.updateOrCreate('Theme', theme, {'dirname': theme.dirname, site: theme.site}, cb);
@@ -202,8 +204,8 @@ var updateOrCreate = function(req, theme, cb) {
 /**
  * 
  */
-var updateOrCreateEach = function(req, themes, cb) {
-  MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+var updateOrCreateEach = function(host, themes, cb) {
+  MultisiteService.getCurrentSiteConfig(host, function (err, config) {
     if(err) cb(err);
     for (var i = themes.length - 1; i >= 0; i--) {
       themes[i].site = config.name;
@@ -275,9 +277,10 @@ var getThemeByDirname = function (dirname, callback) {
  * the file with a lower priority will be used instead,
  * and so on..
  */
-var getThemeForFile = function (req, filepath, cb) {
+var getThemeForFile = function (host, filepath, cb) {
   
-  getThemesSortedByPriority(req, function (err, themes) {
+  getThemesSortedByPriority(host, function (err, themes) {
+    if(err) return cb(err);
     // sails.log.debug("getThemeForFile", themes);
     
     var found = false;
@@ -296,7 +299,7 @@ var getThemeForFile = function (req, filepath, cb) {
       }
     }
     if(!found) {
-      var error = "file not found in any theme";
+      var error = "[ThemeService.getThemeForFile] File not found in any theme";
       // sails.log.error(error, '.');
       return cb(error, null);
     }
@@ -304,19 +307,18 @@ var getThemeForFile = function (req, filepath, cb) {
 }
 
 /**
- * TODO move this to mew AssetService / AssetController ?!
- * Search file in site in current site folder, if file was not found find file in theme with the heigest priority,
- * if file was found callback the rootpath of founded file,
- * if file not found try next theme,
- * if file was not found in any theme try general folder
+ * Function get dirname for filepath from current site folder,
+ * if no site was found, it looks file in theme with the heigest priority.
+ * Otherwise it will be loaded from theme with lower piority and so on..
+ * If no priority is set, the fallback theme defined in local.json has the highest priority `1`.
  */
-var getDirnameForAssetspath = function (req, filepath, cb) {
-  MultisiteService.getSiteDirname(req.session.uri.host, filepath, function(err, dirname){
+var getDirnameForAssetspath = function (host, filepath, cb) {
+  MultisiteService.getSiteDirname(host, filepath, function(err, dirname){
     if(!err) {
       // sails.log.debug("File found in site dirname.", dirname);
       cb(null, dirname);
     } else {
-      getThemeForFile (req, filepath, function (err, theme) {
+      getThemeForFile(host, filepath, function (err, theme) {
         if(!err && theme) {
           // sails.log.debug("File found in theme but not in site dirname.", theme);
           var rootpath = getRootPathOfThemeDirname(theme.dirname);
@@ -324,7 +326,7 @@ var getDirnameForAssetspath = function (req, filepath, cb) {
         } else {
           MultisiteService.getFallbackDirname(filepath, function(err, dirname){
             if(!err) {
-              sails.log.warn("File not found in any site or theme but in fallback path!", dirname);
+              sails.log.warn("[ThemeService.getDirnameForAssetspath] File not found in any site or theme but in fallback path!", dirname);
               cb(null, dirname);
             } else {
               sails.log.error(err, dirname);
@@ -341,8 +343,8 @@ var getDirnameForAssetspath = function (req, filepath, cb) {
  * find file in theme with the possible heigest found priority
  * and callback this path
  */
-var getThemeFullPathForFile = function (req, filepath, cb) {
-  getThemeForFile (req, filepath, function (err, theme) {
+var getThemeFullPathForFile = function (host, filepath, cb) {
+  getThemeForFile (host, filepath, function (err, theme) {
     if(!err && theme) {
       var rootPath = getRootPathOfThemeDirname(theme.dirname);
       var fullpath = path.join(rootPath, filepath);
@@ -351,14 +353,73 @@ var getThemeFullPathForFile = function (req, filepath, cb) {
       return cb(err, filepath);
     }
   });
-}
+};
+
+/**
+ * Loads asset files dynamically.
+ * Function searchs file in site in current site folder,
+ * if no file was found, looks file in theme with the heigest priority.
+ * Otherwise it will be loaded from theme with lower piority and so on..
+ * If no priority is set, the fallback theme defined in local.json has the highest priority "1".
+ *
+ * @param {string} host - the host of the coming request
+ * @param {string} filepath - the relative path for the file
+ * @param {object} [options] - options for file source
+ * @param {object} [options.theme] - If set the asset is loaded from the passed theme
+ * @param {object} [options.site] - If set the asset is loaded from the passed sitename
+ * @param {callback} cb - Callback for error or the result
+ * @see ThemeService.getDirnameForAssetspath
+ */
+var getAssetsFile = function (host, filepath, options, cb) {
+  var errors = [
+    '[ThemeService.getAssetsFile] Not found!'
+  ];
+
+  if(options) {
+    if(typeof (options.theme) === 'string') {
+      var rootpath = ThemeService.getRootPathOfThemeDirname(theme);
+      var fullpath = path.join(rootpath, filepath);
+      fs.exists(fullpath, function (exists) {
+        if(!exists) return cb(errors[0]+" (In theme "+options.theme+")");
+        return cb(null, fullpath);
+      });
+    }
+
+    if(typeof(options.site) === 'string') {
+      MultisiteService.getSiteDirname(host, filepath, function(err, rootpath){
+        if(err) return cb(err);
+        var fullpath = path.join(rootpath, filepath);
+        fs.exists(fullpath, function (exists) {
+          if(!exists) return cb(errors[0]+" (In site "+options.site+")");
+          return cb(null, fullpath);
+        });
+      });
+    }
+  }
+
+  ThemeService.getDirnameForAssetspath(host, filepath, function (err, rootpath) {
+    if(err || rootpath === null) {
+      sails.log.error(err, filepath);
+      return cb(err);
+    }
+    var fullpath = path.join(rootpath, filepath);
+    fs.exists(fullpath, function (exists) {
+      if(!exists) {
+        sails.log.error(errors[0]+" ("+filepath+")");
+        return cb(errors[0]);
+      }
+      return cb(null, fullpath);
+    });
+  });
+
+};
 
 /**
  * Render view from theme with the highest priority,
  * if view not found try next theme.
  */
-var view = function (req, filepath, res, locals) {
-  getThemeFullPathForFile(req, filepath, function (err, fullpath) {
+var view = function (host, filepath, res, locals) {
+  getThemeFullPathForFile(host, filepath, function (err, fullpath) {
     if(err) { sails.log.error(err); return res.serverError(err); }
     else {
       // fullpath = path.join('../', fullpath); // WORKAROUND root of view for themes
@@ -372,8 +433,8 @@ var view = function (req, filepath, res, locals) {
  * Load javascript module from api subfolder from theme with the highest priority,
  * if module not found try next theme.
  */
-var getApiModule = function (req, filepath, callback) {
-  getThemeFullPathForFile(req, filepath, function (err, fullpath) {
+var getApiModule = function (host, filepath, callback) {
+  getThemeFullPathForFile(host, filepath, function (err, fullpath) {
     if(err) { return callback(err); }
     else {
       // fullpath = path.join('../../', fullpath); // WORKAROUND root of controllers / servides for themes
@@ -386,9 +447,9 @@ var getApiModule = function (req, filepath, callback) {
  * Load controller from theme with the highest priority,
  * if controller not found try next theme.
  */
-var getController = function (req, name, callback) {
+var getController = function (host, name, callback) {
   var filepath = "api/controllers/"+name+".js";
-  getApiModule(req, filepath, callback);
+  getApiModule(host, filepath, callback);
 }
 
 /**
@@ -397,7 +458,7 @@ var getController = function (req, name, callback) {
  */
 var getService = function (name, callback) {
   var filepath = "api/services/"+name+".js";
-  getApiModule(req, filepath, callback);
+  getApiModule(host, filepath, callback);
 }
 
 /**
@@ -414,6 +475,7 @@ module.exports = {
   , getThemeByDirname: getThemeByDirname
   , getDirnameForAssetspath: getDirnameForAssetspath
   , getThemeFullPathForFile: getThemeFullPathForFile
+  , getAssetsFile: getAssetsFile
   , view: view
   , getController: getController
   , getService: getService

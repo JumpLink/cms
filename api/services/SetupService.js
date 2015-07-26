@@ -66,7 +66,7 @@ var members = function (cb) {
  */
 var generateMembers = function (siteName, cb) {
   async.waterfall([
-    function destroyAll(callback){
+    function destroyAll(callback) {
       sails.log.debug("destroyAll");
       Member.destroy({site:siteName}, function (error, destroyed) {
         sails.log.debug(destroyed);
@@ -81,7 +81,7 @@ var generateMembers = function (siteName, cb) {
         callback(error, newMembers);
       });
     },
-    function createNewSetup (newMembers, callback){
+    function createNewSetup (newMembers, callback) {
       sails.log.debug("createNewSetup");
       // sails.log.debug("newMembers", newMembers);
       // sails.log.debug("callback", callback);

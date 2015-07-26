@@ -127,6 +127,22 @@ var sortArrayByProperty = function(array, propertyName, inverse) {
 }
 
 /**
+ * Set the same property value for each element in values.
+ * Useful to set the sitename for each element.
+ *
+ * Example:
+ *     users = UtilityService.setPropertyForEach(users, 'site', siteName);
+ * 
+ * @param {array} values Array of objects
+ */
+var setPropertyForEach = function (values, propertyName, value) {
+  for (var i = values.length - 1; i >= 0; i--) {
+    values[i][propertyName] = value;
+  };
+  return values;
+}
+
+/**
  * This functions sets a position property identical wit the current array index.
  * Useful for objects they requiring a position property.
  */
@@ -153,4 +169,5 @@ module.exports = {
   , max: max
   , isNumber: isNumber
   , fixPosition: fixPosition
+  , setPropertyForEach: setPropertyForEach
 };
