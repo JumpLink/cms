@@ -1,13 +1,16 @@
 /**
+ * The Member Controller
+ */
+
+/**
  * 
  */
 var setup = function (req, res, next) {
-  SetupService.generateMembers(function(err, result) {
-    // sails.log.debug("done");
-    if(err)
-      res.json(err);
-    else
+  MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+    SetupService.generateMembers(config.name, unction(err, result) {
+      if(err) { return res.serverError(err); }
       res.json(result);
+    });
   });
 };
 
@@ -70,14 +73,12 @@ var find = function (req, res) {
     };
 
     Member.find(query).exec(function found(err, found) {
+      // error
       if (err) return res.serverError(err);
       // not found
-      if (UtilityService.isUndefined(found) || !UtilityService.isArray(found)) {
-        res.notFound(query.where);
-      } else {
-        // sails.log.debug("found", found);
-        res.json(found);
-      }
+      if (UtilityService.isUndefined(found) || !UtilityService.isArray(found)) return res.notFound(query.where);
+      // else
+      res.json(found);
     });
   });
 };

@@ -1,30 +1,32 @@
 /**
  * UserController
+ * A set of functions called `actions`.
+ * Actions contain code telling Sails how to respond to a certain type of request.
+ * (i.e. do stuff, then send some JSON, show an HTML page, or redirect to another URL)
  *
- * @module      :: Controller
- * @description :: A set of functions called `actions`.
+ * You can configure the blueprint URLs which trigger these actions (`config/controllers.js`)
+ * /or override them with custom routes (`config/routes.js`)
  *
- *                 Actions contain code telling Sails how to respond to a certain type of request.
- *                 (i.e. do stuff, then send some JSON, show an HTML page, or redirect to another URL)
+ * NOTE: The code you write here supports both HTTP and Socket.io automatically.
  *
- *                 You can configure the blueprint URLs which trigger these actions (`config/controllers.js`)
- *                 and/or override them with custom routes (`config/routes.js`)
- *
- *                 NOTE: The code you write here supports both HTTP and Socket.io automatically.
- *
- * @docs        :: http://sailsjs.org/#!documentation/controllers
+ * @see http://sailsjs.org/#!documentation/controllers
  */
 
 /**
- * 
+ * Setup the admin user for the current site
+ *
+ * WARN: This function removes all existing users for site and hust add the default admin user with the default password.
  */
 var setup = function (req, res, next) {
-  SetupService.generateUsers(function(err, result) {
-    sails.log.debug("done");
-    if(err)
-      res.json(err);
-    else
+  // get the current site this setup was called
+  MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+    if(err) return res.serverError(err);
+    SetupService.generateUsers(config.name, function(err, result) {
+      if(err) return res.serverError(err);
+      result.site = config.name;
+      sails.log.debug("done");
       res.json(result);
+    });
   });
 };
 

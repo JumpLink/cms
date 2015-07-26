@@ -3,8 +3,9 @@
  */
 
  /**
- * 
- */
+  * Simple sort Wrapper to sort by position.
+  * @see UtilityService.$filter
+  */
 var sort = function(members) {
   return UtilityService.$filter('orderBy')(members, 'position');
 }

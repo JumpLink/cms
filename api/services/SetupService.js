@@ -1,31 +1,34 @@
 /**
- * 
+ * The SetupService united functions to setup the CMS for the first use.
  */
-
 var moment = require('moment');
 
 /**
- * 
+ * Default admin users for the setup.
  */
 var users = function (cb) {
-  cb(null, [{email:"admin@admin.org", name: "admin", color: "#000000", password: "cms-admin", site:'bootstrap'}]);
+  cb(null, [{email:"admin@admin.org", name: "admin", color: "#000000", password: "cms-admin"}]);
 };
 
 /**
- * 
+ *  WARN: This function removes all existing users for site and is adding just the default admin user with the default password.
  */
-var generateUsers = function (cb) {
+var generateUsers = function (siteName, cb) {
   async.waterfall([
     function destroyAll(callback){
       sails.log.debug("destroyAll");
-      User.destroy({}, function (error, destroyed) {
+      User.destroy({site:siteName}, function (error, destroyed) {
         sails.log.debug(destroyed);
         callback(error);
       });
     },
     function getNewSetup (callback){
       sails.log.debug("getNewSetup");
-      SetupService.users(callback);
+      SetupService.users(function(err, users) {
+        if(err) return callback(err);
+        users = UtilityService.setPropertyForEach(users, 'site', siteName);
+        callback(null, users);
+      });
     },
     function createNewSetup (newUsers, callback){
       sails.log.debug("createNewSetup");
@@ -36,7 +39,7 @@ var generateUsers = function (cb) {
 };
 
 /**
- * 
+ * Default members to setup example members for Member.
  */
 var members = function (cb) {
   cb(null,
@@ -61,11 +64,11 @@ var members = function (cb) {
 /**
  * 
  */
-var generateMembers = function (cb) {
+var generateMembers = function (siteName, cb) {
   async.waterfall([
     function destroyAll(callback){
       sails.log.debug("destroyAll");
-      Member.destroy({}, function (error, destroyed) {
+      Member.destroy({site:siteName}, function (error, destroyed) {
         sails.log.debug(destroyed);
         callback(error);
       });
@@ -73,6 +76,8 @@ var generateMembers = function (cb) {
     function getNewSetup (callback){
       sails.log.debug("getNewSetup Member");
       SetupService.members(function (error, newMembers) {
+        if(error) return callback(error);
+        newMembers = UtilityService.setPropertyForEach(newMembers, 'site', siteName);
         callback(error, newMembers);
       });
     },
@@ -87,7 +92,7 @@ var generateMembers = function (cb) {
 };
 
 /**
- * 
+ * Timeline placeholder events for setup.
  */
 var timeline = function (cb) {
   cb(null,
@@ -144,24 +149,28 @@ var timeline = function (cb) {
 };
 
 /**
- * 
+ * @see https://github.com/caolan/async#waterfall 
+ * @see https://github.com/caolan/async#map
  */
-var generateTimeline = function (cb) {
+var generateTimeline = function (siteName, cb) {
   async.waterfall([
     function destroyAll(callback){
       sails.log.debug("destroyAll");
-      Timeline.destroy({}, function (error, destroyed) {
+      Timeline.destroy({site:siteName}, function (error, destroyed) {
         sails.log.debug(destroyed);
         callback(error);
       });
     },
     function getNewSetup (callback){
       sails.log.debug("getNewSetup Timeline");
-      SetupService.timeline(callback);
+      SetupService.timeline(function (err, events) {
+        if(err) return callback(err);
+        events = UtilityService.setPropertyForEach(events, 'site', siteName);
+        callback(null, events);
+      });
     },
     function createNewSetup (newValues, callback){
       sails.log.debug("createNewSetup");
-      // https://github.com/caolan/async#map
       async.map(newValues, Timeline.create, callback);
     },
   ], cb);
@@ -170,7 +179,7 @@ var generateTimeline = function (cb) {
 /**
  * 
  */
-var generateAll = function (cb) {
+var generateAll = function (siteName, cb) {
 
   var getKeys = function (obj) {
     var keys = [];
@@ -181,7 +190,7 @@ var generateAll = function (cb) {
   var controllers = getKeys(sails.controllers);
   sails.log.info("sails.controllers", controllers);
 
-
+  // TODO siteName
   async.series([
     SetupService.generateUsers,
     SetupService.generateMembers,
