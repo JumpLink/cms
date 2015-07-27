@@ -34,11 +34,16 @@ var send = function(req, res, next) {
   });
 };
 
+var receive = function (req, res, next) {
+
+};
+
 /**
  * 
  */
 module.exports = {
   setup:setup,
-  send:send
+  send:send,
+  receive:receive
 };
 
