@@ -47,9 +47,9 @@ If this works, configure your cronjob to start the cms with forever on each rebo
 
     crontab -e
     
-example line (you need to customize this, if you want to use it):
+example line for io.js/node.js installed with nvm (you need to customize this, if you want to use it):
 
-    @reboot (/home/[username]/.nvm/versions/[io.js|node.js]/[version]/bin/[iojs|node] /usr/local/bin/forever start /home/[username]/cms/cms.js)
+    @reboot (/home/[username]/.nvm/versions/[io.js|node.js]/[version]/bin/[iojs|node] /root/.nvm/versions/io.js/[version]/bin/forever start /home/[username]/cms/cms.js)
 
 ### Proxy
 
