@@ -39,7 +39,7 @@ var parse = function (md_content, cb) {
  */
 var load = function (host, filepath, options, cb) {
   sails.log.debug("[MarkdownService.load]", host, filepath, options);
-  ThemeService.getAssetsFile(host, filepath, options, function (err, fullpath) {
+  ThemeService.getFile(host, filepath, options, function (err, fullpath) {
     if(err) return cb(err);
     sails.log.debug("[MarkdownService.load] fullpath", fullpath);
     fs.readFile(fullpath, 'utf8', function(err, md_content) {

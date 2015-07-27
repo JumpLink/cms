@@ -9,6 +9,10 @@
  * http://sailsjs.org/#/documentation/reference/sails.config/sails.config.http.html
  */
 var useragent = require('express-useragent');
+var MultisiteService = require(__dirname+'/../api/services/MultisiteService.js');
+var fs = require('fs-extra');
+var tls = require('tls');
+var path = require('path');
 
 /**
  * @see http://www.primaryobjects.com/CMS/Article145
@@ -154,9 +158,42 @@ var middleware = {
 var cache = 31557600000;
 
 /**
- * 
+ * Dynamically Return an SSL Certificate using SNI.
+ * @see https://en.wikipedia.org/wiki/Server_Name_Indication
+ * @see https://stackoverflow.com/questions/12219639/is-it-possible-to-dynamically-return-an-ssl-certificate-in-nodejs
+ * @see https://nodejs.org/api/tls.html#tls_tls_createserver_options_secureconnectionlistener
+ */
+var serverOptions = {
+  SNICallback: function (domain, cb) {
+    console.log("SNICallback from domain:", domain);
+    MultisiteService.getCurrentSiteConfig(domain, function (err, siteConf) {
+      if(err) return cb(err);
+      var dirname = MultisiteService.getSitePathFromSiteConf(siteConf);
+      var ca_path = path.join(dirname, siteConf.ssl.ca);
+      var key_path = path.join(dirname, siteConf.ssl.key);
+      var cert_path = path.join(dirname, siteConf.ssl.cert);
+
+      sails.log.debug(dirname, ca_path ,key_path, cert_path);
+
+      var ctx = tls.createSecureContext({
+        ca: fs.readFileSync(ca_path),
+        key: fs.readFileSync(key_path),
+        cert: fs.readFileSync(cert_path),
+        passphrase: siteConf.ssl.passphrase
+      });
+
+      cb(null, ctx);
+
+    });
+  }
+};
+
+/**
+ * Apply the following functions to hhtp config.
+ * To deactivate own ssl stuff, command out `serverOptions`
  */
 module.exports.http = {
   middleware: middleware,
-  cache: cache
+  cache: cache,
+  // serverOptions: serverOptions
 };

@@ -63,7 +63,36 @@ var getFallbackDirname = function (filepath, cb) {
 };
 
 /**
- * TODO move this to mew AssetService / AssetController ?!
+ *
+ */
+var getSitePathFromSiteConf = function (config, cb) {
+  var site = config.name;
+  var dirname = path.resolve(sails.config.paths.public, sails.config.paths.sites, site);
+  if(cb) return cb(null, dirname);
+  return dirname;
+};
+
+/**
+ * Get site dirname from siteConf.
+ * Use this function if you have already the siteconf. 
+ */
+var getSiteDirnameFromSiteConf = function (config, filepath, cb) {
+  var dirname = getSitePathFromSiteConf(config);
+  var fullpath = path.join(dirname, filepath);
+  // sails.log.debug("site", site, "dirname", dirname, "fullpath", fullpath);
+  if(fs.existsSync(fullpath)) {
+    if(cb) return cb(null, dirname);
+    return dirname;
+  } else {
+    var err = "[MultisiteService.getSiteDirname] File not found in site assets dirname: "+fullpath;
+    // sails.log.debug(err, dirname);
+    if(cb) return cb(err);
+    return null;
+  }
+};
+
+/**
+ * Get site dirname from host.
  */
 var getSiteDirname = function (host, filepath, cb) {
   // sails.log.debug("host", host, "filepath", filepath);
@@ -72,20 +101,9 @@ var getSiteDirname = function (host, filepath, cb) {
   MultisiteService.getCurrentSiteConfig(host, function (err, config) {
     if(err) {
       var err = "[MultisiteService.getSiteDirname] No site for host defined: "+host;
-      cb(err, null);
-    } else {
-      var site = config.name;
-      var dirname = path.resolve(sails.config.paths.public, sails.config.paths.sites, site);
-      var fullpath = path.join(dirname, filepath);
-      // sails.log.debug("site", site, "dirname", dirname, "fullpath", fullpath);
-      if(fs.existsSync(fullpath)) {
-        cb(null, dirname);
-      } else {
-        var err = "[MultisiteService.getSiteDirname] File not found in site assets dirname: "+fullpath;
-        // sails.log.debug(err, dirname);
-        cb(err, null);
-      }
+      return cb(err, null);
     }
+    getSiteDirnameFromSiteConf(config, filepath, cb);
   });
 };
 
@@ -93,6 +111,8 @@ var getSiteDirname = function (host, filepath, cb) {
  * TODO move this to mew AssetService / AssetController ?!
  */
 module.exports = {
+  getSitePathFromSiteConf: getSitePathFromSiteConf,
+  getSiteDirnameFromSiteConf: getSiteDirnameFromSiteConf,
   getCurrentSiteConfig: getCurrentSiteConfig,
   getFallbackDirname: getFallbackDirname,
   getSiteDirname: getSiteDirname

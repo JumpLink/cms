@@ -356,7 +356,7 @@ var getThemeFullPathForFile = function (host, filepath, cb) {
 };
 
 /**
- * Loads asset files dynamically.
+ * Loads files (like assets) dynamically.
  * Function searchs file in site in current site folder,
  * if no file was found, looks file in theme with the heigest priority.
  * Otherwise it will be loaded from theme with lower piority and so on..
@@ -365,14 +365,14 @@ var getThemeFullPathForFile = function (host, filepath, cb) {
  * @param {string} host - the host of the coming request
  * @param {string} filepath - the relative path for the file
  * @param {object} [options] - options for file source
- * @param {object} [options.theme] - If set the asset is loaded from the passed theme
- * @param {object} [options.site] - If set the asset is loaded from the passed sitename
+ * @param {string} [options.theme] - If set the asset is loaded from the passed theme
+ * @param {string} [options.site] - If set the asset is loaded from the passed sitename
  * @param {callback} cb - Callback for error or the result
  * @see ThemeService.getDirnameForAssetspath
  */
-var getAssetsFile = function (host, filepath, options, cb) {
+var getFile = function (host, filepath, options, cb) {
   var errors = [
-    '[ThemeService.getAssetsFile] Not found!'
+    '[ThemeService.getFile] Not found!'
   ];
 
   if(options) {
@@ -419,13 +419,12 @@ var getAssetsFile = function (host, filepath, options, cb) {
  * if view not found try next theme.
  */
 var view = function (host, filepath, res, locals) {
+  var options = {};
   getThemeFullPathForFile(host, filepath, function (err, fullpath) {
     if(err) { sails.log.error(err); return res.serverError(err); }
-    else {
-      // fullpath = path.join('../', fullpath); // WORKAROUND root of view for themes
-      // sails.log.debug("fullpath", fullpath);
-      return res.view(fullpath, locals);
-    }
+    // fullpath = path.join('../', fullpath); // WORKAROUND root of view for themes
+    // sails.log.debug("fullpath", fullpath);
+    return res.view(fullpath, locals);
   });
 }
 
@@ -475,7 +474,7 @@ module.exports = {
   , getThemeByDirname: getThemeByDirname
   , getDirnameForAssetspath: getDirnameForAssetspath
   , getThemeFullPathForFile: getThemeFullPathForFile
-  , getAssetsFile: getAssetsFile
+  , getFile: getFile
   , view: view
   , getController: getController
   , getService: getService

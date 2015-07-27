@@ -56,12 +56,17 @@ local_config.paths = local_config.paths || defaultPaths;
  *
  * ```
  * local_config.ssl = {
- *   ca: require('fs').readFileSync(__dirname + './ssl/my_apps_ssl_gd_bundle.crt'),
- *   key: require('fs').readFileSync(__dirname + './ssl/my_apps_ssl.key'),
- *   cert: require('fs').readFileSync(__dirname + './ssl/my_apps_ssl.crt')
+ *   ca: require('fs').readFileSync(__dirname + '/ssl/my_apps_ssl_gd_bundle.crt'),
+ *   key: require('fs').readFileSync(__dirname + '/ssl/my_apps_ssl.key'),
+ *   cert: require('fs').readFileSync(__dirname + '/ssl/my_apps_ssl.crt')
  * };
  * ```
  */
+local_config.ssl = {
+  ca: true, // WORKAROUND for https://github.com/balderdashy/sails/blob/master/lib/hooks/http/initialize.js#L44
+  key: true,
+  cert: true
+};
 
 /**
  * The `port` setting determines which TCP port your app will be deployed on.

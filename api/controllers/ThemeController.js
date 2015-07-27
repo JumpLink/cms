@@ -134,13 +134,13 @@ var modern = function(req, res, next) {
  *
  * @param {Object} req - The request object
  * @param {string} [req.theme] - If set the asset is loaded from the passed theme
- * @see ThemeService.getAssetsFile
+ * @see ThemeService.getFile
  */
 var assets = function (req, res, next, filepath) {
   var filepath = decodeURIComponent(filepath || req.path);
   var theme = req.param('theme');
   var force_site = req.param('force-site');
-  ThemeService.getAssetsFile(req.session.uri.host, filepath, {theme:theme, site:force_site}, function (err, fullpath) {
+  ThemeService.getFile(req.session.uri.host, filepath, {theme:theme, site:force_site}, function (err, fullpath) {
     if(err) return res.serverError(err);
     return res.sendfile(fullpath);
   });

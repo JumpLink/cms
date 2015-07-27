@@ -1,11 +1,11 @@
 /**
  * SessionController
- *
- * @description :: Server-side logic for managing sessions
- * @help        :: See http://links.sailsjs.org/docs/controllers
+ * Server-side logic for managing sessions.
+ * @see http://links.sailsjs.org/docs/controllers
+ * @see https://github.com/shaneGirish/bcrypt-nodejs
+ * @see https://www.npmjs.com/package/sails-generate-auth
  */
-
-var bcrypt = require('bcrypt-nodejs');  // https://github.com/shaneGirish/bcrypt-nodejs
+var bcrypt = require('bcrypt-nodejs');
 
 /**
  * 
