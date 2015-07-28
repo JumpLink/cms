@@ -155,6 +155,7 @@ var getAvailableThemesWithInfo = function (siteConfig, cb) {
  * Get themes with info sorted by priority.
  */
 var getThemesSortedByPriority = function (host, cb) {
+  if(typeof(host) !== "string") return cb(new Error("[ThemeService.getThemesSortedByPriority] Host must be a string!"));
   // sails.log.debug("[services/ThemeService.js] getThemesSortedByPriority");
   MultisiteService.getCurrentSiteConfig(host, function (err, config) {
     if(err) return cb(err);
@@ -183,6 +184,7 @@ var getThemesSortedByPriority = function (host, cb) {
  * 
  */
 var getThemeWithHighestPriority = function (host, callback) {
+  if(typeof(host) !== "string") return cb(new Error("[ThemeService.getThemesSortedByPriority] Host must be a string!"));
   getThemesSortedByPriority(host, function (err, themes) {
     if(err) callback(err);
     else if(!UtilityService.isArray(themes)) callback("themes is not an array");
@@ -278,7 +280,7 @@ var getThemeByDirname = function (dirname, callback) {
  * and so on..
  */
 var getThemeForFile = function (host, filepath, cb) {
-  
+  if(typeof(host) !== "string") return cb(new Error("[ThemeService.getThemeForFile] Host must be a string!"));
   getThemesSortedByPriority(host, function (err, themes) {
     if(err) return cb(err);
     // sails.log.debug("getThemeForFile", themes);
@@ -313,6 +315,7 @@ var getThemeForFile = function (host, filepath, cb) {
  * If no priority is set, the fallback theme defined in local.json has the highest priority `1`.
  */
 var getDirnameForAssetspath = function (host, filepath, cb) {
+  if(typeof(host) !== "string") return cb(new Error("[ThemeService.getDirnameForAssetspath] Host must be a string!"));
   MultisiteService.getSiteDirname(host, filepath, function(err, dirname){
     if(!err) {
       // sails.log.debug("File found in site dirname.", dirname);
@@ -344,6 +347,7 @@ var getDirnameForAssetspath = function (host, filepath, cb) {
  * and callback this path
  */
 var getThemeFullPathForFile = function (host, filepath, cb) {
+  if(typeof(host) !== "string") return cb(new Error("[ThemeService.getThemeFullPathForFile] Host must be a string!"));
   getThemeForFile (host, filepath, function (err, theme) {
     if(!err && theme) {
       var rootPath = getRootPathOfThemeDirname(theme.dirname);
@@ -372,8 +376,11 @@ var getThemeFullPathForFile = function (host, filepath, cb) {
  */
 var getFile = function (host, filepath, options, cb) {
   var errors = [
-    '[ThemeService.getFile] Not found!'
+    "[ThemeService.getFile] Not found!",
+    "[ThemeService.getFile] Host must be a string!"
   ];
+
+  if(typeof(host) !== "string") return cb(new Error(errors[1]));
 
   if(options) {
     if(typeof (options.theme) === 'string') {
@@ -433,6 +440,7 @@ var view = function (host, filepath, res, locals) {
  * if module not found try next theme.
  */
 var getApiModule = function (host, filepath, callback) {
+  if(typeof(host) !== "string") return cb(new Error("[ThemeService.getApiModule] Host must be a string!"));
   getThemeFullPathForFile(host, filepath, function (err, fullpath) {
     if(err) { return callback(err); }
     else {
@@ -447,6 +455,7 @@ var getApiModule = function (host, filepath, callback) {
  * if controller not found try next theme.
  */
 var getController = function (host, name, callback) {
+  if(typeof(host) !== "string") return cb(new Error("[ThemeService.getController] Host must be a string!"));
   var filepath = "api/controllers/"+name+".js";
   getApiModule(host, filepath, callback);
 }

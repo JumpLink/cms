@@ -91,7 +91,7 @@ var start = function () {
         authentication: { username: null, authenticated: false, status: 'NORMAL' }
       }
     }; */
-    console.log(connection);
+    sails.log.info(connection);
   });
 
   

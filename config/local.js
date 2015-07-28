@@ -63,9 +63,9 @@ local_config.paths = local_config.paths || defaultPaths;
  * ```
  */
 local_config.ssl = {
-  // ca: true, // WORKAROUND for https://github.com/balderdashy/sails/blob/master/lib/hooks/http/initialize.js#L44
-  // key: true,
-  // cert: true
+  ca: true, // WORKAROUND for https://github.com/balderdashy/sails/blob/master/lib/hooks/http/initialize.js#L44
+  key: true,
+  cert: true
 };
 
 /**

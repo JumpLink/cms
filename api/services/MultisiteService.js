@@ -14,28 +14,32 @@ var fs = require('fs'); // var fs = require('fs-extra');
  */
 var getCurrentSiteConfig = function (host, cb) {
   var errors = [
-    "[services/MultisiteService.js] No site for host "+host+" in local.json defined!"
+    "[MultisiteService.getCurrentSiteConfig] No site for host "+host+" in local.json defined!"
   ];
-  // sails.log.debug("[services/MultisiteService] Get current site config for host: "+host);
+  sails.log.debug("[MultisiteService.getCurrentSiteConfig] Get current site config for host: "+host);
   
   var found = false;
-  for (var i = sails.config.sites.length - 1; i >= 0 && !found; i--) {
-    for (var k = sails.config.sites[i].domains.length - 1; k >= 0 && !found; k--) {
-
+  for (var i = 0; i < sails.config.sites.length && !found; i++) {
+    for (var k = 0; k < sails.config.sites[i].domains.length && !found; k++) {
       // TODO generate al regex on bootstrap
-      var regex = ".*"+sails.config.sites[i].domains[k].replace(/\./g , "\\\."); // www.bugwelder.com => /www\.bugwelder\.com/g
+      var regex = sails.config.sites[i].domains[k];
+      if(!sails.config.sites[i].matchsubdomain)
+        regex = ".*"+regex;
+      var regex = regex.replace(/\./g , "\\\."); // www.bugwelder.com => /www\.bugwelder\.com/g
+      
       var pattern = new RegExp(regex, 'g');
 
       if(pattern.test(host)) {
-        // sails.log.debug("[services/MultisiteService.js] Match! "+pattern+" ("+sails.config.sites[i].domains[k]+") <=> "+host);
+        sails.log.debug("[MultisiteService.getCurrentSiteConfig] Match! "+pattern+" ("+sails.config.sites[i].domains[k]+") <=> "+host);
         found = true;
         if (cb) return cb(null, sails.config.sites[i]);
         else return sails.config.sites[i];
       } else {
-        // sails.log.debug("[services/MultisiteService.js] No match! "+pattern+" ("+sails.config.sites[i].domains[k]+") <=> "+host);
+        sails.log.debug("[services/MultisiteService.js] No match! "+pattern+" ("+sails.config.sites[i].domains[k]+") <=> "+host);
       }
     };
   };
+
   if (cb) return cb(new Error(errors[0]));
   else return null;
 };
@@ -48,7 +52,7 @@ var getCurrentSiteConfig = function (host, cb) {
  */
 
 /**
- * TODO move this to mew AssetService / AssetController ?!
+ * Get fallcack site dirname as a last alternative.
  */
 var getFallbackDirname = function (filepath, cb) {
   var dirname = path.resolve(sails.config.paths.public, sails.config.paths.sites, sails.config.paths.fallback);
@@ -108,7 +112,7 @@ var getSiteDirname = function (host, filepath, cb) {
 };
 
 /**
- * TODO move this to mew AssetService / AssetController ?!
+ * The following functions are public
  */
 module.exports = {
   getSitePathFromSiteConf: getSitePathFromSiteConf,

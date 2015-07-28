@@ -189,11 +189,11 @@ var serverOptions = {
 };
 
 /**
- * Apply the following functions to hhtp config.
+ * Apply the following functions to http config.
  * To deactivate own ssl stuff, command out `serverOptions`
  */
 module.exports.http = {
   middleware: middleware,
   cache: cache,
-  // serverOptions: serverOptions
+  serverOptions: serverOptions
 };
