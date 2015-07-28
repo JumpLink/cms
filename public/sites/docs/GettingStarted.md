@@ -24,12 +24,11 @@ go into each Theme and install the theme dependencies with bower and NPM.
     npm install; bower install
     ...
 
-## Run
-
-    iojs cms
-or
+To test if the CMS is running, run
 
     node cms
+    
+within the CMS folder.
 
 ## Setup
 
@@ -37,11 +36,11 @@ or
 
 ### Authbind
 
-To receive emails with this CMS you need to get access to port 25, because access to ports under 1000 are only allowed by root. For example to work around this limitation you can use [authbind](https://www.debian-administration.org/article/386/Running_network_services_as_a_non-root_user.). On debian based linux distributions you can install it with
+To receive emails with this CMS you need to get access to port 25, access to ports under 1000 are only allowed by root. To work around this limitation you can use [authbind](https://www.debian-administration.org/article/386/Running_network_services_as_a_non-root_user.) for example. On debian based linux distributions you can install it with
 
     sudo apt-get install authbind
     
-Allow access to port 25 for your user (replace user with your desired username)
+To allow access to port 25 for your user (replace user with your desired username) you need to
     
     sudo touch /etc/authbind/byport/25
     sudo chown user:user /etc/authbind/byport/25
@@ -49,24 +48,26 @@ Allow access to port 25 for your user (replace user with your desired username)
     
 Now you can start applications with authbind to allow this applications to access port 25
 
-    authbind --deep node cms.js
+    authbind --deep node cms
+    
+More informations about how you and why you need to configure authbind can you found [on mailin](https://github.com/Flolagale/mailin) which uses the CMS for the mail reception.
 
 ### Forever
 You can use [forever](https://github.com/foreverjs/forever) to ensure that the cms runs continuously on your Server. To use forever install it with npm
 
     npm install forever -g
     
-Start the cms app with forever
+Start the cms app with forever and authbind
 
-    forever start cms.js
+    authbind --deep forever start cms.js
 
 If this works, configure your cronjob to start the cms with forever on each reboot automatically.
 
     crontab -e
     
-example line for io.js/node.js installed with nvm (you need to customize this, if you want to use it):
+An example line with authbind, forever and for node.js installed with nvm (you need to customize this, if you want to use it) could be:
 
-    @reboot (/home/[username]/.nvm/versions/[io.js|node.js]/[version]/bin/[iojs|node] /root/.nvm/versions/io.js/[version]/bin/forever start /home/[username]/cms/cms.js)
+    @reboot (/usr/bin/authbind --deep /home/[user]/.nvm/versions/node.js/[version]/bin/node /root/.nvm/versions/io.js/[version]/bin/forever start /home/[user]/cms/cms.js)
 
 ### Proxy
 
