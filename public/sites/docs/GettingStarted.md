@@ -34,8 +34,25 @@ or
 ## Setup
 
 ## Server configuration
-### [Forever](https://github.com/foreverjs/forever)
-Install forever to ensure that the cms runs continuously on your Server.
+
+### Authbind
+
+To receive emails with this CMS you need to get access to port 25, because access to ports under 1000 are only allowed by root. For example to work around this limitation you can use [authbind](https://www.debian-administration.org/article/386/Running_network_services_as_a_non-root_user.). On debian based linux distributions you can install it with
+
+    sudo apt-get install authbind
+    
+Allow access to port 25 for your user (replace user with your desired username)
+    
+    sudo touch /etc/authbind/byport/25
+    sudo chown user:user /etc/authbind/byport/25
+    sudo chmod 755 /etc/authbind/byport/25
+    
+Now you can start applications with authbind to allow this applications to access port 25
+
+    authbind --deep node cms.js
+
+### Forever
+You can use [forever](https://github.com/foreverjs/forever) to ensure that the cms runs continuously on your Server. To use forever install it with npm
 
     npm install forever -g
     
