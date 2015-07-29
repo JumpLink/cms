@@ -82,9 +82,9 @@ and enable it in `/etc/default/spamassassin`.
 #### Apache2 Example
 
     <VirtualHost *:80>
-        ServerAdmin info@jumplink.eu
-        ServerName cms.nvc
-        ServerAlias cms.bugwelder cms.ffcux cms.jumplink
+        ServerAdmin info@domain.io
+        ServerName domain.io
+        ServerAlias sub.domain.io sub.domain2.com domain2.com
         RewriteEngine On
         RewriteCond %{REQUEST_URI}  ^/socket.io            [NC]
         RewriteCond %{QUERY_STRING} transport=websocket    [NC]
@@ -98,11 +98,10 @@ and enable it in `/etc/default/spamassassin`.
 
     server {
         listen x.x.x.x:80;
-        root /home/cms/cms;
-        server_name cms.nvc cms.ffcux;
+        server_name sub.domain.io domain.io sub.domain2.com domain2.com;
         location ~ ^/ {
             client_max_body_size 500M;
-            proxy_pass http://127.0.0.1:1327;
+            proxy_pass http://127.0.0.1:1337;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
