@@ -4,8 +4,7 @@
  */
 
 var nodemailer = require('nodemailer'); // for send mails
-var mailin = require('mailin');         // for receive mails
-
+var mailin = null;
 
 /**
  * 
@@ -68,6 +67,7 @@ var send = function (host, from, to, subject, text, html, attachments, callback)
  */
 var start = function () {
   sails.log.debug("startResiveServer");
+  mailin = require('mailin');         // for receive mails
   mailin.start({
     port: 25,
     disableWebhook: true // Disable the webhook posting.

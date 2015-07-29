@@ -62,11 +62,13 @@ local_config.paths = local_config.paths || defaultPaths;
  * };
  * ```
  */
-local_config.ssl = {
-  ca: true, // WORKAROUND for https://github.com/balderdashy/sails/blob/master/lib/hooks/http/initialize.js#L44
-  key: true,
-  cert: true
-};
+if(local_config.usingSSL) {
+  // WORKAROUND for https://github.com/balderdashy/sails/blob/master/lib/hooks/http/initialize.js#L37
+  local_config.ssl = {
+    key: true,
+    cert: true
+  };
+}
 
 /**
  * The `port` setting determines which TCP port your app will be deployed on.

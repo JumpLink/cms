@@ -13,6 +13,7 @@ var MultisiteService = require(__dirname+'/../api/services/MultisiteService.js')
 var fs = require('fs-extra');
 var tls = require('tls');
 var path = require('path');
+var config = (typeof(sails) === "object" && typeof(sails.config) === "object") || require('./local.js');
 
 /**
  * @see http://www.primaryobjects.com/CMS/Article145
@@ -165,7 +166,7 @@ var cache = 31557600000;
  */
 var serverOptions = {
   SNICallback: function (domain, cb) {
-    console.log("SNICallback from domain:", domain);
+    // sails.log.debug("[http.serverOptions] SNICallback from domain:", domain);
     MultisiteService.getCurrentSiteConfig(domain, function (err, siteConf) {
       if(err) return cb(err);
       var dirname = MultisiteService.getSitePathFromSiteConf(siteConf);
@@ -173,7 +174,7 @@ var serverOptions = {
       var key_path = path.join(dirname, siteConf.ssl.key);
       var cert_path = path.join(dirname, siteConf.ssl.cert);
 
-      sails.log.debug(dirname, ca_path ,key_path, cert_path);
+      // sails.log.debug("[http.serverOptions]", dirname, ca_path ,key_path, cert_path);
 
       var ctx = tls.createSecureContext({
         ca: fs.readFileSync(ca_path),
@@ -194,6 +195,6 @@ var serverOptions = {
  */
 module.exports.http = {
   middleware: middleware,
-  cache: cache,
-  serverOptions: serverOptions
+  cache: cache
 };
+if(config.usingSSL) module.exports.http.serverOptions = serverOptions;

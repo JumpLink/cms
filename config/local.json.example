@@ -3,6 +3,8 @@
   "port": 1337,
   "secret": "3452eab56804ee3476ec53148be1b627",
   "hookTimeout": 100000,
+  "usingSSL": false,
+  "emailReception": false,
   "paths": {
     "public": "./public",
     "fallback": "fallback",
@@ -16,13 +18,20 @@
   "sites":[
     {
       "name": "bootstrap",
+      "matchsubdomain": false,
       "domains": [
-        "bootstrap"
+        "sub.domain.io"
       ],
       "email": {
         "user": "mail@gmail.com",
         "pass": "123456",
 	      "address": "mail@gmail.com"
+      },
+      "ssl": {
+        "ca": "ssl/ca-bundle.crt",
+        "key": "ssl/sub.domain.io.key",
+        "cert": "ssl/sub.domain.io.crt",
+        "passphrase": "123456"
       },
       "fallback": {
         "theme": "bootstrap"
@@ -30,9 +39,16 @@
     },
     {
       "name": "docs",
+      "matchsubdomain": true,
       "domains": [
-        "docs"
+        "docs.domain2.com"
       ],
+      "ssl": {
+        "ca": "ssl/ca-bundle.crt",
+        "key": "ssl/docs.domain2.com.key",
+        "cert": "ssl/docs.domain2.com.crt",
+        "passphrase": "123456"
+      },
       "fallback": {
         "theme": "default_docs"
       }
