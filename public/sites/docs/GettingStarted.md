@@ -36,7 +36,7 @@ within the CMS folder.
 
 ### Authbind
 
-To receive emails with this CMS you need to get access to port 25, access to ports under 1000 are only allowed by root. To work around this limitation you can use [authbind](https://www.debian-administration.org/article/386/Running_network_services_as_a_non-root_user.) for example. On debian based linux distributions you can install it with
+To receive emails with this CMS you need to get access to port 25, access to ports under 1000 are only allowed by root. To work around this limitation you can use [authbind](https://www.debian-administration.org/article/386/Running_network_services_as_a_non-root_user.) for example. On Debian / Ubuntu based linux boxes you can install it with
 
     sudo apt-get install authbind
     
@@ -68,6 +68,14 @@ If this works, configure your cronjob to start the cms with forever on each rebo
 An example line with authbind, forever and for node.js installed with nvm (you need to customize this, if you want to use it) could be:
 
     @reboot (/usr/bin/authbind --deep /home/[user]/.nvm/versions/node.js/[version]/bin/node /root/.nvm/versions/io.js/[version]/bin/forever start /home/[user]/cms/cms.js)
+
+### Email spam protection
+
+To enable email spam protection install `spamassassin` and `spamc`, on Debian / Ubuntu based linux boxes this looks like
+
+    sudo apt-get install spamassassin spamc
+
+and enable it in `/etc/default/spamassassin`.
 
 ### Proxy
 
