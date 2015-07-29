@@ -5,16 +5,6 @@
   "hookTimeout": 100000,
   "usingSSL": false,
   "emailReception": false,
-  "paths": {
-    "public": "./public",
-    "fallback": "fallback",
-    "sites": "sites",
-    "members": "assets/images/members",
-    "gallery": "assets/images/gallery",
-    "timeline": "assets/files/timeline",
-    "files": "assets/files",
-    "uploads": "uploads"
-  },
   "sites":[
     {
       "name": "bootstrap",

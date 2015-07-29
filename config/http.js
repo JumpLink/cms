@@ -169,7 +169,8 @@ var serverOptions = {
     // sails.log.debug("[http.serverOptions] SNICallback from domain:", domain);
     MultisiteService.getCurrentSiteConfig(domain, function (err, siteConf) {
       if(err) return cb(err);
-      var dirname = MultisiteService.getSitePathFromSiteConf(siteConf);
+      // cmsdirname/config/sites/[sitename]/
+      var dirname = path.join(sails.config.paths.config, 'sites', siteConf.name);
       var ca_path = path.join(dirname, siteConf.ssl.ca);
       var key_path = path.join(dirname, siteConf.ssl.key);
       var cert_path = path.join(dirname, siteConf.ssl.cert);

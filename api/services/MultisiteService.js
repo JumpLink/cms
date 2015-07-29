@@ -16,7 +16,7 @@ var getCurrentSiteConfig = function (host, cb) {
   var errors = [
     "[MultisiteService.getCurrentSiteConfig] No site for host "+host+" in local.json defined!"
   ];
-  sails.log.debug("[MultisiteService.getCurrentSiteConfig] Get current site config for host: "+host);
+  // sails.log.debug("[MultisiteService.getCurrentSiteConfig] Get current site config for host: "+host);
   
   var found = false;
   for (var i = 0; i < sails.config.sites.length && !found; i++) {
@@ -30,12 +30,12 @@ var getCurrentSiteConfig = function (host, cb) {
       var pattern = new RegExp(regex, 'g');
 
       if(pattern.test(host)) {
-        sails.log.debug("[MultisiteService.getCurrentSiteConfig] Match! "+pattern+" ("+sails.config.sites[i].domains[k]+") <=> "+host);
+        // sails.log.debug("[MultisiteService.getCurrentSiteConfig] Match! "+pattern+" ("+sails.config.sites[i].domains[k]+") <=> "+host);
         found = true;
         if (cb) return cb(null, sails.config.sites[i]);
         else return sails.config.sites[i];
       } else {
-        sails.log.debug("[services/MultisiteService.js] No match! "+pattern+" ("+sails.config.sites[i].domains[k]+") <=> "+host);
+        // sails.log.debug("[services/MultisiteService.js] No match! "+pattern+" ("+sails.config.sites[i].domains[k]+") <=> "+host);
       }
     };
   };

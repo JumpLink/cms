@@ -2,7 +2,7 @@
 public/sites/*
 !public/sites/fallback
 !public/sites/docs
-public/sites/docs/ssl
+config/sites/*
 
 # Logs
 logs
