@@ -136,7 +136,8 @@ module.exports.policies = {
     'favicon': true,
     'signin': true,
     'modern': true,
-    'fallback': true
+    'fallback': true,
+    'view': true
   },
 
   TimelineController: {

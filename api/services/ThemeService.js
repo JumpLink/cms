@@ -425,9 +425,10 @@ var getFile = function (host, filepath, options, cb) {
  * Render view from theme with the highest priority,
  * if view not found try next theme.
  */
-var view = function (host, filepath, res, locals) {
+var view = function (host, filepath, res, locals, options) {
   var options = {};
-  getThemeFullPathForFile(host, filepath, function (err, fullpath) {
+  // getThemeFullPathForFile(host, filepath, function (err, fullpath) {
+  getFile(host, filepath, options, function (err, fullpath) {
     if(err) { sails.log.error(err); return res.serverError(err); }
     // fullpath = path.join('../', fullpath); // WORKAROUND root of view for themes
     // sails.log.debug("fullpath", fullpath);

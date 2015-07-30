@@ -35,6 +35,8 @@ module.exports.routes = {
 
   '/signin': 'ThemeController.signin',
 
+  '/views/*': 'ThemeController.view',
+
   '/fallback/*': 'ThemeController.fallback',
   
   '/assets/*': 'ThemeController.assets',

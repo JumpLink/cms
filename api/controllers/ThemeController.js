@@ -126,6 +126,33 @@ var modern = function(req, res, next) {
 };
 
 /**
+ * View html or jade file from Theme / Site
+ *
+ * @param {Object} req - The request object
+ * @param {Object} req.param.theme - Force Theme to view
+ * @param {Object} req.param.site - Force Site to view
+ * @param {Object} res - The response object
+ */
+var view = function(req, res, next) {
+
+  var options = {};
+
+  var locals = {}; //TODO
+
+  var filepath = req.path;
+
+  if(req.param('theme'))
+    options.theme = req.param('theme');
+
+  if(req.param('site'))
+    options.site = req.param('site');
+
+  sails.log.debug("[ThemeController.view]", req.session.uri.host, filepath, locals, options);
+
+  return ThemeService.view(req.session.uri.host, filepath, res, locals, options);
+};
+
+/**
  * Loads asset files dynamically.
  * Function searchs file in site in current site folder,
  * if no file was found, looks file in theme with the heigest priority.
@@ -173,6 +200,7 @@ module.exports = {
   , signin: signin
   , updateBrowser: updateBrowser
   , modern: modern
+  , view: view
   , assets: assets
   , likeAssets: likeAssets
   , favicon: favicon
