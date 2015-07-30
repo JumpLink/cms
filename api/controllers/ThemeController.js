@@ -101,6 +101,7 @@ var modern = function(req, res, next) {
     if(typeof req.session.user != 'undefined') user = JSON.stringify(req.session.user);
     
     return ThemeService.getThemeWithHighestPriority(req.session.uri.host, function(err, currentTheme) {
+      if(err) return res.serverError(err);
       var filepath = currentTheme.modernview;
       MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
         return ThemeService.view(req.session.uri.host, filepath, res, {force: force, url: req.path, authenticated: req.session.authenticated === true, user: user, site: config.name, config: {paths: sails.config.paths, environment: sails.config.environment}});

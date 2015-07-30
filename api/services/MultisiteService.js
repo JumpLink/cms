@@ -41,7 +41,7 @@ var getCurrentSiteConfig = function (host, cb) {
   };
 
   if (cb) return cb(new Error(errors[0]));
-  else return null;
+  else return new Error(errors[0]);
 };
 
 /**

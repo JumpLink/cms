@@ -44,6 +44,7 @@ var defaultPaths = {
   "uploads": "uploads"
 }
 
+// local_config.paths = local_config.paths || defaultPaths;
 local_config.paths = local_config.paths || defaultPaths;
 
 /**
