@@ -384,7 +384,7 @@ var getFile = function (host, filepath, options, cb) {
 
   if(options) {
     if(typeof (options.theme) === 'string') {
-      var rootpath = ThemeService.getRootPathOfThemeDirname(theme);
+      var rootpath = ThemeService.getRootPathOfThemeDirname(options.theme);
       var fullpath = path.join(rootpath, filepath);
       fs.exists(fullpath, function (exists) {
         if(!exists) return cb(errors[0]+" (In theme "+options.theme+")");

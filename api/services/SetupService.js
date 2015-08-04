@@ -7,7 +7,7 @@ var moment = require('moment');
  * Default admin users for the setup.
  */
 var users = function (cb) {
-  cb(null, [{email:"admin@admin.org", name: "admin", color: "#000000", password: "cms-admin"}]);
+  cb(null, [{email:"admin@admin.org", name: "admin", color: "#000000", password: "cms-admin", role: "superadmin"}]);
 };
 
 /**

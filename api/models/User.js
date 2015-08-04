@@ -12,18 +12,29 @@ var bcrypt = require('bcrypt-nodejs');  // https://github.com/shaneGirish/bcrypt
  * 
  */
 var beforeUpdateCreate = function(values, next) {
+  
   if(typeof(values.password) === "undefined") {
     next();
   } else {
     bcrypt.hash(values.password, null, null, function(err, hash) {
       if(err) {
         sails.log.error("[models/User.js]", err);
-        return next(err);
+        return next(new Error(err));
       }
       values.password = hash;
       next();
     });
   }
+
+  // blogger | siteadmin | superadmin
+  if(typeof(values.role) === "undefined") {
+    next();
+  } else {
+    if(values.role != 'blogger' && values.role != 'siteadmin'  && values.role != 'superadmin') {
+      next(new Error("[models/User.js] User must have one of the following roles: 'blogger, 'siteadmin', 'superadmin' but is "+values.role));
+    }
+  }
+
 };
 
 /**
@@ -67,6 +78,11 @@ var attributes = {
     type: 'string'
     , minLength: 6
     , required: true
+  },
+  role: {
+    type: 'string'
+    , required: true
+    , defaultsTo: 'blogger'
   }
 };
 
