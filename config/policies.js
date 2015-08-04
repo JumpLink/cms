@@ -40,27 +40,27 @@ module.exports.policies = {
   /**
    * Default policy for all controllers and actions (`true` allows publicaccess)
    */
-  '*': 'sessionAuth',
+  '*': ['authenticated', 'siteadmin'],
 
   CMSController: {
-    'setup': 'sessionAuthDev',
+    'setup': 'developer',
     'infoUser': true
   },
 
   ConfigController: {
-    'setup': 'sessionAuthDev',
+    'setup': 'developer',
     'find': true
   },
 
   ContentController: {
-    'setup': 'sessionAuthDev',
+    'setup': 'developer',
     'find': true,
     'findAll': true,
     'findAllWithImage': true
   },
 
   DocsController: {
-    'setup': 'sessionAuthDev',
+    'setup': 'developer',
     'config': true,
     'controllers': true,
     'policies': true,
@@ -76,61 +76,65 @@ module.exports.policies = {
   },
 
   DocumentController: {
-    'setup': 'sessionAuthDev',
+    'setup': 'developer',
     'upload': true,
     'convert': true,
   },
 
   EmailController: {
-    'setup': 'sessionAuthDev',
+    'setup': 'developer',
     'send': true,
     'contact': true,
     'application': true,
   },
 
   GalleryController: {
-    'setup': 'sessionAuthDev',
+    'setup': 'developer',
     'find': true,
     'findOne': true,
   },
 
   LocaleController: {
-    'setup': 'sessionAuthDev',
+    'setup': 'developer',
   },
 
   MagentoController: {
-    'setup': 'sessionAuthDev',
+    'setup': 'developer',
   },
 
   MarkdownController: {
-    'setup': 'sessionAuthDev',
+    'setup': 'developer',
     'find': true
   },
 
-
   MemberController: {
-    'setup': 'sessionAuthDev',
+    'setup': 'developer',
     'find': true,
   },
 
+  MultisiteController: {
+    'find': ['authenticated', 'superadmin'],
+    'findNames': ['authenticated', 'superadmin'],
+  },
+
   NavigationController: {
-    'setup': 'sessionAuthDev',
+    'setup': 'developer',
     'find': true
   },
 
   SessionController: {
-    'setup': 'sessionAuthDev',
+    'setup': 'developer',
     'create': true,
     'subscribe': true,
     'authenticated': true
   },
 
   SetupController: {
-    '*': 'sessionAuthDev',
+    '*': 'developer',
   },
 
   ThemeController: {
-    'setup': 'sessionAuthDev',
+    'setup': 'developer',
     'assets': true,
     'likeAssets': true,
     'favicon': true,
@@ -141,17 +145,17 @@ module.exports.policies = {
   },
 
   TimelineController: {
-    'setup': 'sessionAuthDev',
+    'setup': 'developer',
     'find': true,
   },
   
   UserController: {
-    'setup': 'sessionAuthDev',
+    'setup': 'developer',
     'find': true,
   },
 
   VWHeritageController: {
-    'setup': 'sessionAuthDev',
+    'setup': 'developer',
     'find': true,
   }
 };

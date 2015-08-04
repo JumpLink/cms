@@ -6,6 +6,27 @@ var path = require('path');
 var fs = require('fs'); // var fs = require('fs-extra');
 
 /**
+ * Get all available sites
+ */
+var find = function (callback) {
+  callback(null, sails.config.sites);
+}
+
+/**
+ * Get all available site names without duplicates
+ */
+var findNames = function (callback) {
+  var names = {};
+  find(function(err, sites) {
+    if(err) return callback(err);
+    for (var i = sites.length - 1; i >= 0; i--) {
+      names[sites[i].name] = sites[i].name;
+    };
+    callback(null, Object.keys(names));
+  });
+}
+
+/**
  * Get the corrent Site config from local.json that matchs the current host domain 
  *
  * @param {string} host - The current host of the site this function was called.
@@ -115,6 +136,8 @@ var getSiteDirname = function (host, filepath, cb) {
  * The following functions are public
  */
 module.exports = {
+  find: find,
+  findNames: findNames,
   getSitePathFromSiteConf: getSitePathFromSiteConf,
   getSiteDirnameFromSiteConf: getSiteDirnameFromSiteConf,
   getCurrentSiteConfig: getCurrentSiteConfig,
