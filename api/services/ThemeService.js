@@ -343,8 +343,7 @@ var getDirnameForAssetspath = function (host, filepath, cb) {
 }
 
 /**
- * find file in theme with the possible heigest found priority
- * and callback this path
+ * Find file in theme with the possible heigest found priority and callback this path.
  */
 var getThemeFullPathForFile = function (host, filepath, cb) {
   if(typeof(host) !== "string") return cb(new Error("[ThemeService.getThemeFullPathForFile] Host must be a string!"));

@@ -1,7 +1,8 @@
 /**
  * 
+ * @see https://github.com/PeterScott/simplesets-nodejs
  */
-
+var sets = require('simplesets');
 var path = require('path');
 var fs = require('fs'); // var fs = require('fs-extra');
 
@@ -23,6 +24,22 @@ var findNames = function (callback) {
       names[sites[i].name] = sites[i].name;
     };
     callback(null, Object.keys(names));
+  });
+}
+
+/**
+ * Get all available site names without duplicates
+ */
+var findHosts = function (callback) {
+  var hosts = new sets.Set([]);
+  find(function(err, sites) {
+    if(err) return callback(err);
+    for (var i = 0; i < sites.length; i++) {
+      for (var k = 0; k < sites[i].domains.length; k++) {
+        hosts.add(sites[i].domains[k])
+      };
+    };
+    callback(null, hosts.array());
   });
 }
 
@@ -138,6 +155,7 @@ var getSiteDirname = function (host, filepath, cb) {
 module.exports = {
   find: find,
   findNames: findNames,
+  findHosts: findHosts,
   getSitePathFromSiteConf: getSitePathFromSiteConf,
   getSiteDirnameFromSiteConf: getSiteDirnameFromSiteConf,
   getCurrentSiteConfig: getCurrentSiteConfig,

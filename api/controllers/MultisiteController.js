@@ -23,9 +23,21 @@ var findNames = function(req, res) {
 };
 
 /**
+ * Get all hosts defined in all sites
+ */
+var findHosts = function(req, res) {
+  MultisiteService.findHosts(function (error, hosts) {
+    if(error) return res.serverError(error);
+    res.json(hosts);
+  });
+};
+
+
+/**
  * 
  */
 module.exports = {
   find: find,
-  findNames: findNames
+  findNames: findNames,
+  findHosts: findHosts
 };

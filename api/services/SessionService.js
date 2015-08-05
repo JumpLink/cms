@@ -34,7 +34,7 @@ var create = function(host, email, password, session, callback) {
 
     // Try to find the user by there email address.
     // findOneByEmail() is a dynamic finder in that it searches the model by a particular attribute.
-    // User.findOneByEmail(req.param('email')).done(function(err, user) {
+    // User.findOneByEmail(email).done(function(err, user) {
     User.findOne({email: email, site: config.name}, function foundUser(err, user) {
       if (err) {
         return callback(err);
@@ -44,7 +44,7 @@ var create = function(host, email, password, session, callback) {
       if (!user) {
         var noAccountError = [{
           name: 'noAccount',
-          message: 'The email address ' + req.param('email') + ' not found.'
+          message: 'The email address ' + email + ' not found.'
         }];
 
         session.flash = {

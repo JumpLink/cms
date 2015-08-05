@@ -115,6 +115,7 @@ module.exports.policies = {
   MultisiteController: {
     'find': ['authenticated', 'superadmin'],
     'findNames': ['authenticated', 'superadmin'],
+    'findHosts': ['authenticated', 'superadmin'],
   },
 
   NavigationController: {
@@ -141,7 +142,13 @@ module.exports.policies = {
     'signin': true,
     'modern': true,
     'fallback': true,
-    'view': true
+    'view': true,
+    'find': ['authenticated', 'siteadmin'],
+    'findByHost': ['authenticated', 'superadmin'],
+    'updateOrCreate': ['authenticated', 'siteadmin'],
+    'updateOrCreateByHost': ['authenticated', 'superadmin'],
+    'updateOrCreateEach': ['authenticated', 'siteadmin'],
+    'updateOrCreateEachByHost': ['authenticated', 'siteadmin'],
   },
 
   TimelineController: {

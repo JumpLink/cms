@@ -25,7 +25,7 @@ var infos = function (req, res, next) {
 }
 
 /**
- * find from database and isert priority from database
+ * find themes for current host from database and isert priority from database (or from local.json if no priority is set).
  */
 var find = function (req, res, next) {
   ThemeService.getThemesSortedByPriority(req.session.uri.host, function (err, themes) {
@@ -35,7 +35,21 @@ var find = function (req, res, next) {
 }
 
 /**
- * 
+ * find themes for any passed host from database and isert priority from database (or from local.json if no priority is set).
+ * Only for superadmins!
+ */
+var findByHost = function (req, res, next) {
+  var host = req.param('host');
+  sails.log.debug("[ThemeController.findByHost]", host);
+  ThemeService.getThemesSortedByPriority(host, function (err, themes) {
+    if(err) return res.serverError(err);
+    return res.json({available: themes});
+  });
+}
+
+
+/**
+ * Update or create theme (eg. priority) for current host.
  */
 var updateOrCreate = function (req, res, next) {
   var data = req.params.all();
@@ -47,12 +61,42 @@ var updateOrCreate = function (req, res, next) {
 }
 
 /**
- * 
+ * Update or create theme (eg. priority) for any passed host.
+ * Only for superadmins!
+ *
+ * @param req.param.host Host to save theme for
+ */
+var updateOrCreateByHost = function (req, res, next) {
+  var data = req.params.all();
+  // sails.log.debug(data);
+  ThemeService.updateOrCreate(data.host, data, function (err, result) {
+    if(err) return res.serverError(err);
+    return res.json(result);
+  });
+}
+
+/**
+ * Update or create each theme (eg. priority) for current host.
  */
 var updateOrCreateEach = function (req, res, next) {
   var data = req.params.all();
   // sails.log.debug(data);
-  ThemeService.updateOrCreateEach(req.session.uri.host, data, function (err, result) {
+  ThemeService.updateOrCreateEach(req.session.uri.host, data.themes, function (err, result) {
+    if(err) return res.serverError(err);
+    return res.json(result);
+  });
+}
+
+/**
+ * Update or create each theme (eg. priority) for any passed host.
+ * Only for superadmins!
+ *
+ * @param req.param.host Host to save theme for
+ */
+var updateOrCreateEachByHost = function (req, res, next) {
+  var data = req.params.all();
+  // sails.log.debug(data);
+  ThemeService.updateOrCreateEach(data.host, data.themes, function (err, result) {
     if(err) return res.serverError(err);
     return res.json(result);
   });
@@ -195,8 +239,11 @@ module.exports = {
   available: available
   , infos: infos
   , find: find
+  , findByHost: findByHost
   , updateOrCreate: updateOrCreate
+  , updateOrCreateByHost: updateOrCreateByHost
   , updateOrCreateEach: updateOrCreateEach
+  , updateOrCreateEachByHost: updateOrCreateEachByHost
   , fallback: fallback
   , signin: signin
   , updateBrowser: updateBrowser
