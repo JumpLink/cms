@@ -68,8 +68,10 @@ var updateOrCreate = function (req, res, next) {
  */
 var updateOrCreateByHost = function (req, res, next) {
   var data = req.params.all();
+  var host = data.host;
+  delete data.host;
   // sails.log.debug(data);
-  ThemeService.updateOrCreate(data.host, data, function (err, result) {
+  ThemeService.updateOrCreate(host, data, function (err, result) {
     if(err) return res.serverError(err);
     return res.json(result);
   });
@@ -95,8 +97,10 @@ var updateOrCreateEach = function (req, res, next) {
  */
 var updateOrCreateEachByHost = function (req, res, next) {
   var data = req.params.all();
+  var host = data.host;
+  delete data.host;
   // sails.log.debug(data);
-  ThemeService.updateOrCreateEach(data.host, data.themes, function (err, result) {
+  ThemeService.updateOrCreateEach(host, data.themes, function (err, result) {
     if(err) return res.serverError(err);
     return res.json(result);
   });
