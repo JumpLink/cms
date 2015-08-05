@@ -1,5 +1,6 @@
 # uploaded images
 public/sites/*
+public/themes
 !public/sites/fallback
 !public/sites/docs
 config/sites/*

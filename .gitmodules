@@ -1,15 +1,3 @@
-[submodule "public/themes/bootstrap"]
-	path = public/themes/bootstrap
-	url = git@github.com:JumpLink/cms-bootstrap-theme.git
-[submodule "public/themes/nvc"]
-	path = public/themes/nvc
-	url = git@github.com:JumpLink/cms-bootstrap-theme.git
-[submodule "public/themes/bugwelder"]
-	path = public/themes/bugwelder
-	url = git@github.com:JumpLink/cms-material-theme.git
 [submodule "node_modules/magento"]
 	path = node_modules/magento
 	url = git@github.com:JumpLink/node-magento.git
-[submodule "public/themes/default_docs"]
-	path = public/themes/default_docs
-	url = git@github.com:JumpLink/jumplink_default_cms_theme.git
