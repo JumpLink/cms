@@ -123,6 +123,19 @@ module.exports.policies = {
     'find': true
   },
 
+  RoutesController: {
+    'setup': 'developer',
+    'update': ['authenticated', 'siteadmin'],
+    'destroy': ['authenticated', 'siteadmin'],
+    'create': ['authenticated', 'siteadmin'],
+    'updateOrCreate': ['authenticated', 'siteadmin'],
+    'updateOrCreateByHost': ['authenticated', 'superadmin'],
+    'updateOrCreateEach': ['authenticated', 'siteadmin'],
+    'updateOrCreateEachByHost': ['authenticated', 'superadmin'],
+    'find': true,
+    'findByHost': ['authenticated', 'superadmin'],
+  },
+
   SessionController: {
     'setup': 'developer',
     'create': true,
