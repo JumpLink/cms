@@ -92,6 +92,7 @@ module.exports.policies = {
     'setup': 'developer',
     'find': true,
     'findOne': true,
+    'upload': ['authenticated', 'siteadmin']
   },
 
   LocaleController: {
