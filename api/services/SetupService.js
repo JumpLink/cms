@@ -19,9 +19,9 @@ var getThemeSetup = function (host, cb) {
 var users = function (host, cb) {
   getThemeSetup(host, function (err, setup) {
     if(err) sails.log.warn(err);
-    if(UtilityService.isUndefined(err) && UtilityService.isDefined(setup.users) && UtilityService.isArray(setup.users) && setup.users.length > 0)
+    if(UtilityService.isDefined(setup.users) && UtilityService.isArray(setup.users) && setup.users.length > 0)
       return cb(null, setup.users);
-    if(UtilityService.isUndefined(sails.config.setup.fallback) || UtilityService.isUndefined(sails.config.setup.fallback.users) || isUndefined.isArray(sails.config.setup.fallback.users) || sails.config.setup.fallback.users.length <= 0)
+    if(UtilityService.isUndefined(sails.config.setup.fallback) || UtilityService.isUndefined(sails.config.setup.fallback.users) || !UtilityService.isArray(sails.config.setup.fallback.users) || sails.config.setup.fallback.users.length <= 0)
       return cb(new Error("[SetupService.users] No Setup for Users found"));
     sails.log.warn("[SetupService.users] Use Fallback Setup for Users");
     return cb(null, sails.config.setup.fallback.users);

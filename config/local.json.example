@@ -5,6 +5,36 @@
   "hookTimeout": 100000,
   "usingSSL": false,
   "emailReception": false,
+  "setup": {
+    "fallback": {
+      "users": [
+        {
+          "email":"admin@admin.org",
+          "name": "admin",
+          "color": "#000000",
+          "password": "admin",
+          "role": "siteadmin"
+        }
+      ],
+      "routes": [
+        {
+          "position": 1,
+          "match": "/*home*",
+          "title": "Home",
+          "state": {
+            "name": "layout.home",
+            "customstate": false,
+            "url": "",
+            "views": "",
+            "resolve": ""
+          },
+          "fallback": { 
+            "url": ""
+          }
+        }
+      ]
+    }
+  },
   "sites":[
     {
       "name": "bootstrap",
