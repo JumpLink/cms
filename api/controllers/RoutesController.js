@@ -95,37 +95,100 @@ var createByHost = function(req, res) {
 };
 
 /**
+ * Update or create route (eg. position) for current host.
+ */
+var updateOrCreate = function (req, res, next) {
+  var data = req.params.all();
+  sails.log.debug("[RoutesController.updateOrCreate]", data);
+  RoutesService.updateOrCreate(req.session.uri.host, data, function (err, result) {
+    if(err) return res.serverError(err);
+    sails.log.debug("[RoutesController.updateOrCreate]", "result", result);
+    return res.json(result);
+  });
+}
+
+/**
+ * Update or create route (eg. position) for any passed host.
+ * Only for superadmins!
+ *
+ * @param req.param.host Host to save route for
+ */
+var updateOrCreateByHost = function (req, res, next) {
+  var data = req.params.all();
+  var host = data.host;
+  delete data.host;
+  sails.log.debug("[RoutesController.updateOrCreateByHost]", host, data);
+  RoutesService.updateOrCreate(host, data, function (err, result) {
+    if(err) return res.serverError(err);
+    sails.log.debug("[RoutesController.updateOrCreateByHost]", "result", result);
+    return res.json(result);
+  });
+}
+
+/**
+ * Update or create each route (eg. position) for current host.
+ */
+var updateOrCreateEach = function (req, res, next) {
+  var data = req.params.all();
+  sails.log.debug("[RoutesController.updateOrCreateEach]", data);
+  RoutesService.updateOrCreateEach(req.session.uri.host, data.routes, function (err, result) {
+    if(err) return res.serverError(err);
+    sails.log.debug("[RoutesController.updateOrCreateEach]", "result", result);
+    return res.json(result);
+  });
+}
+
+/**
+ * Update or create each route (eg. position) for any passed host.
+ * Only for superadmins!
+ *
+ * @param req.param.host Host to save route for
+ */
+var updateOrCreateEachByHost = function (req, res, next) {
+  var data = req.params.all();
+  var host = data.host;
+  delete data.host;
+  sails.log.debug("[RoutesController.updateOrCreateEachByHost]", host, data);
+  RoutesService.updateOrCreateEach(host, data.routes, function (err, result) {
+    if(err) return res.serverError(err);
+    sails.log.debug("[RoutesController.updateOrCreateEachByHost]", "result", result);
+    return res.json(result);
+  });
+}
+
+/**
  * 
  */
 var find = function (req, res) {
-  var query;
-  MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
-    if(err) { return res.serverError(err); }
-    query = {
-      where: {
-        site: config.name
-      }
-    };
-    Routes.find(query).exec(function found(err, found) {
-      if (err) return res.serverError(err);
-      // not found
-      if (UtilityService.isUndefined(found) || !UtilityService.isArray(found)) {
-        res.notFound(query.where);
-      } else {
-        sails.log.debug("found", found);
-        res.json(found);
-      }
-    });
+  RoutesService.find(req.session.uri.host, {}, function found(err, found) {
+    if (err) return res.serverError(err);
+    res.json(found);
   });
 };
 
 /**
  * 
  */
+var findByHost = function (req, res) {
+  var host = req.param('host');
+  RoutesService.find(host, {}, function found(err, found) {
+    if (err) return res.serverError(err);
+    res.json(found);
+  });
+};
+
+/**
+ * Public functions
+ */
 module.exports = {
-  setup:setup,
-  update:update,
-  destroy:destroy,
-  create:create,
-  find:find
+  setup: setup,
+  update: update,
+  destroy: destroy,
+  create: create,
+  updateOrCreate: updateOrCreate,
+  updateOrCreateByHost: updateOrCreateByHost,
+  updateOrCreateEach: updateOrCreateEach,
+  updateOrCreateEachByHost: updateOrCreateEachByHost,
+  find: find,
+  findByHost: findByHost,
 };

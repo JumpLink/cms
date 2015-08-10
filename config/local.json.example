@@ -40,7 +40,7 @@
         "passphrase": "123456"
       },
       "fallback": {
-        "theme": "default_docs"
+        "theme": "docs"
       }
     }
   ]

@@ -145,14 +145,20 @@ var modern = function(req, res, next) {
 
     // sails.log.info(req.session);
     // TODO fix user
-    var user = "{}";
-    if(typeof req.session.user != 'undefined') user = JSON.stringify(req.session.user);
+    var user = {};
+    // if(typeof req.session.user != 'undefined') user = JSON.stringify(req.session.user);
     
     return ThemeService.getThemeWithHighestPriority(req.session.uri.host, function(err, currentTheme) {
       if(err) return res.serverError(err);
       var filepath = currentTheme.modernview;
       MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
-        return ThemeService.view(req.session.uri.host, filepath, res, {force: force, url: req.path, authenticated: req.session.authenticated === true, user: user, site: config.name, config: {paths: sails.config.paths, environment: sails.config.environment}});
+        if(err) return res.serverError(err);
+        RoutesService.find(req.session.uri.host, {}, function(err, routes) {
+          if(err) return res.serverError(err);
+          // routes = JSON.stringify(routes);
+          sails.log.debug("[ThemeController.modern]", routes);
+          return ThemeService.view(req.session.uri.host, filepath, res, {force: force, url: req.path, authenticated: req.session.authenticated === true, user: user, site: config.name, config: {paths: sails.config.paths, environment: sails.config.environment}, routes: routes});
+        });
       });
     });
   }
