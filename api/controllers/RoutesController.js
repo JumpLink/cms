@@ -9,10 +9,9 @@
  * WARN: This function removes all existing routess for site and hust add the default admin routes with the default password.
  */
 var setup = function (req, res, next) {
-  // get the current site this setup was called
-  MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+  SetupService.generateRoutes(req.session.uri.host, function (err, routes) {
     if(err) return res.serverError(err);
-    res.ok();
+    res.json(routes);
   });
 };
 

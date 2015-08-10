@@ -123,10 +123,11 @@ var setThemeInfos = function (siteConfig, availableThemes, callback) {
   var iterator = function (theme, cb) {
     var themePath = THEME_DIR+"/"+theme;
     var themeInfoPath = themePath+"/"+INFO_FILENAME;
-    fs.readJson(themeInfoPath, function(err, themeInfo) {
-      if(err) {
-        sails.log.error(err);
-        return cb(err);
+    fs.readJson(themeInfoPath, function(fsError, themeInfo) {
+      if(fsError) {
+        var error = "Can't parse Theme Info File: "+themeInfoPath+"\n"+fsError;
+        sails.log.error(error);
+        return cb(error);
       }
       // themeInfo.path = themePath;
       themeInfo.dirname = theme;
@@ -181,15 +182,24 @@ var getThemesSortedByPriority = function (host, cb) {
 };
 
 /**
- * 
+ * Get Theme with highest priority for host
  */
 var getThemeWithHighestPriority = function (host, callback) {
   if(typeof(host) !== "string") return cb(new Error("[ThemeService.getThemesSortedByPriority] Host must be a string!"));
   getThemesSortedByPriority(host, function (err, themes) {
-    if(err) callback(err);
-    else if(!UtilityService.isArray(themes)) callback("themes is not an array");
-    else callback(null, themes[0]);
+    if(err) return callback(err);
+    if(!UtilityService.isArray(themes)) return callback("themes is not an array");
+    return callback(null, themes[0]);
   });
+}
+
+/**
+ * Alias for getThemeWithHighestPriority
+ * 
+ * @see ThemeService.getThemeWithHighestPriority
+ */
+var getTheme = function (host, callback) {
+  return getThemeWithHighestPriority(host, callback);
 }
 
 /**
@@ -476,6 +486,7 @@ module.exports = {
   getAvailableThemes: getAvailableThemes
   , getThemesSortedByPriority: getThemesSortedByPriority
   , getThemeWithHighestPriority: getThemeWithHighestPriority
+  , getTheme: getTheme
   , updateOrCreate: updateOrCreate
   , updateOrCreateEach: updateOrCreateEach
   , getThemeForFile: getThemeForFile
