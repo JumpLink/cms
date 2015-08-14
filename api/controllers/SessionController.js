@@ -98,7 +98,10 @@ var create = function(req, res, next) {
  * 
  */
 var authenticated = function(req, res, next) {
-  return res.json(req.session.authenticated === true);
+  SessionService.authenticated(req.session.uri.host, req.session, function (err, auth) {
+    if(err) { return res.serverError(err); }
+    return res.json(auth);
+  });
 };
 
 /**

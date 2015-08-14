@@ -77,6 +77,7 @@ var create = function(host, email, password, session, callback) {
 
         session.user = user;
         session.authenticated = true;
+        session.site = config.name;
     
         callback(null, session);
 
@@ -86,8 +87,20 @@ var create = function(host, email, password, session, callback) {
 };
 
 /**
+ * 
+ */
+var authenticated = function(host, session, cb) {
+  MultisiteService.getCurrentSiteConfig(host, function (err, conf) {
+    if(err) { return cb(err); }
+    return cb(null, session.authenticated === true && session.site === conf.name);
+  });
+  
+};
+
+/**
  * The following functions are public.
  */
 module.exports = {
-  create:create
+  create:create,
+  authenticated: authenticated
 };
