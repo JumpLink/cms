@@ -7,7 +7,7 @@ var nodemailer = require('nodemailer'); // for send mails
 var mailin = null;
 
 /**
- * 
+ * nodemailer send
  */
 var send = function (host, from, to, subject, text, html, attachments, callback) {
 
@@ -16,9 +16,11 @@ var send = function (host, from, to, subject, text, html, attachments, callback)
     // console.log(sails.config.email);
     // create reusable transporter object using SMTP transport
     var transporter = nodemailer.createTransport({
-      service: 'Gmail'
-      , auth: config.email
+      service: config.email.service,
+      auth: config.email.auth
     });
+
+    sails.log.debug("[EmailService.send] transporter", transporter, "config.email.service", config.email.service, "config.email.auth", config.email.auth);
 
     // NB! No need to recreate the transporter object. You can use
     // the same transporter object for all e-mails
@@ -37,10 +39,11 @@ var send = function (host, from, to, subject, text, html, attachments, callback)
     transporter.sendMail(mailOptions, function(error, info){
       if(error){
         sails.log.error(error);
-      }else{
-        sails.log.debug('Message sent: ' + info.response);
+        return callback(error);
       }
-      callback(error, info);
+
+      sails.log.debug('Message sent: ' + info.response);
+      callback(null, info);
     });
   });
 }
