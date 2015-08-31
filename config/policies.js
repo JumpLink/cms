@@ -40,7 +40,7 @@ module.exports.policies = {
   /**
    * Default policy for all controllers and actions (`true` allows publicaccess)
    */
-  '*': ['authenticated', 'siteadmin'],
+  '*': true,
 
   CMSController: {
     'setup': 'developer',
@@ -163,6 +163,7 @@ module.exports.policies = {
     'updateOrCreateByHost': ['authenticated', 'superadmin'],
     'updateOrCreateEach': ['authenticated', 'siteadmin'],
     'updateOrCreateEachByHost': ['authenticated', 'siteadmin'],
+    'check': true
   },
 
   TimelineController: {

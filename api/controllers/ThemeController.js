@@ -40,7 +40,7 @@ var find = function (req, res, next) {
  */
 var findByHost = function (req, res, next) {
   var host = req.param('host');
-  sails.log.debug("[ThemeController.findByHost]", host);
+  // sails.log.debug("[ThemeController.findByHost]", host);
   ThemeService.getThemesSortedByPriority(host, function (err, themes) {
     if(err) return res.serverError(err);
     return res.json({available: themes});
@@ -156,7 +156,7 @@ var modern = function(req, res, next) {
         RoutesService.find(req.session.uri.host, {}, function(err, routes) {
           if(err) return res.serverError(err);
           // routes = JSON.stringify(routes);
-          sails.log.debug("[ThemeController.modern]", routes);
+          // sails.log.debug("[ThemeController.modern]", routes);
           return ThemeService.view(req.session.uri.host, filepath, res, {force: force, url: req.path, authenticated: req.session.authenticated === true, user: user, site: config.name, config: {paths: sails.config.paths, environment: sails.config.environment}, routes: routes});
         });
       });
@@ -202,7 +202,7 @@ var view = function(req, res, next) {
   if(req.param('site'))
     options.site = req.param('site');
 
-  sails.log.debug("[ThemeController.view]", req.session.uri.host, filepath, locals, options);
+  // sails.log.debug("[ThemeController.view]", req.session.uri.host, filepath, locals, options);
 
   return ThemeService.view(req.session.uri.host, filepath, res, locals, options);
 };
@@ -243,6 +243,31 @@ var favicon = function (req, res, next) {
 }
 
 /**
+ * Check if route is modern or fallback view saved as route, and return show the view if it was found
+ */
+var check = function(req, res, next) {
+  sails.log.debug("check", req.url, req.session.uri.host);
+  RoutesService.find(req.session.uri.host, {}, function found(err, result) {
+    if (err) return res.serverError(err);
+    var found = false;
+    for (var i = result.length - 1; i >= 0 && !found; i--) {
+      if(result[i].url === req.url) {
+        sails.log.debug("[ThemeController.check] Modern route found!");
+        found = true;
+        return modern(req, res, next);
+      }
+      if(result[i].fallback.url === req.url) {
+        sails.log.debug("[ThemeController.check] Fallback route found! TODO");
+        found = true;
+        return fallback(req, res, next);
+      }
+    };
+    sails.log.warn("[ThemeController.check] Route not found!", req.url);
+    if(!found) return next();
+  });
+};
+
+/**
  * 
  */
 module.exports = {
@@ -262,4 +287,5 @@ module.exports = {
   , assets: assets
   , likeAssets: likeAssets
   , favicon: favicon
+  , check: check
 };

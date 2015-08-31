@@ -1,11 +1,19 @@
 /**
  * The UseragentService makes use of and provides additional functions for [express-useragent](https://github.com/biggora/express-useragent) that was processed on server. 
  */
+var useragent = require('express-useragent');
 
 /**
  * 
  */
 var getPrimaryVersion = function (req) {
+
+  if(typeof(req.useragent) === 'undefined') {
+    sails.log.warn('[UseragentService.getPrimaryVersion] Useragent not set, try to set it', req.headers);
+    req.useragent = useragent.parse(req.headers['user-agent']);
+    sails.log.warn('[UseragentService.getPrimaryVersion] req.useragent:', req.useragent);
+  }
+
   var primaryVersion = 0;
   var firstDotIndex = -1;
   // primaryVersion = Number(req.useragent.version);

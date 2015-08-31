@@ -7,6 +7,7 @@
  */
 var setup = function (req, res, next) {
   MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+    if(err) { return res.serverError(err); }
     SetupService.generateMembers(config.name, function(err, result) {
       if(err) { return res.serverError(err); }
       res.json(result);

@@ -55,7 +55,7 @@ var setPriority = function (site, theme, cb) {
     } else {
       if(!err) err = errors[0];
       else err = String(err)+" "+errors[0];
-      sails.log.warn(err, "Theme:", theme, "Site:", site);
+      sails.log.warn(err, "Theme:", theme.name, "Site:", site);
       // return cb(err, theme); // do not break on error, because it is normal that new themes not found in database
     }
     if(UtilityService.isUndefined(theme.priority)) {
