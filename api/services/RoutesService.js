@@ -48,10 +48,57 @@ var find = function (host, query, callback) {
 };
 
 /**
+ * 
+ */
+var findOne = function (host, query, callback) {
+  MultisiteService.getCurrentSiteConfig(host, function (err, config) {
+    if(err) { return callback(err); }
+    if(UtilityService.isUndefined(query)) query = {};
+    if(UtilityService.isUndefined(query.where)) query.where = {};
+    if(UtilityService.isUndefined(query.where.site)) query.where.site = config.name;
+
+    Routes.findOne(query).exec(function found(err, found) {
+      if (err) return callback(err);
+      // not found
+      if (UtilityService.isUndefined(found)) return callback("not found");
+      callback(null, found);
+    });
+  });
+};
+
+/**
+ * Check if route is a modern or fallback route.
+ * cb(err, isModern, route);
+ */
+var isModern = function(host, url, cb) {
+  find(host, {}, function found(err, result) {
+    if (err) return cb(err);
+    var found = false;
+    for (var i = result.length - 1; i >= 0 && !found; i--) {
+      if(result[i].url === url) {
+        sails.log.debug("[ThemeController.check] Modern route found!");
+        found = true;
+        return cb(null, true, result[i]);
+      }
+      if(result[i].fallback.url === url) {
+        sails.log.debug("[ThemeController.check] Fallback route found! TODO");
+        found = true;
+        return cb(null, false, result[i]);
+      }
+    };
+    sails.log.warn("[ThemeController.check] Route not found!", url);
+    if(!found) return cb("not found");
+  });
+};
+
+
+/**
  * Public functions
  */
 module.exports = {
   updateOrCreate: updateOrCreate,
   updateOrCreateEach: updateOrCreateEach,
-  find: find
+  find: find,
+  findOne: findOne,
+  isModern: isModern
 }

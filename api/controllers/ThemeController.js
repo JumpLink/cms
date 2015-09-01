@@ -1,7 +1,6 @@
 /**
  * @see http://sailsjs.org/#!documentation/controllers
  */
-
 var path = require("path");
 
 /**
@@ -109,11 +108,25 @@ var updateOrCreateEachByHost = function (req, res, next) {
 /**
  * 
  */
-var fallback = function (req, res, next, force) {
-  ThemeService.getController(req.session.uri.host, 'FallbackController', function (err, FallbackController) {
-    if(err) return res.serverError(err);
-    else return FallbackController.fallback(req, res, next, force);
-  });
+var fallback = function (req, res, next, force, route) {
+  var host = req.session.uri.host;
+  var url = req.path;
+  var _fallback = function (req, res, next, force, route) {
+    ThemeService.getController(req.session.uri.host, 'FallbackController', function (err, FallbackController) {
+      if(err) return res.serverError(err);
+      else return FallbackController.fallback(req, res, next, force, route);
+    });
+  }
+
+  if(UtilityService.isUndefined(route)) {
+    sails.log.warn("[ThemeController.fallback] route is not defined!")
+    return RoutesService.findOne(host, {url: url}, function(err, route) {
+      return _fallback(req, res, next, force, route);
+    });
+  } else {
+    return _fallback(req, res, next, force, route);
+  }
+
 }
 
 /**
@@ -139,46 +152,69 @@ var updateBrowser = function (req, res, next, force) {
 /**
  * 
  */
-var modern = function(req, res, next) {
+var modern = function(req, res, next, force, route) {
+  var _modern = function (req, res, next, force, route) {
+    var user = null;
+    var url = req.path;
+    var host = req.session.uri.host;
+    var authenticated = req.session.authenticated === true;
+    var filepath = null;
+    var site = null;
+    if(route && route.url) url = route.url;
+    if(typeof req.session.user != 'undefined') user = req.session.user;
 
-  var ok = function (req, res, next, force) {
-
-    // sails.log.info(req.session);
-    // TODO fix user
-    var user = {};
-    // if(typeof req.session.user != 'undefined') user = JSON.stringify(req.session.user);
-    
-    return ThemeService.getThemeWithHighestPriority(req.session.uri.host, function(err, currentTheme) {
+    // 
+    return ThemeService.getThemeWithHighestPriority(host, function(err, currentTheme) {
       if(err) return res.serverError(err);
-      var filepath = currentTheme.modernview;
-      MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+      filepath = currentTheme.modernview;
+      MultisiteService.getCurrentSiteConfig(host, function (err, config) {
         if(err) return res.serverError(err);
-        RoutesService.find(req.session.uri.host, {}, function(err, routes) {
-          if(err) return res.serverError(err);
+        site = config.name;
+        if(err) return res.serverError(err);
+        RoutesService.find(host, {url: url}, function(err, routes) {
           // routes = JSON.stringify(routes);
           // sails.log.debug("[ThemeController.modern]", routes);
-          return ThemeService.view(req.session.uri.host, filepath, res, {force: force, url: req.path, authenticated: req.session.authenticated === true, user: user, site: config.name, config: {paths: sails.config.paths, environment: sails.config.environment}, routes: routes});
+          return ThemeService.view(host, filepath, res, {force: force, url: url, authenticated: authenticated, user: user, site: site, config: {paths: sails.config.paths, environment: sails.config.environment}, routes: routes});
         });
       });
     });
   }
 
-  var force = null; // modern | legacy
-
-  if(req.param('force'))
-    force = req.param('force');
-
-  if(req.query.force)
-    force = req.query.force;
-
-  // sails.log.debug('force', force);
-
-  if(UseragentService.isModern(req, force)) {
-    return ok (req, res, next, force);
+  if(UtilityService.isUndefined(route)) {
+    sails.log.warn("[ThemeController.modern] route is not defined!")
+    return RoutesService.findOne(host, {url: url}, function(err, route) {
+      return _modern(req, res, next, force, route);
+    });
   } else {
-    return fallback (req, res, next, force);
+    return _modern(req, res, next, force, route);
   }
 };
+
+var getForce = function (req) {
+  var force = null;
+  if(req.param('force')) {
+    force = req.param('force');
+  }
+  if(req.query.force) {
+    force = req.query.force;
+  }
+  return force;
+}
+
+/**
+ * Check if modern or fallback mode is forced with url parameters
+ * cb(err, isForce, isModern)
+ * TODO move to new service?
+ */
+var force = function (req, cb) {
+  var force = getForce(req);
+  var isForce = false;
+  if(force != null) isForce = true;
+  var isModern = null;
+  var error = null;
+  if(isForce) isModern = (force == 'modern' && (force != 'fallback' && force != 'legacy' && force != 'noscript'));
+  return cb(error, isForce, isModern, force);
+}
 
 /**
  * View html or jade file from Theme / Site
@@ -189,21 +225,14 @@ var modern = function(req, res, next) {
  * @param {Object} res - The response object
  */
 var view = function(req, res, next) {
-
   var options = {};
-
   var locals = {}; //TODO
-
   var filepath = req.path;
-
   if(req.param('theme'))
     options.theme = req.param('theme');
-
   if(req.param('site'))
     options.site = req.param('site');
-
   // sails.log.debug("[ThemeController.view]", req.session.uri.host, filepath, locals, options);
-
   return ThemeService.view(req.session.uri.host, filepath, res, locals, options);
 };
 
@@ -243,32 +272,70 @@ var favicon = function (req, res, next) {
 }
 
 /**
- * Check if route is modern or fallback view saved as route, and return show the view if it was found
+ * Check if
+ * * URL is forced with force paramr
+ * and render modern or fallback view
  */
-var check = function(req, res, next) {
-  sails.log.debug("check", req.url, req.session.uri.host);
-  RoutesService.find(req.session.uri.host, {}, function found(err, result) {
-    if (err) return res.serverError(err);
-    var found = false;
-    for (var i = result.length - 1; i >= 0 && !found; i--) {
-      if(result[i].url === req.url) {
-        sails.log.debug("[ThemeController.check] Modern route found!");
-        found = true;
-        return modern(req, res, next);
-      }
-      if(result[i].fallback.url === req.url) {
-        sails.log.debug("[ThemeController.check] Fallback route found! TODO");
-        found = true;
-        return fallback(req, res, next);
-      }
-    };
-    sails.log.warn("[ThemeController.check] Route not found!", req.url);
-    if(!found) return next();
+var dynamicForced = function(req, res, next, route) {
+  // Check if modem or fallback mode is forced
+  force(req, function (err, isForce, isModernForce, forceParam) {
+    if(err) return next(err);
+    if(isForce) {
+      if(isModernForce) return modern(req, res, next, forceParam, route);
+      return fallback(req, res, next, forceParam, route);
+    }
+    next(); // next step if url is not forced
   });
 };
 
 /**
- * 
+ * Check if
+ * * URL is forced with force param
+ * * modern view is supported by Browser
+ * and render modern or fallback view
+ * Use this if you know the route is modern
+ */
+var dynamicSupported = function(req, res, next, route) {
+  // Check if modem or fallback mode is forced
+  force(req, function (err, isForce, isModernForce, forceParam) {
+    if(err) return next(err);
+    if(isForce) {
+      if(isModernForce) return modern(req, res, next, forceParam, route);
+      return fallback(req, res, next, forceParam, route);
+    }
+    // if url is not force check if browser is supported
+    var isSupported = UseragentService.supported(req);
+    // if'browser is supported call modern view
+    if(isSupported) return modern(req, res, next, forceParam, route);
+    // orherwise show the fallback view
+    return fallback(req, res, next, forceParam, route);
+  }, route);
+};
+
+/**
+ * Check if
+ * * Route is modern or fallback
+ * * URL is forced with force param
+ * * modern view is supported by Browser
+ * and render modern or fallback view
+ */
+var dynamicRoute = function(req, res, next) {
+  sails.log.debug("check", req.url, req.session.uri.host);
+  // Çheck url for modern or fallback
+  RoutesService.isModern(req.session.uri.host, req.url, function found(err, isModern, route) {
+    if (err) {
+      if(err === "not found") return next(); // if not found go back to config/routes.js and try the next
+      return next(err);
+    }
+    // if route is found and modern, check if browser is supported
+    if(isModern) return dynamicSupported(req, res, next, route); 
+    // if route is not modern use fallback
+    return fallback(req, res, next, forceParam, route);
+  });
+};
+
+/**
+ * Public functions of ThemeController
  */
 module.exports = {
   available: available
@@ -287,5 +354,8 @@ module.exports = {
   , assets: assets
   , likeAssets: likeAssets
   , favicon: favicon
-  , check: check
+  , force: force
+  , dynamicForced: dynamicForced
+  , dynamicSupported: dynamicSupported
+  , dynamicRoute: dynamicRoute
 };

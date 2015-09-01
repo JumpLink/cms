@@ -435,7 +435,8 @@ var getFile = function (host, filepath, options, cb) {
  * if view not found try next theme.
  */
 var view = function (host, filepath, res, locals, options) {
-  var options = {};
+  if(!options) options = {};
+  var route = options.route;
   // getThemeFullPathForFile(host, filepath, function (err, fullpath) {
   getFile(host, filepath, options, function (err, fullpath) {
     if(err) { sails.log.error(err); return res.serverError(err); }

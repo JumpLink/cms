@@ -29,7 +29,7 @@ module.exports.routes = {
    * (Alternatively, remove this and add an `index.html` file in your `assets` directory)
    */
 
-  '/': 'ThemeController.modern',
+  '/': 'ThemeController.dynamicSupported',
 
   '/singedin': 'ThemeController.modern',
 
@@ -44,7 +44,7 @@ module.exports.routes = {
   '/browserconfig.xml': 'ThemeController.favicon',
   '/robots.txt': 'ThemeController.likeAssets',
 
-  '/*': 'ThemeController.check',
+  '/*': 'ThemeController.dynamicRoute',
 
   /**
    * Custom routes here...

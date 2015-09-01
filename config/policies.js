@@ -40,7 +40,8 @@ module.exports.policies = {
   /**
    * Default policy for all controllers and actions (`true` allows publicaccess)
    */
-  '*': true,
+
+  '*': true, // all routes allowed e.g dynamic routes with ThemeController.check, check config/routes.js for that 
 
   CMSController: {
     'setup': 'developer',
@@ -163,7 +164,9 @@ module.exports.policies = {
     'updateOrCreateByHost': ['authenticated', 'superadmin'],
     'updateOrCreateEach': ['authenticated', 'siteadmin'],
     'updateOrCreateEachByHost': ['authenticated', 'siteadmin'],
-    'check': true
+    'dynamicForced': true,
+    'dynamicSupported': true,
+    'dynamicRoute': true,
   },
 
   TimelineController: {
