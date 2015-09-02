@@ -111,6 +111,7 @@ var updateOrCreateEachByHost = function (req, res, next) {
 var fallback = function (req, res, next, force, route) {
   var host = req.session.uri.host;
   var url = req.path;
+
   var _fallback = function (req, res, next, force, route) {
     ThemeService.getController(req.session.uri.host, 'FallbackController', function (err, FallbackController) {
       if(err) return res.serverError(err);
@@ -120,7 +121,8 @@ var fallback = function (req, res, next, force, route) {
 
   if(UtilityService.isUndefined(route)) {
     sails.log.warn("[ThemeController.fallback] route is not defined!")
-    return RoutesService.findOne(host, {url: url}, function(err, route) {
+    return RoutesService.findOneByFallbackUrl(host, url, function(err, route) {
+      sails.log.warn("[ThemeController.fallback]", "url", url, "host", host, "route:", route);
       return _fallback(req, res, next, force, route);
     });
   } else {
@@ -153,16 +155,17 @@ var updateBrowser = function (req, res, next, force) {
  * 
  */
 var modern = function(req, res, next, force, route) {
-  var _modern = function (req, res, next, force, route) {
-    var user = null;
-    var url = req.path;
-    var host = req.session.uri.host;
-    var authenticated = req.session.authenticated === true;
-    var filepath = null;
-    var site = null;
-    if(route && route.url) url = route.url;
-    if(typeof req.session.user != 'undefined') user = req.session.user;
+  var user = null;
+  var url = req.path;
+  var host = req.session.uri.host;
+  var authenticated = req.session.authenticated === true;
+  var filepath = null;
+  var site = null;
+  if(route && route.url) url = route.url;
+  if(typeof req.session.user != 'undefined') user = req.session.user;
 
+  var _modern = function (req, res, next, force, route) {
+    if(route && route.url) url = route.url;
     // 
     return ThemeService.getThemeWithHighestPriority(host, function(err, currentTheme) {
       if(err) return res.serverError(err);
@@ -171,7 +174,7 @@ var modern = function(req, res, next, force, route) {
         if(err) return res.serverError(err);
         site = config.name;
         if(err) return res.serverError(err);
-        RoutesService.find(host, {url: url}, function(err, routes) {
+        RoutesService.find(host, {}, function(err, routes) {
           // routes = JSON.stringify(routes);
           // sails.log.debug("[ThemeController.modern]", routes);
           return ThemeService.view(host, filepath, res, {force: force, url: url, authenticated: authenticated, user: user, site: site, config: {paths: sails.config.paths, environment: sails.config.environment}, routes: routes});
