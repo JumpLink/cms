@@ -121,7 +121,7 @@ var fallback = function (req, res, next, force, route) {
 
   if(UtilityService.isUndefined(route)) {
     sails.log.warn("[ThemeController.fallback] route is not defined!")
-    return RoutesService.findOneByFallbackUrl(host, url, function(err, route) {
+    return RoutesService.findOneByUrl(host, url, function(err, isModern, route) {
       sails.log.warn("[ThemeController.fallback]", "url", url, "host", host, "route:", route);
       return _fallback(req, res, next, force, route);
     });
@@ -216,6 +216,7 @@ var force = function (req, cb) {
   var isModern = null;
   var error = null;
   if(isForce) isModern = (force == 'modern' && (force != 'fallback' && force != 'legacy' && force != 'noscript'));
+   sails.log.debug("[ThemeController.force] error", error, "isForce", isForce, "isModern", isModern, "force", force);
   return cb(error, isForce, isModern, force);
 }
 
@@ -323,9 +324,15 @@ var dynamicSupported = function(req, res, next, route) {
  * and render modern or fallback view
  */
 var dynamicRoute = function(req, res, next) {
-  sails.log.debug("check", req.url, req.session.uri.host);
+
+  var url = req.path;
+  var host = req.session.uri.host;
+
+  if(UtilityService.isUndefined(url)) return next();
+
+  sails.log.debug("check", url, host);
   // Çheck url for modern or fallback
-  RoutesService.isModern(req.session.uri.host, req.url, function found(err, isModern, route) {
+  RoutesService.findOneByUrl(host, url, function found(err, isModern, route) {
     if (err) {
       if(err === "not found") return next(); // if not found go back to config/routes.js and try the next
       return next(err);

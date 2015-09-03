@@ -70,7 +70,7 @@ var findOne = function (host, query, callback) {
  * 
  */
 var findOneByFallbackUrl = function (host, url, callback) {
-  // sails.log.debug("[RoutesService.findOneByFallbackUrl]", "host", host, "url", url);
+  sails.log.debug("[RoutesService.findOneByFallbackUrl]", "host", host, "url", url);
   MultisiteService.getCurrentSiteConfig(host, function (err, config) {
     if(err) { return callback(err); }
     var site = config.name;
@@ -92,23 +92,46 @@ var findOneByFallbackUrl = function (host, url, callback) {
 };
 
 /**
- * Check if route is a modern or fallback route.
+ * Find Route and check if route is a modern or fallback route.
  * cb(err, isModern, route);
  */
-var isModern = function(host, url, cb) {
+var findOneByUrl = function(host, url, cb) {
+  sails.log.debug("[ThemeController.findOneByUrl]", host, url);
   find(host, {}, function found(err, result) {
     if (err) return cb(err);
     var found = false;
     for (var i = result.length - 1; i >= 0 && !found; i--) {
+      // modern url
       if(result[i].url === url) {
-        sails.log.debug("[ThemeController.check] Modern route found!");
+        sails.log.debug("[ThemeController.findOneByUrl] Modern route found!", url, result[i].url);
         found = true;
         return cb(null, true, result[i]);
       }
+      // fallback url
       if(result[i].fallback.url === url) {
-        sails.log.debug("[ThemeController.check] Fallback route found! TODO");
+        sails.log.debug("[ThemeController.findOneByUrl] Fallback route found!");
         found = true;
         return cb(null, false, result[i]);
+      }
+      // alternative modern url
+      if(UtilityService.isDefined(result[i].alternativeUrls)) {
+        for (var k = result[i].alternativeUrls.length - 1; k >= 0 && !found; k--) {
+          if(result[i].alternativeUrls[k] === url) {
+            sails.log.debug("[ThemeController.findOneByUrl] Alternative modern route found!", url, result[i].url);
+            found = true;
+            return cb(null, true, result[i]);
+          }
+        };
+      }
+      // alternative fallback url
+      if(UtilityService.isDefined(result[i].fallback.alternativeUrls)) {
+        for (var k = result[i].fallback.alternativeUrls.length - 1; k >= 0 && !found; k--) {
+          if(result[i].fallback.alternativeUrls[k] === url) {
+            sails.log.debug("[ThemeController.findOneByUrl] Alternative fallback route found!", url, result[i].url);
+            found = true;
+            return cb(null, false, result[i]);
+          }
+        };
       }
     };
     sails.log.warn("[ThemeController.check] Route not found!", url);
@@ -126,5 +149,6 @@ module.exports = {
   find: find,
   findOne: findOne,
   findOneByFallbackUrl: findOneByFallbackUrl,
-  isModern: isModern
+  findOneByUrl: findOneByUrl,
+  isModern: findOneByUrl, // Alias
 }
