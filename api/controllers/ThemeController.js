@@ -112,6 +112,8 @@ var fallback = function (req, res, next, force, route) {
   var host = req.session.uri.host;
   var url = req.path;
 
+  sails.log.info("[ThemeController.fallback]", host, url, force, route);
+
   var _fallback = function (req, res, next, force, route) {
     ThemeService.getController(req.session.uri.host, 'FallbackController', function (err, FallbackController) {
       if(err) return res.serverError(err);
