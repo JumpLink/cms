@@ -7,8 +7,13 @@ var underscore = require('underscore'); // http://documentcloud.github.io/unders
 var extend = require('node.extend'); // https://github.com/dreamerslab/node.extend
 
 var UlilityService = {};
-// var UlilityService = extend({}, underscore);
 
+/**
+ * Merge the contents of two or more objects together into the first object.
+ *
+ * @see https://github.com/dreamerslab/node.extend
+ */
+UlilityService.extend = extend;
 
 /**
  * check whether a value is a number
@@ -25,7 +30,7 @@ UlilityService.isNumber = function (n) {
  * @see http://stackoverflow.com/questions/4020796/finding-the-max-value-of-an-attribute-in-an-array-of-objects
  */
 UlilityService.max = function (array, key) {
-  return Math.max.apply(Math,array.map(function(o){ if(isNumber) return o[key]; else 0}))
+  return Math.max.apply(Math,array.map(function(o){ if(UlilityService.isNumber) return o[key]; else 0}))
 };
 
 /**

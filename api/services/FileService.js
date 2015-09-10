@@ -5,63 +5,54 @@
 var easyimg = require('easyimage');
 var path = require('path');
 var fs = require('fs-extra');
+var async = require('async');
 
 // var UPLOAD_FOLDER =  path.resolve(sails.config.paths.tmp, sails.config.paths.uploads);
 var SITES_FOLDER = path.resolve(sails.config.paths.public, sails.config.paths.sites);
 
 /**
- * 
+ * Create square thumbnails.
+ * @see https://github.com/hacksparrow/node-easyimage
  */
 var generateThumbnail = function (site, file, options, callback) {
   file.thumb = "thumb_"+file.uploadedAs;
-  var src = path.join(SITES_FOLDER, site, options.path, file.uploadedAs);
-  var dst = path.join(SITES_FOLDER, site, options.path, file.thumb);
-  fs.mkdirs(path.dirname(dst), function(err) {
+  var thumbnailOptions = options.thumbnail;
+  thumbnailOptions.src = path.join(SITES_FOLDER, site, options.path, file.uploadedAs);
+  thumbnailOptions.dst = path.join(SITES_FOLDER, site, options.path, file.thumb);
+  // sails.log.debug("[FileService.generateThumbnail] thumbnailOptions", JSON.stringify(thumbnailOptions, null, 2));
+  fs.mkdirs(path.dirname(thumbnailOptions.dst), function(err) {
     if(err) {
       sails.log.error(err);
-      callback(err);
-    } else {
-      easyimg.thumbnail({
-        src: src,
-        dst: dst,
-        width: options.width
-      }).then( function(image) {
-        sails.log.info("Thumbnail generated", dst);
-        callback(null, file);
-        // copy files to public tmp folder
-      }, function (err) {
-        sails.log.error(err);
-        callback(err, file);
-      });
+      return callback(err);
     }
+    easyimg.thumbnail(thumbnailOptions).then( function(image) {
+      // sails.log.debug("[FileService.generateThumbnail] Thumbnail generated", thumbnailOptions.dst);
+      callback(null, file);
+    }, function (err) {
+      sails.log.error(err);
+      callback(err, file);
+    });
   });
 };
 
 /**
- * 
+ * Resize and crop and image in one go, useful for creating customzied thumbnails.
+ * @see https://github.com/hacksparrow/node-easyimage
  */
-var convertFileIterator = function (site, file, relativePathInSiteFolder, thumbnailOptions, callback) {
-  file.uploadedAs = path.basename(file.fd);
-  file.savedTo = path.join(SITES_FOLDER, site, relativePathInSiteFolder, file.uploadedAs);
-  file.dirname = path.dirname(file.savedTo);
-
-  fs.mkdirs(file.dirname, function(err){
-    if (err) callback(err);
-    // move file to puplic path
-    fs.move(file.fd, file.savedTo, function(err){
-      if (err) callback(err);
-      else {
-        sails.log.debug("moved file: "+file.fd+" -> "+file.savedTo);
-        if(thumbnailOptions !== null && thumbnailOptions.width) {
-          generateThumbnail(site, file, thumbnailOptions, function (err) {
-            if (err) callback(err);
-            // sails.log.debug(file);
-            callback(null, file);
-          });
-        } else {
-          callback(null, file);
-        }
-      }
+var generateRescrop = function (site, file, options, callback) {
+  if(UtilityService.isUndefined(options) || UtilityService.isUndefined(options.rescrop)) callback();
+  file.rescrop = "rescrop_"+file.uploadedAs;
+  var rescropOptions = options.rescrop;
+  rescropOptions.src = path.join(SITES_FOLDER, site, options.path, file.uploadedAs);
+  rescropOptions.dst = path.join(SITES_FOLDER, site, options.path, file.rescrop);
+  // sails.log.debug("[FileService.generateRescrop] rescropOptions", JSON.stringify(rescropOptions, null, 2));
+  fs.mkdirs(path.dirname(rescropOptions.dst), function(err) {
+    if(err) return callback(err);
+    easyimg.rescrop(rescropOptions).then( function(image) {
+      // sails.log.debug("[FileService.generateRescrop] rescrop generated", rescropOptions.dst);
+      callback(null, file);
+    }, function (err) {
+      callback(err, file);
     });
   });
 };
@@ -69,8 +60,52 @@ var convertFileIterator = function (site, file, relativePathInSiteFolder, thumbn
 /**
  * 
  */
-var upload = function (req, relativePathInSiteFolder, thumbnailOptions, cb) {
-  // sails.log.debug(req.file);
+var convertFileIterator = function (site, file, relativePathInSiteFolder, options, callback) {
+  file.uploadedAs = path.basename(file.fd);
+  file.savedTo = path.join(SITES_FOLDER, site, relativePathInSiteFolder, file.uploadedAs);
+  file.dirname = path.dirname(file.savedTo);
+  // sails.log.debug("[FileService.convertFileIterator] options", options);
+
+  // an example using an object instead of an array
+  async.series([
+    function (callback) {
+      fs.mkdirs(file.dirname, callback);
+    },
+    function (callback) {
+      fs.move(file.fd, file.savedTo, callback);
+    }
+  ],
+  function(err, results) {
+    if (err) return callback(err);
+    sails.log.debug("moved file: "+file.fd+" -> "+file.savedTo);
+    async.parallel({
+      thumb: function (callback) {
+        generateThumbnail(site, file, options, callback);
+      },
+      rescrop: function (callback) {
+        generateRescrop(site, file, options, callback);
+      }
+    },
+    function(err, results) {
+      if (err) {
+        // err = new Error(err);
+        sails.log.error(err);
+        return callback(err);
+      }
+      if(results.thumb) file.thumb = results.thumb.thumb;
+      if(results.rescrop) file.rescrop = results.rescrop.rescrop;
+      // sails.log.debug("[FileService.convertFileIterator] file", file);
+      callback(null, file);
+    });
+  });
+};
+
+/**
+ * 
+ */
+var upload = function (req, relativePathInSiteFolder, options, cb) {
+  var host = req.session.uri.host;
+  var site = null;
 
   // WORKAROUND for BUG https://github.com/balderdashy/skipper/issues/36
   if(req._fileparser.form.bytesExpected > 10000000) {
@@ -85,15 +120,16 @@ var upload = function (req, relativePathInSiteFolder, thumbnailOptions, cb) {
       return cb(err);
     } else {
 
-      MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
-        if(err) { return res.serverError(err); }
+      MultisiteService.getCurrentSiteConfig(host, function (err, config) {
+        if(err) return res.serverError(err);
+        site = config.name;
         async.map(files, function (file, cb) {
-          convertFileIterator(config.name, file, relativePathInSiteFolder, thumbnailOptions, cb);
+          convertFileIterator(site, file, relativePathInSiteFolder, options, cb);
         }, function(err, files) {
           var result = {
             message: files.length + ' file(s) uploaded successfully!',
             files: files,
-            site: config.name
+            site: site
           };
           return cb(null, result);
         });

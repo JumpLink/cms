@@ -56,24 +56,41 @@ var update = function (req, res, next) {
  * 
  */
 var upload = function (req, res) {
-  thumbnailOptions = {width: 280, path: sails.config.paths.gallery};
-  FileService.upload(req, sails.config.paths.gallery, thumbnailOptions, function (err, result) {
+  var data = req.params.all();
+  var options = JSON.parse(req.headers.options);
+  // sails.log.debug("[GalleryController.upload] headers", JSON.stringify(req.headers, null, 2));
+  var defaults = {
+    path: sails.config.paths.gallery,
+    thumbnail: {
+      width: 300,
+      path: sails.config.paths.gallery
+    },
+    rescrop: {
+      width: 960 * 3, // width og bootstrap content width * 3 for hidpi
+      cropwidth: 960 * 3,
+      cropheight: 720 * 3,
+    }
+  }
+  options = UtilityService.extend(true, defaults, options);
+  sails.log.debug("[GalleryController.upload]", options);
+  FileService.upload(req, sails.config.paths.gallery, options, function (err, result) {
     if(err) return res.serverError(err);
     // sails.log.debug("GalleryController: file upload result", result);
     var files = result.files;
     var site = result.site;
+    options.site = site;
     // find all images for this site
     GalleryService.find({where: {site: site}}, function found(err, images) {
       if (err) return res.serverError(err);
-      GalleryService.prepearFilesForDatabase(site, files, images, function (err, files) {
+      GalleryService.prepearFilesForDatabase(options, files, images, function (err, files) {
         if(err) { sails.log.error(err); return res.serverError(err); }
-        // sails.log.debug("GalleryService: prepear files for database result", files);
+        sails.log.debug("GalleryService: prepear files for database result", files);
         Gallery.create(files, function(err, files) {
           if(err) return res.serverError(err);
           files.forEach(function(file, index) {
             // TODO not broadcast / fired why?!
             Gallery.publishCreate(file);
-            // sails.log.debug("Gallery.publishCreate(file);", file);
+            sails.log.debug("Gallery.publishCreate(file);", file);
           });
           res.json({
             message: files.length + ' file(s) uploaded successfully!',
@@ -138,9 +155,10 @@ var destroy = function(req, res) {
  * 
  */
 module.exports = {
-  setup:setup,
-  update:update,
-  upload:upload,
-  find:find,
-  destroy:destroy
+  setup: setup,
+  update: update,
+  upload: upload,
+  create: upload, // Alias
+  find: find,
+  destroy: destroy
 };
