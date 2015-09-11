@@ -35,7 +35,7 @@ var update = function (req, res, next) {
 /**
  * 
  */
-var destroy = function(req, res) {
+var destroy = function(req, res, next) {
   var id = req.param('id');
   Routes.destroy(id, function (error, destroyed) {
     if(error) return res.serverError(error);
@@ -48,7 +48,7 @@ var destroy = function(req, res) {
 /**
  * 
  */
-var create = function(req, res) {
+var create = function(req, res, next) {
   MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
     if(err) { 
       sails.log.error("[RoutesController.create]", err);
@@ -71,7 +71,7 @@ var create = function(req, res) {
 /**
  * 
  */
-var createByHost = function(req, res) {
+var createByHost = function(req, res, next) {
   var data = req.params.all();
   var host = data.host;
   delete data.host;
@@ -158,7 +158,7 @@ var updateOrCreateEachByHost = function (req, res, next) {
 /**
  * 
  */
-var find = function (req, res) {
+var find = function (req, res, next) {
   RoutesService.find(req.session.uri.host, {}, function found(err, found) {
     if (err) return res.serverError(err);
     res.json(found);
@@ -168,12 +168,19 @@ var find = function (req, res) {
 /**
  * 
  */
-var findByHost = function (req, res) {
+var findByHost = function (req, res, next) {
   var host = req.param('host');
   RoutesService.find(host, {}, function found(err, found) {
     if (err) return res.serverError(err);
     res.json(found);
   });
+};
+
+/**
+ * TODO https://support.google.com/webmasters/answer/139066?hl=de
+ */
+var getCanonicalUrl = function (req, res, next) {
+
 };
 
 /**
@@ -190,4 +197,5 @@ module.exports = {
   updateOrCreateEachByHost: updateOrCreateEachByHost,
   find: find,
   findByHost: findByHost,
+  getCanonicalUrl: getCanonicalUrl
 };

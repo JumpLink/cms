@@ -1,30 +1,32 @@
 /**
  * 
  */
+var sm = require('sitemap');
+var async = require('async');
 
 /**
  * 
  */
-var updateOrCreate = function(host, route, cb) {
+var updateOrCreate = function(host, route, callback) {
   MultisiteService.getCurrentSiteConfig(host, function (err, config) {
-    if(err) cb(err);
+    if(err) callback(err);
     route.site = config.name;
     // modelName, data, query, callback, extendFound
-    ModelService.updateOrCreate('Routes', route, {id: route.id, site: route.site}, cb);
+    ModelService.updateOrCreate('Routes', route, {id: route.id, site: route.site}, callback);
   });
 }
 
 /**
  * 
  */
-var updateOrCreateEach = function(host, routes, cb) {
+var updateOrCreateEach = function(host, routes, callback) {
   MultisiteService.getCurrentSiteConfig(host, function (err, config) {
-    if(err) cb(err);
+    if(err) callback(err);
     for (var i = routes.length - 1; i >= 0; i--) {
       routes[i].site = config.name;
     };
     // modelName, datas, propertyNames, callback, extendFound
-    ModelService.updateOrCreateEach('Routes', routes, ['id', 'site'], cb);
+    ModelService.updateOrCreateEach('Routes', routes, ['id', 'site'], callback);
   });
 }
 
@@ -42,7 +44,7 @@ var find = function (host, query, callback) {
       if (err) return callback(err);
       // not found
       if (UtilityService.isUndefined(found) || !UtilityService.isArray(found)) return callback("not found");
-      callback(null, found);
+      callback(null, found, config);
     });
   });
 };
@@ -61,7 +63,7 @@ var findOne = function (host, query, callback) {
       if (err) return callback(err);
       // not found
       if (UtilityService.isUndefined(found)) return callback("not found");
-      callback(null, found);
+      callback(null, found, config);
     });
   });
 };
@@ -85,7 +87,7 @@ var findOneByFallbackUrl = function (host, url, callback) {
           route = routes[i];
         }
       };
-      if(found) return callback(null, route);
+      if(found) return callback(null, route, config);
       return callback("not found");
     });
   });
@@ -93,25 +95,25 @@ var findOneByFallbackUrl = function (host, url, callback) {
 
 /**
  * Find Route and check if route is a modern or fallback route.
- * cb(err, isModern, route);
+ * callback(err, isModern, route);
  */
-var findOneByUrl = function(host, url, cb) {
+var findOneByUrl = function(host, url, callback) {
   sails.log.debug("[ThemeController.findOneByUrl]", host, url);
   find(host, {}, function found(err, result) {
-    if (err) return cb(err);
+    if (err) return callback(err);
     var found = false;
     for (var i = result.length - 1; i >= 0 && !found; i--) {
       // modern url
       if(result[i].url === url) {
         sails.log.debug("[ThemeController.findOneByUrl] Modern route found!", url, result[i].url);
         found = true;
-        return cb(null, true, result[i]);
+        return callback(null, true, result[i]);
       }
       // fallback url
       // if(result[i].fallback.url === url) {
       //   sails.log.debug("[ThemeController.findOneByUrl] Fallback route found!");
       //   found = true;
-      //   return cb(null, false, result[i]);
+      //   return callback(null, false, result[i]);
       // }
       // alternative modern url
       if(UtilityService.isDefined(result[i].alternativeUrls)) {
@@ -119,7 +121,7 @@ var findOneByUrl = function(host, url, cb) {
           if(result[i].alternativeUrls[k] === url) {
             sails.log.debug("[ThemeController.findOneByUrl] Alternative modern route found!", url, result[i].url);
             found = true;
-            return cb(null, true, result[i]);
+            return callback(null, true, result[i]);
           }
         };
       }
@@ -129,15 +131,77 @@ var findOneByUrl = function(host, url, cb) {
       //     if(result[i].fallback.alternativeUrls[k] === url) {
       //       sails.log.debug("[ThemeController.findOneByUrl] Alternative fallback route found!", url, result[i].url);
       //       found = true;
-      //       return cb(null, false, result[i]);
+      //       return callback(null, false, result[i]);
       //     }
       //   };
       // }
     };
     sails.log.warn("[ThemeController.check] Route not found!", url);
-    if(!found) return cb("not found");
+    if(!found) return callback("not found");
   });
 };
+
+/**
+ *
+ * @see https://github.com/ekalinin/sitemap.js
+ */
+var getSitemapUrls = function (host, callback) {
+  find(host, {}, function(err, routes) {
+    if(err) return callback(err);
+    var sitemapUrls = [];
+    for (var i = 0; i < routes.length; i++) {
+      
+      var mainUrl = {
+        changefreq: 'monthly',
+        priority: 0.1,
+        lang: 'de'
+      };
+
+      // overwrite default values
+      if(UtilityService.isDefined(routes[i].url)) mainUrl.url = routes[i].url;
+      if(UtilityService.isDefined(routes[i].changefreq)) mainUrl.changefreq = routes[i].changefreq;
+      if(UtilityService.isDefined(routes[i].priority)) mainUrl.priority = routes[i].priority;
+      if(UtilityService.isDefined(routes[i].lang)) mainUrl.lang = routes[i].lang;
+
+      sitemapUrls.push(mainUrl);
+
+      // add alternative urls TODO nur beforzugte urls und keine fallback urls?
+      // if(UtilityService.isDefined(routes[i].alternativeUrls)) {
+      //   for (var k = 0; k < routes[i].alternativeUrls.length; k++) {
+      //     routes[i].alternativeUrls[k]
+      //   };
+      // }
+    };
+    callback(err, sitemapUrls);
+  });
+}
+
+/**
+ * Generate sitemap.xml
+ * @see https://github.com/ekalinin/sitemap.js
+ */
+var generateSitemap = function (protocol, host, callback) {
+  var sitemapOptions = {};
+  async.parallel({
+    config: function(callback){
+      MultisiteService.getCurrentSiteConfig(host, callback);
+    },
+    urls: function(callback){
+      getSitemapUrls(host, callback);
+    }
+  },
+  function(err, results) {
+    if(err) return callback(err);
+    sitemapOptions.hostname = protocol + "://"+host; // TODO
+    sitemapOptions.cacheTime = 600000;  // 600 sec cache period
+    sitemapOptions.urls = results.urls;
+    sails.log.debug("[RoutesService.generateSitemap]", results, sitemapOptions);
+    var sitemap = sm.createSitemap(sitemapOptions);
+    sitemap.toXML( function(xml) {
+      return callback(null, xml);
+    });
+  });
+}
 
 
 /**
@@ -147,8 +211,10 @@ module.exports = {
   updateOrCreate: updateOrCreate,
   updateOrCreateEach: updateOrCreateEach,
   find: find,
+  findALL: find, // Alias
   findOne: findOne,
   findOneByFallbackUrl: findOneByFallbackUrl,
   findOneByUrl: findOneByUrl,
   isModern: findOneByUrl, // Alias
+  generateSitemap: generateSitemap,
 }

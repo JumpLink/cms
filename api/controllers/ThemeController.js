@@ -278,6 +278,30 @@ var favicon = function (req, res, next) {
 }
 
 /**
+ * TODO
+ * @see https://support.google.com/webmasters/answer/139066?hl=de
+ * @see https://de.wikipedia.org/wiki/Sitemap
+ */
+var sitemap = function (req, res, next) {
+  var url = req.path;
+  var protocol = req.protocol;
+  var host = req.session.uri.host;
+  RoutesService.generateSitemap(protocol, host, function (err, sitemapXml) {
+    if(err) return next(err);
+    sails.log.debug("[ThemeController.sitemap]", sitemapXml.toString());
+    return res.xml(sitemapXml);
+  });
+}
+
+/**
+ * TODO
+ * @see https://de.wikipedia.org/wiki/Robots_Exclusion_Standard
+ */
+var robots = function () {
+
+}
+
+/**
  * Check if
  * * URL is forced with force paramr
  * and render modern or fallback view
@@ -366,6 +390,7 @@ module.exports = {
   , assets: assets
   , likeAssets: likeAssets
   , favicon: favicon
+  , sitemap: sitemap
   , force: force
   , dynamicForced: dynamicForced
   , dynamicSupported: dynamicSupported

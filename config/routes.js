@@ -41,6 +41,7 @@ module.exports.routes = {
   
   '/assets/*': 'ThemeController.assets',
   '/favicon.ico': 'ThemeController.favicon',
+  '/sitemap.xml': 'ThemeController.sitemap',
   '/browserconfig.xml': 'ThemeController.favicon',
   '/robots.txt': 'ThemeController.likeAssets',
 
