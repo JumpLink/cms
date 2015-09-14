@@ -1,11 +1,6 @@
 /**
  * 
  */
-var path = require('path');
-var fs = require('fs-extra'); // Node.js: extra methods for the fs object: https://github.com/jprichardson/node-fs-extra
-var UPLOADFOLDER =  path.normalize(__dirname+'/../../.tmp/uploads');
-var TIMELINEFILEDIR = path.normalize(__dirname+'/../../.tmp/public/files/timeline');
-var BACKUPTIMELINEFILEDIR = path.normalize(__dirname+'/../../assets/files/timeline');
 
 /**
  * 
@@ -90,10 +85,27 @@ var find = function (req, res) {
 /**
  * 
  */
+var destroy = function (req, res, next) {
+  MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
+    if(err) { return res.serverError(err); }
+    var id = req.param('id');
+    var site = config.name;
+    Blog.destroy({id:id, site:site}).exec(function create(err, destroyed){
+      // Blog.publisCreate(destroyed[0].id, destroyed[0]);
+      sails.log.info("destroyed", destroyed);
+      res.json(destroyed);
+    });
+  });
+};
+
+/**
+ * 
+ */
 module.exports = {
-  setup:setup,
-  create:create,
-  update:update,
-  upload:upload,
-  find:find
+  setup: setup,
+  create: create,
+  update: update,
+  upload: upload,
+  find: find,
+  destroy: destroy,
 }
