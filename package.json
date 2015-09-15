@@ -41,7 +41,8 @@
     "simplesets": "^1.2.0",
     "sitemap": "^1.1.1",
     "underscore": "^1.7.0",
-    "validator": "^3.22.0"
+    "validator": "^3.22.0",
+    "magento": "jumplink/node-magento"
   },
   "scripts": {
     "start": "node app.js",
