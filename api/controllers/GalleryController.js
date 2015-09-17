@@ -53,27 +53,11 @@ var update = function (req, res, next) {
 };
 
 /**
- * 
+ * Upload a file for the gallery and save file in gallery database
  */
 var upload = function (req, res) {
-  var data = req.params.all();
-  var options = JSON.parse(req.headers.options);
-  // sails.log.debug("[GalleryController.upload] headers", JSON.stringify(req.headers, null, 2));
-  var defaults = {
-    path: sails.config.paths.gallery,
-    thumbnail: {
-      width: 300,
-      path: sails.config.paths.gallery
-    },
-    rescrop: {
-      width: 960 * 3, // width og bootstrap content width * 3 for hidpi
-      cropwidth: 960 * 3,
-      cropheight: 720 * 3,
-    }
-  }
-  options = UtilityService.extend(true, defaults, options);
-  sails.log.debug("[GalleryController.upload]", options);
-  FileService.upload(req, sails.config.paths.gallery, options, function (err, result) {
+  sails.log.debug("[GalleryController.upload]");
+  FileService.upload(req, sails.config.paths.gallery, function (err, result) {
     if(err) return res.serverError(err);
     // sails.log.debug("GalleryController: file upload result", result);
     var files = result.files;

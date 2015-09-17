@@ -54,7 +54,7 @@ var update = function (req, res, next) {
  * Upload a file for a Blog Post
  */
 var upload = function (req, res) {
-  FileService.upload(req, sails.config.paths.blog, null, function (err, result) {
+  FileService.upload(req, sails.config.paths.blog, function (err, result) {
     if(err) return res.serverError(err);
     else res.json(result);
   });
@@ -102,6 +102,13 @@ var destroy = function (req, res, next) {
 };
 
 /**
+ *
+ */
+var deleteAttachment = function (req, res, next) {
+  return res.json("TODO");
+}
+
+/**
  * 
  */
 module.exports = {
@@ -112,4 +119,5 @@ module.exports = {
   find: find,
   findAll: find, // Alias
   destroy: destroy,
+  deleteAttachment: deleteAttachment
 }

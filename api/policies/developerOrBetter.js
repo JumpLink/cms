@@ -7,7 +7,7 @@
  * @docs        :: http://sailsjs.org/#!documentation/policies
  *
  */
-var developer = function(req, res, next) {
+var developerOrBetter = function(req, res, next) {
 
   // Allways allowed on development-mode
   if (sails.config.environment === 'development' || req.session.user.role === 'superadmin') {
@@ -22,4 +22,4 @@ var developer = function(req, res, next) {
 /**
  * Make this policy available
  */
-module.exports = developer;
+module.exports = developerOrBetter;

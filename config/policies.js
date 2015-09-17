@@ -43,25 +43,34 @@ module.exports.policies = {
 
   '*': true, // all routes allowed e.g dynamic routes with ThemeController.check, check config/routes.js for that 
 
+  BlogController: {
+    'setup': 'developerOrBetter',
+    'create': true,
+    'update': 'bloggerOrBetter',
+    'upload': 'bloggerOrBetter',
+    'find': true,
+    'destroy': 'bloggerOrBetter',
+  },
+
   CMSController: {
-    'setup': 'developer',
+    'setup': 'developerOrBetter',
     'infoUser': true
   },
 
   ConfigController: {
-    'setup': 'developer',
+    'setup': 'developerOrBetter',
     'find': true
   },
 
   ContentController: {
-    'setup': 'developer',
+    'setup': 'developerOrBetter',
     'find': true,
     'findAll': true,
     'findAllWithImage': true
   },
 
   DocsController: {
-    'setup': 'developer',
+    'setup': 'developerOrBetter',
     'config': true,
     'controllers': true,
     'policies': true,
@@ -77,40 +86,40 @@ module.exports.policies = {
   },
 
   DocumentController: {
-    'setup': 'developer',
+    'setup': 'developerOrBetter',
     'upload': true,
     'convert': true,
   },
 
   EmailController: {
-    'setup': 'developer',
+    'setup': 'developerOrBetter',
     'send': true,
     'contact': true,
     'application': true,
   },
 
   GalleryController: {
-    'setup': 'developer',
+    'setup': 'developerOrBetter',
     'find': true,
     'findOne': true,
-    'upload': ['authenticated', 'siteadmin']
+    'upload': ['authenticated', 'siteadminOrBetter']
   },
 
   LocaleController: {
-    'setup': 'developer',
+    'setup': 'developerOrBetter',
   },
 
   MagentoController: {
-    'setup': 'developer',
+    'setup': 'developerOrBetter',
   },
 
   MarkdownController: {
-    'setup': 'developer',
+    'setup': 'developerOrBetter',
     'find': true
   },
 
   MemberController: {
-    'setup': 'developer',
+    'setup': 'developerOrBetter',
     'find': true,
   },
 
@@ -121,36 +130,36 @@ module.exports.policies = {
   },
 
   NavigationController: {
-    'setup': 'developer',
+    'setup': 'developerOrBetter',
     'find': true
   },
 
   RoutesController: {
-    'setup': 'developer',
-    'update': ['authenticated', 'siteadmin'],
-    'destroy': ['authenticated', 'siteadmin'],
-    'create': ['authenticated', 'siteadmin'],
-    'updateOrCreate': ['authenticated', 'siteadmin'],
+    'setup': 'developerOrBetter',
+    'update': ['authenticated', 'siteadminOrBetter'],
+    'destroy': ['authenticated', 'siteadminOrBetter'],
+    'create': ['authenticated', 'siteadminOrBetter'],
+    'updateOrCreate': ['authenticated', 'siteadminOrBetter'],
     'updateOrCreateByHost': ['authenticated', 'superadmin'],
-    'updateOrCreateEach': ['authenticated', 'siteadmin'],
+    'updateOrCreateEach': ['authenticated', 'siteadminOrBetter'],
     'updateOrCreateEachByHost': ['authenticated', 'superadmin'],
     'find': true,
     'findByHost': ['authenticated', 'superadmin'],
   },
 
   SessionController: {
-    'setup': 'developer',
+    'setup': 'developerOrBetter',
     'create': true,
     'subscribe': true,
     'authenticated': true
   },
 
   SetupController: {
-    '*': 'developer',
+    '*': 'developerOrBetter',
   },
 
   ThemeController: {
-    'setup': 'developer',
+    'setup': 'developerOrBetter',
     'assets': true,
     'likeAssets': true,
     'favicon': true,
@@ -158,29 +167,29 @@ module.exports.policies = {
     'modern': true,
     'fallback': true,
     'view': true,
-    'find': ['authenticated', 'siteadmin'],
+    'find': ['authenticated', 'siteadminOrBetter'],
     'findByHost': ['authenticated', 'superadmin'],
-    'updateOrCreate': ['authenticated', 'siteadmin'],
+    'updateOrCreate': ['authenticated', 'siteadminOrBetter'],
     'updateOrCreateByHost': ['authenticated', 'superadmin'],
-    'updateOrCreateEach': ['authenticated', 'siteadmin'],
-    'updateOrCreateEachByHost': ['authenticated', 'siteadmin'],
+    'updateOrCreateEach': ['authenticated', 'siteadminOrBetter'],
+    'updateOrCreateEachByHost': ['authenticated', 'siteadminOrBetter'],
     'dynamicForced': true,
     'dynamicSupported': true,
     'dynamicRoute': true,
   },
 
   TimelineController: {
-    'setup': 'developer',
+    'setup': 'developerOrBetter',
     'find': true,
   },
   
   UserController: {
-    'setup': 'developer',
+    'setup': 'developerOrBetter',
     'find': true,
   },
 
   VWHeritageController: {
-    'setup': 'developer',
+    'setup': 'developerOrBetter',
     'find': true,
   }
 };

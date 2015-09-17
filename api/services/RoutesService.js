@@ -203,7 +203,6 @@ var generateSitemap = function (protocol, host, callback) {
   });
 }
 
-
 /**
  * Public functions
  */

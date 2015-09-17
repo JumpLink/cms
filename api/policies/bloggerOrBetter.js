@@ -5,7 +5,7 @@
  * @module Policy
  * @see http://sailsjs.org/#!documentation/policies
  */
-var blogger = function(req, res, next) {
+var bloggerOrBetter = function(req, res, next) {
 
   // User is allowed, proceed to the next policy,
   // or if this is the last policy, the controller  
@@ -21,4 +21,4 @@ var blogger = function(req, res, next) {
 /**
  * Make this policy available
  */
-module.exports = blogger;
+module.exports = bloggerOrBetter;
