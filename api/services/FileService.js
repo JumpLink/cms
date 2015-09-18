@@ -23,10 +23,10 @@ var isImage = function (mime) {
  */
 var generateThumbnail = function (site, file, options, callback) {
   if(options === null || UtilityService.isUndefined(options) || UtilityService.isUndefined(options.thumbnail)) return callback();
-  file.thumb = "thumb_"+file.uploadedAs;
+  file.thumbName = "thumb_"+file.uploadedAs;
   var thumbnailOptions = options.thumbnail;
   thumbnailOptions.src = path.join(SITES_FOLDER, site, options.path, file.uploadedAs);
-  thumbnailOptions.dst = path.join(SITES_FOLDER, site, options.path, file.thumb);
+  thumbnailOptions.dst = path.join(SITES_FOLDER, site, options.path, file.thumbName);
   // sails.log.debug("[FileService.generateThumbnail] thumbnailOptions", JSON.stringify(thumbnailOptions, null, 2));
   fs.mkdirs(path.dirname(thumbnailOptions.dst), function(err) {
     if(err) {
@@ -35,6 +35,7 @@ var generateThumbnail = function (site, file, options, callback) {
     }
     easyimg.thumbnail(thumbnailOptions).then( function(image) {
       // sails.log.debug("[FileService.generateThumbnail] Thumbnail generated", thumbnailOptions.dst);
+      file.thumbObject = image;
       callback(null, file);
     }, function (err) {
       sails.log.error(err);
@@ -49,15 +50,16 @@ var generateThumbnail = function (site, file, options, callback) {
  */
 var generateRescrop = function (site, file, options, callback) {
   if(options === null || UtilityService.isUndefined(options) || UtilityService.isUndefined(options.rescrop)) return callback();
-  file.rescrop = "rescrop_"+file.uploadedAs;
+  file.rescropName = "rescrop_"+file.uploadedAs;
   var rescropOptions = options.rescrop;
   rescropOptions.src = path.join(SITES_FOLDER, site, options.path, file.uploadedAs);
-  rescropOptions.dst = path.join(SITES_FOLDER, site, options.path, file.rescrop);
+  rescropOptions.dst = path.join(SITES_FOLDER, site, options.path, file.rescropName);
   // sails.log.debug("[FileService.generateRescrop] rescropOptions", JSON.stringify(rescropOptions, null, 2));
   fs.mkdirs(path.dirname(rescropOptions.dst), function(err) {
     if(err) return callback(err);
     easyimg.rescrop(rescropOptions).then( function(image) {
       // sails.log.debug("[FileService.generateRescrop] rescrop generated", rescropOptions.dst);
+      file.rescropObject = image;
       callback(null, file);
     }, function (err) {
       callback(err, file);
@@ -66,23 +68,67 @@ var generateRescrop = function (site, file, options, callback) {
 };
 
 /**
+ * Get Image Information for the original Image like width, depth, size, type and etc..
+ */
+var setImageInfoForOriginal = function (options, file, callback) {
+  // sails.log.debug("[GalleryService.setInfoForOriginal]", "options", options, "file", file);
+  if(UtilityService.isUndefined(file) || UtilityService.isUndefined(file.savedTo)) callback(new Error("file.savedTo is undefined"));
+  easyimg.info(file.savedTo).then( function(original) {
+    delete original.path;
+    callback(null, original);
+  }, callback); // error
+};
+
+/**
+ * Get Image Information for the Thumbnail Image like width, depth, size, type and etc..
+ */
+var setImageInfoForThumbnail = function (options, file, callback) {
+  if(UtilityService.isUndefined(options.thumbnail) || UtilityService.isUndefined(options.thumbnail.dst)) callback();
+  easyimg.info(options.thumbnail.dst).then( function(thumb) {
+    delete thumb.path;
+    callback(null, thumb);
+  }, callback); // error
+};
+
+/**
+ * Get Image Information for the rescrop (resized and cropped) Image like width, depth, size, type and etc..
+ */
+var setImageInfoForRescrop = function (options, file, callback) {
+  if(UtilityService.isUndefined(options.rescrop) || UtilityService.isUndefined(options.rescrop.dst)) callback();
+  easyimg.info(options.rescrop.dst).then( function(rescrop) {
+    delete rescrop.path;
+    callback(null, rescrop);
+  }, callback); // error
+};
+
+/**
  * Convert image file for upload.
  * Generate thumbnail, rescrop etc if this is set in options.
  */
 var convertImageIterator = function (site, file, relativePathInSiteFolder, options, callback) {
   sails.log.debug("[FileService.convertImageIterator] options", options, "isImage: "+file.isImage);
-  async.parallel({
+  async.series({
     thumb: function (callback) {
       generateThumbnail(site, file, options, callback);
     },
     rescrop: function (callback) {
       generateRescrop(site, file, options, callback);
+    },
+    originalInfo: function (callback) {
+      setImageInfoForOriginal(options, file, callback);
+    },
+    thumbnailInfo: function (callback) {
+      setImageInfoForThumbnail(options, file, callback);
+    },
+    rescropInfo: function (callback) {
+      setImageInfoForRescrop(options, file, callback);
     }
   },
   function(err, results) {
     if (err) return callback(err);
-    if(results.thumb) file.thumb = results.thumb.thumb;
-    if(results.rescrop) file.rescrop = results.rescrop.rescrop;
+    if(results.originalInfo) file.original = results.originalInfo;
+    if(results.thumbnailInfo) file.thumb = results.thumbnailInfo;
+    if(results.rescropInfo) file.rescrop = results.rescropInfo;
     // sails.log.debug("[FileService.convertImageIterator] file", file);
     callback(null, file);
   });
@@ -172,11 +218,41 @@ var parseFileOptions = function (req, path) {
   return options;
 }
 
+var removeFromFilesystem = function (site, file, relativePathInSiteFolder, callback) {
+  var dirname = path.join(SITES_FOLDER, site, relativePathInSiteFolder);
+  sails.log.debug("[FileService,removeFromFilesystem]", "dirname", dirname, file);
+  async.parallel([
+    function removeFile(callback){
+      if(UtilityService.isUndefined(file.uploadedAs) || file.uploadedAs === null) return callback();
+      var filepath = path.join(dirname, file.uploadedAs);
+      return fs.remove(filepath, callback);
+    },
+    function removeOriginalImage(callback){
+      if(UtilityService.isUndefined(file.original) || file.original === null) return callback();
+      var filepath = path.join(dirname, file.original.name);
+      return fs.remove(filepath, callback);
+    },
+    function removeThumbnailImage(callback){
+      if(UtilityService.isUndefined(file.thumb) || file.thumb === null) return callback();
+      var filepath = path.join(dirname, file.thumb.name);
+      return fs.remove(filepath, callback);
+    },
+    function removeThumbnailImage(callback){
+      if(UtilityService.isUndefined(file.rescrop) || file.rescrop === null) return callback();
+      var filepath = path.join(dirname, file.rescrop.name);
+      return fs.remove(filepath, callback);
+    },
+  ],
+  callback);
+}
+
 /**
  * Public functions
  */
 module.exports = {
   convertFileIterator: convertFileIterator,
   upload: upload,
-  parseFileOptions: parseFileOptions
+  parseFileOptions: parseFileOptions,
+  removeFromFilesystem: removeFromFilesystem,
+  deleteFromFilesystem: removeFromFilesystem, // alias
 };

@@ -66,7 +66,7 @@ var upload = function (req, res) {
     // find all images for this site
     GalleryService.find({where: {site: site}}, function found(err, images) {
       if (err) return res.serverError(err);
-      GalleryService.prepearFilesForDatabase(options, files, images, function (err, files) {
+      GalleryService.setPositions(options, files, images, function (err, files) {
         if(err) { sails.log.error(err); return res.serverError(err); }
         sails.log.debug("GalleryService: prepear files for database result", files);
         Gallery.create(files, function(err, files) {
@@ -122,7 +122,7 @@ var destroy = function(req, res) {
   MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, conf) {
     Gallery.findOne({id:id, site:conf.name}).exec(function found(err, file) {
       if (err) return res.serverError(err);
-      GalleryService.removeFromFilesystem(conf.name, file, function(err) {
+      FileService.removeFromFilesystem(conf.name, file, sails.config.paths.gallery, function(err) {
         if(err) return res.serverError(err);
         Gallery.destroy({id:id, site:conf.name}, function (err, destroyed) {
           Gallery.publishDestroy(id);
@@ -136,7 +136,7 @@ var destroy = function(req, res) {
 };
 
 /**
- * 
+ * public functions
  */
 module.exports = {
   setup: setup,
