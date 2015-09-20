@@ -59,16 +59,15 @@ var upload = function (req, res) {
   sails.log.debug("[GalleryController.upload]");
   FileService.upload(req, sails.config.paths.gallery, function (err, result) {
     if(err) return res.serverError(err);
-    // sails.log.debug("GalleryController: file upload result", result);
+    sails.log.debug("GalleryController: file upload result", result);
     var files = result.files;
     var site = result.site;
-    options.site = site;
     // find all images for this site
-    GalleryService.find({where: {site: site}}, function found(err, images) {
+    GalleryService.find({where: {site: site}}, function (err, images) {
       if (err) return res.serverError(err);
-      GalleryService.setPositions(options, files, images, function (err, files) {
+      GalleryService.setPositions(site, files, images, function (err, files) {
         if(err) { sails.log.error(err); return res.serverError(err); }
-        sails.log.debug("GalleryService: prepear files for database result", files);
+        sails.log.debug("[GalleryService.upload]: setPositions result", files);
         Gallery.create(files, function(err, files) {
           if(err) return res.serverError(err);
           files.forEach(function(file, index) {

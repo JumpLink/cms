@@ -11,15 +11,15 @@ var async = require('async');
 /**
  * Set position for each file based on existing files (images)
  */
-var setPositions = function (options, files, images, callback) {
-  // sails.log.debug("setPositions", site, files);
+var setPositions = function (site, files, images, callback) {
+  sails.log.debug("[GalleryService.setPositions]", site, files);
   // get max position
   var last_position = UtilityService.max(images, 'position');
   // sails.log.debug("last_position", last_position);
   for (var i = files.length - 1; i >= 0; i--) {
     last_position++;
     files[i].position = last_position; // set position
-    files[i].site = options.site; // set site for each file
+    files[i].site = site; // set site for each file
   };
   callback(null, files);
 };
@@ -29,6 +29,7 @@ var setPositions = function (options, files, images, callback) {
  */
 var find = function (query, callback) {
   if(!query.sort) query.sort = 'position';
+  sails.log.debug("[GalleryService.find]", query);
   Gallery.find(query).exec(function found(err, images) {
     if (err) return callback(err);
     if (UtilityService.isUndefined(images) || !UtilityService.isArray(images)) {

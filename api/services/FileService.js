@@ -250,7 +250,7 @@ var parseFileOptions = function (req, path) {
  */
 var removeFromFilesystem = function (site, file, relativePathInSiteFolder, callback) {
   var dirname = path.join(SITES_FOLDER, site, relativePathInSiteFolder);
-  sails.log.debug("[FileService,removeFromFilesystem]", "dirname", dirname, file);
+  sails.log.debug("[FileService.removeFromFilesystem]", "dirname", dirname, file);
   async.parallel([
     function removeFile(callback){
       if(UtilityService.isUndefined(file.uploadedAs) || file.uploadedAs === null) return callback();
