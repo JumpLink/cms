@@ -1,5 +1,12 @@
 /**
- * 
+ * FileService
+ *
+ * @module FileService
+ *
+ * @requires easyimg - https://github.com/hacksparrow/node-easyimage
+ * @requires path - https://nodejs.org/api/path.html
+ * @requires fs-extra - https://github.com/jprichardson/node-fs-extra
+ * @requires async - https://github.com/caolan/async
  */
 
 var easyimg = require('easyimage');
@@ -7,11 +14,12 @@ var path = require('path');
 var fs = require('fs-extra');
 var async = require('async');
 
-// var UPLOAD_FOLDER =  path.resolve(sails.config.paths.tmp, sails.config.paths.uploads);
 var SITES_FOLDER = path.resolve(sails.config.paths.public, sails.config.paths.sites);
 
 /**
  * Check if mime type is an image
+ *
+ * @alias module:FileService.isImage
  */
 var isImage = function (mime) {
   return mime.match('image.*') !== null;
@@ -19,6 +27,8 @@ var isImage = function (mime) {
 
 /**
  * Create square thumbnails.
+ *
+ * @alias module:FileService.generateThumbnail
  * @see https://github.com/hacksparrow/node-easyimage
  */
 var generateThumbnail = function (site, file, options, callback) {
@@ -46,6 +56,8 @@ var generateThumbnail = function (site, file, options, callback) {
 
 /**
  * Resize and crop and image in one go, useful for creating customzied thumbnails.
+ *
+ * @alias module:FileService.generateRescrop
  * @see https://github.com/hacksparrow/node-easyimage
  */
 var generateRescrop = function (site, file, options, callback) {
@@ -69,6 +81,8 @@ var generateRescrop = function (site, file, options, callback) {
 
 /**
  * Get Image Information for the original Image like width, depth, size, type and etc..
+ *
+ * @alias module:FileService.setImageInfoForOriginal
  */
 var setImageInfoForOriginal = function (options, file, callback) {
   // sails.log.debug("[GalleryService.setInfoForOriginal]", "options", options, "file", file);
@@ -81,6 +95,8 @@ var setImageInfoForOriginal = function (options, file, callback) {
 
 /**
  * Get Image Information for the Thumbnail Image like width, depth, size, type and etc..
+ *
+ * @alias module:FileService.setImageInfoForThumbnail
  */
 var setImageInfoForThumbnail = function (options, file, callback) {
   if(UtilityService.isUndefined(options.thumbnail) || UtilityService.isUndefined(options.thumbnail.dst)) callback();
@@ -92,6 +108,8 @@ var setImageInfoForThumbnail = function (options, file, callback) {
 
 /**
  * Get Image Information for the rescrop (resized and cropped) Image like width, depth, size, type and etc..
+ *
+ * @alias module:FileService.setImageInfoForRescrop
  */
 var setImageInfoForRescrop = function (options, file, callback) {
   if(UtilityService.isUndefined(options.rescrop) || UtilityService.isUndefined(options.rescrop.dst)) callback();
@@ -104,6 +122,8 @@ var setImageInfoForRescrop = function (options, file, callback) {
 /**
  * Convert image file for upload.
  * Generate thumbnail, rescrop etc if this is set in options.
+ *
+ * @alias module:FileService.convertImageIterator
  */
 var convertImageIterator = function (site, file, relativePathInSiteFolder, options, callback) {
   sails.log.debug("[FileService.convertImageIterator] options", options, "isImage: "+file.isImage);
@@ -136,6 +156,8 @@ var convertImageIterator = function (site, file, relativePathInSiteFolder, optio
 
 /**
  * Convert general file for upload
+ *
+ * @alias module:FileService.convertFileIterator
  */
 var convertFileIterator = function (site, file, relativePathInSiteFolder, options, callback) {
   file.isImage = isImage(file.type);
@@ -159,7 +181,9 @@ var convertFileIterator = function (site, file, relativePathInSiteFolder, option
 };
 
 /**
- * Upload files and convert them 
+ * Upload files and convert them
+ *
+ * @alias module:FileService.upload
  */
 var upload = function (req, relativePathInSiteFolder, callback) {
   var host = req.session.uri.host;
@@ -199,6 +223,8 @@ var upload = function (req, relativePathInSiteFolder, callback) {
 
 /**
  * Upload a file for the gallery and save file in gallery database
+ *
+ * @alias module:FileService.parseFileOptions
  */
 var parseFileOptions = function (req, path) {
   var options = JSON.parse(req.headers.options);
@@ -218,6 +244,10 @@ var parseFileOptions = function (req, path) {
   return options;
 }
 
+/**
+ *
+ * @alias module:FileService.removeFromFilesystem
+ */
 var removeFromFilesystem = function (site, file, relativePathInSiteFolder, callback) {
   var dirname = path.join(SITES_FOLDER, site, relativePathInSiteFolder);
   sails.log.debug("[FileService,removeFromFilesystem]", "dirname", dirname, file);
@@ -250,6 +280,8 @@ var removeFromFilesystem = function (site, file, relativePathInSiteFolder, callb
  * Public functions
  */
 module.exports = {
+  isImage: isImage,
+  generateThumbnail: generateThumbnail,
   convertFileIterator: convertFileIterator,
   upload: upload,
   parseFileOptions: parseFileOptions,

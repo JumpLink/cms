@@ -1,12 +1,16 @@
 /**
- * BlogController
+ * BlogController for Server-side logic to managing Blog posts
  *
- * @description :: Server-side logic for managing Blogs
- * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
+ * @module BlogController
+ * @see http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
 /**
  * Setup Blog Posts
+ *
+ * @param {!object} req - Request
+ * @param {!object} res - responses
+ * @param {function} next
  */
 var setup = function (req, res, next) {
   MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
@@ -19,6 +23,10 @@ var setup = function (req, res, next) {
 
 /**
  * Create a Blog Post
+ *
+ * @param {!object} req - Request
+ * @param {!object} res - responses
+ * @param {function} next
  */
 var create = function (req, res, next) {
   MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
@@ -35,6 +43,10 @@ var create = function (req, res, next) {
 
 /**
  * Update a Blog Post
+ *
+ * @param {!object} req - Request
+ * @param {!object} res - responses
+ * @param {function} next
  */
 var update = function (req, res, next) {
   MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
@@ -52,6 +64,10 @@ var update = function (req, res, next) {
 
 /**
  * Upload a file for a Blog Post
+ *
+ * @param {!object} req - Request
+ * @param {!object} res - responses
+ * @param {function} next
  */
 var upload = function (req, res) {
   FileService.upload(req, sails.config.paths.blog, function (err, result) {
@@ -62,10 +78,14 @@ var upload = function (req, res) {
 
 /**
  * Find Blog posts for the current site and if set of the page
+ *
+ * @param {!object} req - Request
+ * @param {!object} res - responses
+ * @param {function} next
  */
 var find = function (req, res) {
   var page = req.param('page');
-  BlogService.find(req.session.uri.host, page, function (err, status, results) {
+  BlogService.find(req.session.uri.host, page, function (err, results, status, config) {
     if(err) return res.serverError(err);
     sails.log.debug("[BlogController.find]", status, result);
     switch(status.code) {
@@ -80,7 +100,11 @@ var find = function (req, res) {
 }
 
 /**
- *  Destroy / delete a Blog Post by id
+ * Destroy / delete a Blog Post by id
+ *
+ * @param {!object} req - Request
+ * @param {!object} res - responses
+ * @param {function} next
  */
 var destroy = function (req, res, next) {
   MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
@@ -98,17 +122,21 @@ var destroy = function (req, res, next) {
 
 /**
  * delete attachment found by blog post id and attachmentUploadedAs string
+ *
+ * @param {!object} req - Request
+ * @param {!object} res - responses
+ * @param {function} next
  */
 var deleteAttachment = function (req, res, next) {
   var id = req.param('blogPostID') || req.param('id');
   var attachmentUploadedAs = req.param('attachmentUploadedAs');
   sails.log.debug("BlogController.deleteAttachment", id, attachmentUploadedAs);
-  BlogService.findAttachmentInPost(req.session.uri.host, id, attachmentUploadedAs, function (err, status, found, attachment, index, config) {
+  BlogService.findAttachmentInPost(req.session.uri.host, id, attachmentUploadedAs, function (err, index, attachment, status, config) {
     if(err || status.code !== 200) {
       sails.log.error(status);
       return res.serverError(err);
     }
-    if(!found) {
+    if(index <= -1) {
       sails.log.warn("Attachment not found");
       return res.ok();
     }
@@ -122,7 +150,7 @@ var deleteAttachment = function (req, res, next) {
 }
 
 /**
- * public functions
+ * public api functions
  */
 module.exports = {
   setup: setup,

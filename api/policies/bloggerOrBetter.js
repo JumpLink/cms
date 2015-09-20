@@ -1,8 +1,8 @@
 /**
- * Policy to allow any blogger
+ * Policy to allow any blogger or better rule
  * Assumes that your login action in one of your controllers sets `req.session.user.role = 'blogger'`
  *
- * @module Policy
+ * @module bloggerOrBetter
  * @see http://sailsjs.org/#!documentation/policies
  */
 var bloggerOrBetter = function(req, res, next) {
