@@ -12,7 +12,7 @@ var async = require('async');
  * Set position for each file based on existing files (images)
  */
 var setPositions = function (site, files, images, callback) {
-  sails.log.debug("[GalleryService.setPositions]", site, files);
+  // sails.log.debug("[GalleryService.setPositions]", site, files);
   // get max position
   var last_position = UtilityService.max(images, 'position');
   // sails.log.debug("last_position", last_position);
@@ -23,6 +23,15 @@ var setPositions = function (site, files, images, callback) {
   };
   callback(null, files);
 };
+
+var publishEachCreate = function (newImages, callback) {
+  newImages.forEach(function(file, index) {
+    // TODO not broadcast / fired why?!
+    Gallery.publishCreate(file);
+    // sails.log.debug("Gallery.publishCreate(file);", file);
+  });
+  callback(null, newImages);
+}
 
 /**
  * 
@@ -83,6 +92,7 @@ var findForContent = function (content, callback) {
  */
 module.exports = {
   setPositions: setPositions,
+  publishEachCreate: publishEachCreate,
   find: find,
   findForContent: findForContent,
   convertImageArrayToObject: convertImageArrayToObject,

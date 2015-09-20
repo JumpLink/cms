@@ -1,12 +1,24 @@
 /**
  * 
+ *
+ * @module NavigationController
  */
-var setup = function(req, res) {
+
+/**
+ * 
+ * @param {!object} req - Request
+ * @param {!object} res - responses
+ * @param {function} next
+ */
+var setup = function(req, res, next) {
   res.ok();
 };
 
 /**
  * 
+ * @param {!object} req - Request
+ * @param {!object} res - responses
+ * @param {function} next
  */
 var replaceAll = function (req, res, next) {
   MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
@@ -36,6 +48,9 @@ var replaceAll = function (req, res, next) {
 
 /**
  * 
+ * @param {!object} req - Request
+ * @param {!object} res - responses
+ * @param {function} next
  */
 var replace = function (req, res, next) {
   MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
@@ -67,8 +82,11 @@ var replace = function (req, res, next) {
 
 /**
  * 
+ * @param {!object} req - Request
+ * @param {!object} res - responses
+ * @param {function} next
  */
-var find = function (req, res) {
+var find = function (req, res, next) {
   var query;
   MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
     if(err) { return res.serverError(err); }
@@ -90,8 +108,11 @@ var find = function (req, res) {
 
 /**
  * 
+ * @param {!object} req - Request
+ * @param {!object} res - responses
+ * @param {function} next
  */
-var exporting = function (req, res) {
+var exporting = function (req, res, next) {
   MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, config) {
     if(err) { return res.serverError(err); }
     var query = { where: { site: config.name }};
@@ -104,7 +125,7 @@ var exporting = function (req, res) {
 };
 
 /**
- * 
+ * Public API functions
  */
 module.exports = {
   setup:setup,
