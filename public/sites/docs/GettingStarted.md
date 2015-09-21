@@ -2,26 +2,56 @@
 
 ## System Requirements
 * Linux (Other OS's not tested)
-* [Node.js or io.js with NPM](https://github.com/creationix/nvm)
-* ImageMagick
-* [Bower](http://bower.io/)
-* [Grunt](http://gruntjs.com/)
+* [Node.js or io.js with NVM](https://github.com/creationix/nvm)
+* [ImageMagick](http://www.imagemagick.org/) to manipulate images
+* 
+* [Ghostscript](http://www.ghostscript.com/) and [Poppler Utils](http://poppler.freedesktop.org/) to generate thumbnails from PDF's
+* [Bower](http://bower.io/) to install the theme dependencies
+* [Grunt](http://gruntjs.com/) to build your theme
+
+### Optinal Requirements
+* [Authbind](https://en.wikipedia.org/wiki/Authbind) to receive emails with user rights on port 25
+* [Forever](https://github.com/foreverjs/forever) to ensure that the cms runs continuously on your Server
+* [Spamassassin and Spamc](https://en.wikipedia.org/wiki/SpamAssassin) to enable email spam protection
+* [LibreOffice](https://www.libreoffice.org/) to convert documents
 
 ## Install
 
-Clone this git-repo including the git submodules for themes and install the dependencies with NPM:
+Install the system requirements, on debian based systems this looks like
 
-    git clone --recursive https://github.com/JumpLink/cms.git
+    sudo apt install imagemagick ghostscript poppler-utils
+
+For the optinal requirements
+
+    sudo apt install authbind spamassassin spamc
+
+And for LibreOffice (on your server [without the gui](http://askubuntu.com/questions/519082/how-to-install-libre-office-without-gui))
+
+    sudo apt install libreoffice --no-install-recommends
+
+Clone this git-repo and install the dependencies with NPM:
+
+    git clone https://github.com/JumpLink/cms.git
     cd cms
     npm install
 
-go into each Theme and install the theme dependencies with bower and NPM.
+Install the required themes
 
-    cd public/themes/bootstrap
-    npm install; bower install
+    git clone https://github.com/JumpLink/cms-admin-theme.git public/themes/admin
+    git clone https://github.com/JumpLink/cms-docs-theme.git public/themes/docs
+
+Install the optional themes
+
+    git clone https://github.com/JumpLink/cms-nvc-theme.git public/themes/nvc
+    git clone https://github.com/JumpLink/cms-bootstrap-theme.git public/themes/bootstrap
+
+go into each theme, install the theme dependencies with bower and NPM and build the theme
+
+    cd public/themes/admin
+    npm install; bower install; grunt build-dev
     
-    cd ../default_docs
-    npm install; bower install
+    cd ../docs
+    npm install; bower install; grunt build-dev
     ...
 
 To test if the CMS is running, run
@@ -38,7 +68,7 @@ within the CMS folder.
 
 To receive emails with this CMS you need to get access to port 25, access to ports under 1000 are only allowed by root. To work around this limitation you can use [authbind](https://www.debian-administration.org/article/386/Running_network_services_as_a_non-root_user.) for example. On Debian / Ubuntu based linux boxes you can install it with
 
-    sudo apt-get install authbind
+    sudo apt install authbind
     
 To allow access to port 25 for your user (replace user with your desired username) you need to
     

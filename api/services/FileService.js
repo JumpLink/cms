@@ -8,12 +8,10 @@
  * @requires fs-extra - https://github.com/jprichardson/node-fs-extra
  * @requires async - https://github.com/caolan/async
  */
-
 var easyimg = require('easyimage');
 var path = require('path');
 var fs = require('fs-extra');
 var async = require('async');
-
 var SITES_FOLDER = path.resolve(sails.config.paths.public, sails.config.paths.sites);
 
 /**
@@ -25,6 +23,138 @@ var isImage = function (mime) {
   return mime.match('image.*') !== null;
 }
 
+var isText = function (mime) {
+  return mime.match('text.*') !== null;
+}
+
+var isVideo = function (mime) {
+  return mime.match('video.*') !== null;
+}
+
+var isAudio = function (mime) {
+  return mime.match('audio.*') !== null;
+}
+
+var isApplication = function (mime) {
+  return mime.match('application.*') !== null;
+}
+
+var isMultipart = function (mime) {
+  return mime.match('multipart.*') !== null;
+}
+
+var isModel = function (mime) {
+  return mime.match('model.*') !== null;
+}
+
+/**
+ * Microsoft Word
+ * @see http://filext.com/faq/office_mime_types.php
+ */
+var isDoc = function (mime) {
+  return mime === 'application/msword';
+}
+
+/**
+ * Microsoft Word
+ * @see http://filext.com/faq/office_mime_types.php
+ */
+var isDocx = function (mime) {
+  return mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+}
+
+/**
+ * Microsoft Excel
+ * @see http://filext.com/faq/office_mime_types.php
+ */
+var isXls = function (mime) {
+  return mime === 'application/vnd.ms-excel';
+}
+
+/**
+ * OpenDocument Text
+ * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
+ */
+var isOdt = function (mime) {
+  return mime === 'application/vnd.oasis.opendocument.text';
+}
+
+/**
+ * OpenDocument Spreadsheet
+ * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
+ */
+var isOds = function (mime) {
+  return mime === 'application/vnd.oasis.opendocument.spreadsheet';
+}
+
+/**
+ * Check if mime type is an pdf
+ *
+ * @alias module:PDFService.isPDF
+ */
+var isPDF = function (mime) {
+  return mime === "application/pdf";
+}
+
+var hasTextIcon = function (file) {
+  return file.isApplication && file.isDoc;
+}
+
+var hasTableIcon = function (file) {
+  return file.isApplication && file.isXls;
+}
+
+var hasCodeIcon = function (file) {
+  return file.isText;
+}
+
+var hasVideoIcon = function (file) {
+  return file.isVideo;
+}
+
+var hasApplicationIcon = function (file) {
+  return file.isApplication && !file.hasTextIcon && !file.isXls;
+}
+
+var hasUnknownIcon = function (mime) {
+  return 
+}
+
+/**
+ * Check if file has an preview image
+ *
+ * @alias module:FileService.hasPreview
+ */
+var hasPreview = function (file) {
+  return file.isPDF && !file.isImage;
+}
+
+var parseFileType = function (file) {
+  file.isImage = isImage(file.type);
+  file.isText = isText(file.type);
+  file.isVideo = isVideo(file.type);
+  file.isApplication = isApplication(file.type);
+  file.isMultipart = isMultipart(file.type);
+  file.isModel = isModel(file.type);
+  file.isDoc = isDoc(file.type);
+  file.isXls = isXls(file.type);
+  file.isPDF = isPDF(file.type);
+
+  file.hasTextIcon = hasTextIcon(file);
+  file.hasTableIcon = hasTableIcon(file);
+  file.hasCodeIcon = hasCodeIcon(file);
+  file.hasVideoIcon = hasVideoIcon(file);
+  file.hasApplicationIcon = hasApplicationIcon(file);
+  file.hasUnknownIcon = hasUnknownIcon(file);
+  file.hasPreview = hasPreview(file);
+
+  return file;
+}
+
+var getPreviewName = function (file) {
+  return file.previewName = "preview_"+path.basename(file.uploadedAs, ".pdf")+".png";
+}
+
 /**
  * Create square thumbnails.
  *
@@ -33,10 +163,13 @@ var isImage = function (mime) {
  */
 var generateThumbnail = function (site, file, options, callback) {
   if(options === null || UtilityService.isUndefined(options) || UtilityService.isUndefined(options.thumbnail)) return callback();
-  file.thumbName = "thumb_"+file.uploadedAs;
   var thumbnailOptions = options.thumbnail;
-  thumbnailOptions.src = path.join(SITES_FOLDER, site, options.path, file.uploadedAs);
-  thumbnailOptions.dst = path.join(SITES_FOLDER, site, options.path, file.thumbName);
+  var src = "";
+  if(file.hasPreview) src = getPreviewName(file);
+  else src = file.uploadedAs;
+  file.thumbName = "thumb_"+src;
+  thumbnailOptions.src = path.join(SITES_FOLDER, site, options.path, src);
+  thumbnailOptions.dst = path.join(SITES_FOLDER, site, options.path, src);
   // sails.log.debug("[FileService.generateThumbnail] thumbnailOptions", JSON.stringify(thumbnailOptions, null, 2));
   fs.mkdirs(path.dirname(thumbnailOptions.dst), function(err) {
     if(err) {
@@ -45,7 +178,7 @@ var generateThumbnail = function (site, file, options, callback) {
     }
     easyimg.thumbnail(thumbnailOptions).then( function(image) {
       // sails.log.debug("[FileService.generateThumbnail] Thumbnail generated", thumbnailOptions.dst);
-      file.thumbObject = image;
+      file.thumb = image;
       callback(null, file);
     }, function (err) {
       sails.log.error(err);
@@ -71,7 +204,7 @@ var generateRescrop = function (site, file, options, callback) {
     if(err) return callback(err);
     easyimg.rescrop(rescropOptions).then( function(image) {
       // sails.log.debug("[FileService.generateRescrop] rescrop generated", rescropOptions.dst);
-      file.rescropObject = image;
+      file.rescrop = image;
       callback(null, file);
     }, function (err) {
       callback(err, file);
@@ -92,6 +225,22 @@ var setImageInfoForOriginal = function (options, file, callback) {
     callback(null, original);
   }, callback); // error
 };
+
+/**
+ * Get Image Information for the original Image like width, depth, size, type and etc..
+ *
+ * @alias module:FileService.setImageInfoForOriginal
+ */
+var setImageInfoForPreview = function (site, options, file, callback) {
+  // sails.log.debug("[GalleryService.setInfoForOriginal]", "options", options, "file", file);
+  if(UtilityService.isUndefined(file) || UtilityService.isUndefined(file.savedTo)) callback(new Error("file.savedTo is undefined"));
+  var src = path.join(SITES_FOLDER, site, options.path, getPreviewName(file));
+  easyimg.info(src).then( function(preview) {
+    delete preview.path;
+    callback(null, preview);
+  }, callback); // error
+};
+
 
 /**
  * Get Image Information for the Thumbnail Image like width, depth, size, type and etc..
@@ -137,12 +286,12 @@ var convertImageIterator = function (site, file, relativePathInSiteFolder, optio
     originalInfo: function (callback) {
       setImageInfoForOriginal(options, file, callback);
     },
-    thumbnailInfo: function (callback) {
-      setImageInfoForThumbnail(options, file, callback);
-    },
-    rescropInfo: function (callback) {
-      setImageInfoForRescrop(options, file, callback);
-    }
+    // thumbnailInfo: function (callback) {
+    //   setImageInfoForThumbnail(options, file, callback);
+    // },
+    // rescropInfo: function (callback) {
+    //   setImageInfoForRescrop(options, file, callback);
+    // }
   },
   function(err, results) {
     if (err) return callback(err);
@@ -160,7 +309,7 @@ var convertImageIterator = function (site, file, relativePathInSiteFolder, optio
  * @alias module:FileService.convertFileIterator
  */
 var convertFileIterator = function (site, file, relativePathInSiteFolder, options, callback) {
-  file.isImage = isImage(file.type);
+  file = parseFileType(file);
   file.uploadedAs = path.basename(file.fd);
   file.savedTo = path.join(SITES_FOLDER, site, relativePathInSiteFolder, file.uploadedAs);
   file.dirname = path.dirname(file.savedTo);
@@ -175,6 +324,7 @@ var convertFileIterator = function (site, file, relativePathInSiteFolder, option
   ],
   function(err, results) {
     if (err) return callback(err);
+    if(file.isPDF) return PDFService.convertPDFIterator(site, file, relativePathInSiteFolder, options, callback);
     if(file.isImage) return convertImageIterator(site, file, relativePathInSiteFolder, options, callback);
     return callback(null, file);
   });
@@ -281,7 +431,10 @@ var removeFromFilesystem = function (site, file, relativePathInSiteFolder, callb
  */
 module.exports = {
   isImage: isImage,
+  hasPreview: hasPreview,
+  getPreviewName: getPreviewName,
   generateThumbnail: generateThumbnail,
+  setImageInfoForPreview: setImageInfoForPreview,
   convertFileIterator: convertFileIterator,
   upload: upload,
   parseFileOptions: parseFileOptions,

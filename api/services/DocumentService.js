@@ -1,43 +1,5 @@
 /**
- * DocumentController to get the docs as json
- */
-var exec = require('child_process').exec;
-var path = require('path');
-var fs = require('fs');
-var UPLOADFOLDER =  __dirname+'/../../.tmp/uploads';
-
-/**
- * 
- */
-var setup = function(req, res) {
-  res.ok();
-};
-
-/**
- * `OdfController.create()`
- */
-var upload = function (req, res) {
-  req.file("documents").upload(function (err, files) {
-    if (err) {
-      sails.log.error(err);
-      return res.serverError(err);
-    }
-
-    for (var i = 0; i < files.length; i++) {
-      files[i].uploadedAs = path.basename(files[i].fd);
-    };
-
-    // EmailService.send(from, subject, text, html);
-
-    return res.json({
-      message: files.length + ' file(s) uploaded successfully!',
-      files: files
-    });
-  });
-};
-
-/**
- * filters source: http://listarchives.libreoffice.org/global/users/msg15151.html
+ * filters options.source: http://listarchives.libreoffice.org/global/users/msg15151.html
  * org.openoffice.da.writer2xhtml.epub
  * org.openoffice.da.calc2xhtml11
  * Text - txt - csv (StarCalc)
@@ -229,58 +191,35 @@ var upload = function (req, res) {
  * impress_flash_Export
  * draw_pgm_Export
  */
-// var convert = function (req, res) {
-//   var stdout = '';
-//   var stderr = '';
-//   sails.log.info('convert');
-//   if(!req.param('filename')) res.badRequest('filename is required');
-//   var source = req.param('filename');
-//   var inputDir = UPLOADFOLDER +'/'+source;
-//   var outputFileExtension = req.param('extension') ? req.param('extension') : 'pdf'; // example 'pdf';
-//   var outputFilterName = req.param('filter') ? ':'+req.param('filter') : '';  //(optinal) example ':'+'MS Excel 95';
-//   var outputDir = UPLOADFOLDER;
-//   if(req.param('dir')) {
-//     outputDir += '/'+req.param('dir');
-//   }
-//   outputDir = path.normalize(outputDir);
-//   inputDir = path.normalize(inputDir);
-//   var target = outputDir+"/"+path.basename(source, '.odt')+"."+outputFileExtension;
-//   var command = 'soffice --headless --invisible --convert-to '+outputFileExtension+outputFilterName+' --outdir '+outputDir+' '+inputDir;
-//   sails.log.info(command);
-//   var child = exec(command, function (code, stdout, stderr) {
-//     if(code) {
-//       sails.log.error(code);
-//     }
-//     if(stderr) {
-//       sails.log.error(stderr);
-//     }
-//     if(stdout) {
-//       sails.log.info(stdout);
-//     }
-//     res.json({target:target, code: code, stdout: stdout, stderr: stderr});
-//     // res.download(target); // not working over socket.io
-//   });
-// };
-
-var convert = function (req, res) {
-  var options = {
-    inputFileExtension: req.param('inputFileExtension') || 'odt',
-    source: req.param('filename') || 'unknown.pdf',
-    inputDir: req.param('inputDir'),
-    outputFileExtension: req.param('extension') || req.param('outputFileExtension') || 'pdf', // example 'pdf';
-    outputFilterName: req.param('filter') || req.param('outputFilterName') || '',  //(optinal) example ':'+'MS Excel 95';
-    outputDir: req.param('dir') || req.param('outputDir'),
-  }
-  DocumentService.convert(options, function (err, result, data) {
-    res.json({target:result, code: data.code, stdout: data.stdout, stderr: data.stderr});
+var convert = function (options, cb) {
+  var stdout = '';
+  var stderr = '';
+  sails.log.info('convert');
+  if(UltilityService.isUndefined(options.filename)) res.badRequest('filename is required');
+  options.outputDir = path.normalize(options.outputDir);
+  options.inputDir = path.normalize(options.inputDir);
+  var target = options.outputDir+"/"+path.basename(options.source, "."+options.inputFileExtension)+"."+options.outputFileExtension;
+  var command = 'soffice --headless --invisible --convert-to '+options.outputFileExtension+options.outputFilterName+' --outdir '+options.outputDir+' '+options.inputDir;
+  sails.log.info(command);
+  var child = exec(command, function (code, stdout, stderr) {
+    if(code) {
+      sails.log.error(code);
+    }
+    if(stderr) {
+      sails.log.error(stderr);
+    }
+    if(stdout) {
+      sails.log.info(stdout);
+    }
+    // exit codes: http://stackoverflow.com/questions/1101957/are-there-any-standard-exit-status-codes-in-linux
+    if(code !== 0) return cb(stderr)
+    cb(null, target, {code: code, stdout: stdout, stderr: stderr})
   });
-}
+};
 
 /**
- * 
+ * Public functions
  */
 module.exports = {
-  setup:setup,
-  upload:upload,
-  convert:convert
+  convert: convert
 };
