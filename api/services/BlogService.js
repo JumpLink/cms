@@ -20,7 +20,8 @@ var find = function (host, page, callback) {
     var query = {
       where: {
         site: config.name
-      }
+      },
+      sort: 'createdAt DESC'
     };
     if(page !== null && UtilityService.isDefined(page)) query.where.page = page;
     Blog.find(query).exec(function found(err, found) {
