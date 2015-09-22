@@ -4,7 +4,6 @@
 * Linux (Other OS's not tested)
 * [Node.js or io.js with NVM](https://github.com/creationix/nvm)
 * [ImageMagick](http://www.imagemagick.org/) to manipulate images
-* 
 * [Ghostscript](http://www.ghostscript.com/) and [Poppler Utils](http://poppler.freedesktop.org/) to generate thumbnails from PDF's
 * [Bower](http://bower.io/) to install the theme dependencies
 * [Grunt](http://gruntjs.com/) to build your theme
@@ -13,15 +12,19 @@
 * [Authbind](https://en.wikipedia.org/wiki/Authbind) to receive emails with user rights on port 25
 * [Forever](https://github.com/foreverjs/forever) to ensure that the cms runs continuously on your Server
 * [Spamassassin and Spamc](https://en.wikipedia.org/wiki/SpamAssassin) to enable email spam protection
-* [LibreOffice](https://www.libreoffice.org/) to convert documents
+* [unoconv](https://github.com/dagwieers/unoconv) to convert documents
 
 ## Install
+
+### Requirements
 
 Install the system requirements, on debian based systems this looks like
 
     sudo apt install imagemagick ghostscript poppler-utils
 
-For the optinal requirements
+### Optional Requirements
+
+For the optional requirements
 
     sudo apt install authbind spamassassin spamc
 
@@ -29,11 +32,15 @@ And for LibreOffice (on your server [without the gui](http://askubuntu.com/quest
 
     sudo apt install libreoffice --no-install-recommends
 
+### CMS
+
 Clone this git-repo and install the dependencies with NPM:
 
     git clone https://github.com/JumpLink/cms.git
     cd cms
     npm install
+
+### Themes
 
 Install the required themes
 
@@ -53,6 +60,8 @@ go into each theme, install the theme dependencies with bower and NPM and build 
     cd ../docs
     npm install; bower install; grunt build-dev
     ...
+    
+### Test
 
 To test if the CMS is running, run
 
