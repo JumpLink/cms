@@ -1,13 +1,22 @@
 /**
- * Convert Documents using Universal Office Converter (unoconv
+ * Convert and handle Documents
+ *
+ * @module DocumentController
+ *
+ * @requires unoconv2 - https://github.com/HAASLEWER/unoconv2
+ * @requires path - https://nodejs.org/api/path.html
+ * @requires fs-extra - https://github.com/jprichardson/node-fs-extra
+ * @requires async - https://github.com/caolan/async
  */
-
-var unoconv = require('unoconv2'); // https://github.com/HAASLEWER/unoconv2
+var unoconv = require('unoconv2');
 var path = require('path');
 var fs = require('fs-extra');
 var async = require('async');
 var SITES_FOLDER = path.resolve(sails.config.paths.public, sails.config.paths.sites);
 
+/**
+ *  Convert and handle Documents using Universal Office Converter (unoconv)
+ */
 var convert = function (filePath, outputFormat, options, callback) {
   unoconv.convert(filePath, outputFormat, null, callback);
 };

@@ -334,6 +334,11 @@ var hasPreview = function (file) {
   return (hasConvertToPdfSupport(file) || file.isPDF) && !file.isImage;
 }
 
+/**
+ * Determine what kind of file type file is
+ *
+ * @alias module:FileService.parseFileType
+ */
 var parseFileType = function (file) {
   // Base type
   file.isImage = isImage(file.type);
@@ -398,10 +403,16 @@ var parseFileType = function (file) {
   return file;
 }
 
+/**
+ * Append prefix and change extension of filename
+ */
 var getConvertedName = function (prefix, filename, newExtension) {
   return prefix+path.basename(filename, path.extname(filename))+newExtension;
 }
 
+/**
+ * Get filename fpr preview files
+ */
 var getPreviewName = function (file) {
   return getConvertedName("preview_", file.uploadedAs, ".png");
 }

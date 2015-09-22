@@ -11,6 +11,9 @@ var PDFImage = require("pdf-image").PDFImage;
 var path = require('path');
 var fs = require('fs-extra');
 
+/**
+ * Generate preview image from odf
+ */
 var generatePreview = function (site, file, options, callback) {
   file.previewName = FileService.getPreviewName(file);
   sails.log.debug(sails.config.paths.public, sails.config.paths.sites, site, options.path, file.uploadedAs);

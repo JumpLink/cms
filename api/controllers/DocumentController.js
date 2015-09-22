@@ -14,7 +14,7 @@ var setup = function(req, res) {
 };
 
 /**
- * `OdfController.create()`
+ * 
  */
 var upload = function (req, res) {
   req.file("documents").upload(function (err, files) {
