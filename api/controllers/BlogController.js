@@ -71,8 +71,9 @@ var update = function (req, res, next) {
  */
 var upload = function (req, res) {
   FileService.upload(req, sails.config.paths.blog, function (err, result) {
+    sails.log.debug("[BlogController.upload] finish", err, result);
     if(err) return res.serverError(err);
-    else res.json(result);
+    res.json(result);
   });
 };
 

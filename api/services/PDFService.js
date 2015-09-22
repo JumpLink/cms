@@ -13,14 +13,14 @@ var fs = require('fs-extra');
 
 var generatePreview = function (site, file, options, callback) {
   file.previewName = FileService.getPreviewName(file);
-  var previewOptions = options.preview || {};
-  previewOptions.src = path.join(path.resolve(sails.config.paths.public, sails.config.paths.sites), site, options.path, file.uploadedAs);
-  previewOptions.dst = path.join(path.resolve(sails.config.paths.public, sails.config.paths.sites), site, options.path, file.previewName);
-  fs.mkdirs(path.dirname(previewOptions.dst), function(err) {
+  sails.log.debug(sails.config.paths.public, sails.config.paths.sites, site, options.path, file.uploadedAs);
+  if(UtilityService.isUndefined(options.preview.src)) options.preview.src = path.resolve(sails.config.paths.public, sails.config.paths.sites, site, options.path, file.uploadedAs);
+  if(UtilityService.isUndefined(options.preview.dst)) options.preview.dst = path.resolve(sails.config.paths.public, sails.config.paths.sites, site, options.preview.path, file.previewName);
+  fs.mkdirs(path.dirname(options.preview.dst), function(err) {
     if(err) return callback(err);
-    var pdfImage = new PDFImage(previewOptions.src);
+    var pdfImage = new PDFImage(options.preview.src);
     pdfImage.convertPage(0).then(function (imagePath) {
-      fs.move(imagePath, previewOptions.dst, function (err) {
+      fs.move(imagePath, options.preview.dst, function (err) {
         if (err) return callback(err);
         callback(null, file);
       });
@@ -28,8 +28,7 @@ var generatePreview = function (site, file, options, callback) {
       sails.log.error(err);
       return callback(err, file);
     });
-  });
-}
+  });}
 
 /**
  * Convert image file for upload.
@@ -52,7 +51,6 @@ var convertPDFIterator = function (site, file, relativePathInSiteFolder, options
   },
   function(err, results) {
     if (err) return callback(err);
-    if(results.previewInfo) file.preview = results.previewInfo;
     // sails.log.debug("[PDFService.convertImageIterator] file", file);
     callback(null, file);
   });

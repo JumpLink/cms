@@ -47,6 +47,8 @@ var isModel = function (mime) {
   return mime.match('model.*') !== null;
 }
 
+
+
 /**
  * Microsoft Word
  * @see http://filext.com/faq/office_mime_types.php
@@ -64,6 +66,14 @@ var isDocx = function (mime) {
 }
 
 /**
+ * Microsoft Word
+ * @see http://filext.com/faq/office_mime_types.php
+ */
+var isDotx = function (mime) {
+  return mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.template';
+}
+
+/**
  * Microsoft Excel
  * @see http://filext.com/faq/office_mime_types.php
  */
@@ -72,11 +82,117 @@ var isXls = function (mime) {
 }
 
 /**
+ * Microsoft Excel
+ * @see http://filext.com/faq/office_mime_types.php
+ */
+var isXlsx = function (mime) {
+  return mime === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+}
+
+/**
+ * Microsoft Excel
+ * @see http://filext.com/faq/office_mime_types.php
+ */
+var isXltx = function (mime) {
+  return mime === 'application/vnd.openxmlformats-officedocument.spreadsheetml.template';
+}
+
+/**
+ * Microsoft Powerpoint
+ * @see http://filext.com/faq/office_mime_types.php
+ */
+var isPpt = function (mime) {
+  return mime === 'application/vnd.ms-powerpoint';
+}
+
+/**
+ * Microsoft Powerpoint
+ * @see http://filext.com/faq/office_mime_types.php
+ */
+var isPptx = function (mime) {
+  return mime === 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+}
+
+/**
+ * Microsoft Powerpoint
+ * @see http://filext.com/faq/office_mime_types.php
+ */
+var isPotx = function (mime) {
+  return mime === 'application/vnd.openxmlformats-officedocument.presentationml.template';
+}
+
+/**
+ * Microsoft Powerpoint
+ * @see http://filext.com/faq/office_mime_types.php
+ */
+var isPpsx = function (mime) {
+  return mime === 'application/vnd.openxmlformats-officedocument.presentationml.slideshow';
+}
+
+
+
+/**
  * OpenDocument Text
  * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
  */
 var isOdt = function (mime) {
   return mime === 'application/vnd.oasis.opendocument.text';
+}
+
+/**
+ * OpenDocument Text Template
+ * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
+ */
+var isOtt = function (mime) {
+  return mime === 'application/vnd.oasis.opendocument.text-template';
+}
+
+/**
+ * HTML Document Template
+ * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
+ */
+var isOth = function (mime) {
+  return mime === 'application/vnd.oasis.opendocument.text-web';
+}
+
+/**
+ * OpenDocument Master Document
+ * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
+ */
+var isOdm = function (mime) {
+  return mime === 'application/vnd.oasis.opendocument.text-master';
+}
+
+/**
+ * OpenDocument Drawing
+ * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
+ */
+var isOdg = function (mime) {
+  return mime === 'application/vnd.oasis.opendocument.graphics';
+}
+
+/**
+ * OpenDocument Drawing Template
+ * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
+ */
+var isOtg = function (mime) {
+  return mime === 'application/vnd.oasis.opendocument.graphics-template';
+}
+
+/**
+ * OpenDocument Presentation
+ * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
+ */
+var isOdp = function (mime) {
+  return mime === 'application/vnd.oasis.opendocument.presentation';
+}
+
+/**
+ * OpenDocument Presentation Template
+ * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
+ */
+var isOtp = function (mime) {
+  return mime === 'application/vnd.oasis.opendocument.presentation-template';
 }
 
 /**
@@ -88,6 +204,87 @@ var isOds = function (mime) {
 }
 
 /**
+ * OpenDocument Spreadsheet Template
+ * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
+ */
+var isOts = function (mime) {
+  return mime === 'application/vnd.oasis.opendocument.spreadsheet-template';
+}
+
+/**
+ * OpenDocument Chart
+ * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
+ */
+var isOdc = function (mime) {
+  return mime === 'application/vnd.oasis.opendocument.chart';
+}
+
+/**
+ * OpenDocument Formula
+ * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
+ */
+var isOdf = function (mime) {
+  return mime === 'application/vnd.oasis.opendocument.formula';
+}
+
+/**
+ * OpenDocument Database
+ * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
+ */
+var isOdb = function (mime) {
+  return mime === 'application/vnd.oasis.opendocument.database';
+}
+
+/**
+ * OpenDocument Image
+ * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
+ */
+var isOdi = function (mime) {
+  return mime === 'application/vnd.oasis.opendocument.image';
+}
+
+/**
+ * OpenOffice.org extension
+ * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
+ */
+var isOxt = function (mime) {
+  return mime === 'application/vnd.openofficeorg.extension';
+}
+
+
+
+
+var isMSWord = function (file) {
+  return file.isDoc || file.isDot || file.isDocx || file.isDotx;
+}
+
+var isMSExcel = function (file) {
+  return file.isXls || file.isXlt || file.isXla || file.isXlsx || file.isXltx;
+}
+
+var isMSPowerpoint = function (file) {
+  return file.isPpt || file.isPot || file.isPps || file.isPpa || file.isPptx || file.isPotx || file.isPpsx;
+}
+
+var isOOWriter = function (file) {
+  return file.isDdt || file.isOtt;
+}
+
+var isOODrawing = function (file) {
+  return file.isOdg || file.isOtg;
+}
+
+var isOOPresentation = function (file) {
+  return file.isOdp || file.isOtp;
+}
+
+var isOOSpreadsheet = function (file) {
+  return file.isOds || file.isOts;
+}
+
+
+
+/**
  * Check if mime type is an pdf
  *
  * @alias module:PDFService.isPDF
@@ -95,6 +292,8 @@ var isOds = function (mime) {
 var isPDF = function (mime) {
   return mime === "application/pdf";
 }
+
+
 
 var hasTextIcon = function (file) {
   return file.isApplication && file.isDoc;
@@ -105,7 +304,7 @@ var hasTableIcon = function (file) {
 }
 
 var hasCodeIcon = function (file) {
-  return file.isText;
+  return !file.isApplication && file.isText;
 }
 
 var hasVideoIcon = function (file) {
@@ -116,8 +315,14 @@ var hasApplicationIcon = function (file) {
   return file.isApplication && !file.hasTextIcon && !file.isXls;
 }
 
-var hasUnknownIcon = function (mime) {
-  return 
+var hasUnknownIcon = function (file) {
+  return !file.hasTextIcon && !file.hasTableIcon && !file.hasCodeIcon && !file.hasVideoIcon && !file.hasApplicationIcon && !file.hasPreview && !file.isPDF
+}
+
+
+
+var hasConvertToPdfSupport = function (file) {
+  return file.isMSWord || file.isMSExcel || file.isMSPowerpoint || file.isOOWriter ||  file.isOODrawing || file.isOOPresentation || file.isOOSpreadsheet;
 }
 
 /**
@@ -126,33 +331,79 @@ var hasUnknownIcon = function (mime) {
  * @alias module:FileService.hasPreview
  */
 var hasPreview = function (file) {
-  return file.isPDF && !file.isImage;
+  return (hasConvertToPdfSupport(file) || file.isPDF) && !file.isImage;
 }
 
 var parseFileType = function (file) {
+  // Base type
   file.isImage = isImage(file.type);
   file.isText = isText(file.type);
   file.isVideo = isVideo(file.type);
   file.isApplication = isApplication(file.type);
   file.isMultipart = isMultipart(file.type);
   file.isModel = isModel(file.type);
-  file.isDoc = isDoc(file.type);
+
+  // MS Office
+  file.isDocx = isDocx(file.type);
+  file.isDotx = isDotx(file.type);
   file.isXls = isXls(file.type);
+  file.isXlsx = isXlsx(file.type);
+  file.isXltx = isXltx(file.type);
+  file.isPpt = isPpt(file.type);
+  file.isPptx = isPptx(file.type);
+  file.isPotx = isPotx(file.type);
+  file.isPpsx = isPpsx(file.type);
+
+  // LibreOffice OpenOffice
+  file.isOdt = isOdt(file.type);
+  file.isOtt = isOtt(file.type);
+  file.isOth = isOth(file.type);
+  file.isOdm = isOdm(file.type);
+  file.isOdg = isOdg(file.type);
+  file.isOtg = isOtg(file.type);
+  file.isOdp = isOdp(file.type);
+  file.isOtp = isOtp(file.type);
+  file.isOds = isOds(file.type);
+  file.isOts = isOts(file.type);
+  file.isOdc = isOdc(file.type);
+  file.isOdf = isOdf(file.type);
+  file.isOdb = isOdb(file.type);
+  file.isOdi = isOdi(file.type);
+  file.isOxt = isOxt(file.type);
+
+  // Groupes
+  file.isMSWord = (file.type);
+  file.isMSExcel = (file.type);
+  file.isMSPowerpoint = (file.type);
+  file.isOOWriter = (file.type);
+  file.isOODrawing = (file.type);
+  file.isOOPresentation = (file.type);
+  file.isOOSpreadsheet = (file.type);
+
+  // Other formats
   file.isPDF = isPDF(file.type);
 
+  // Icons
   file.hasTextIcon = hasTextIcon(file);
   file.hasTableIcon = hasTableIcon(file);
   file.hasCodeIcon = hasCodeIcon(file);
   file.hasVideoIcon = hasVideoIcon(file);
   file.hasApplicationIcon = hasApplicationIcon(file);
   file.hasUnknownIcon = hasUnknownIcon(file);
+
+  // supports
+  file.hasConvertToPdfSupport = hasConvertToPdfSupport(file);
   file.hasPreview = hasPreview(file);
 
   return file;
 }
 
+var getConvertedName = function (prefix, filename, newExtension) {
+  return prefix+path.basename(filename, path.extname(filename))+newExtension;
+}
+
 var getPreviewName = function (file) {
-  return file.previewName = "preview_"+path.basename(file.uploadedAs, ".pdf")+".png";
+  return getConvertedName("preview_", file.uploadedAs, ".png");
 }
 
 /**
@@ -169,7 +420,7 @@ var generateThumbnail = function (site, file, options, callback) {
   else src = file.uploadedAs;
   file.thumbName = "thumb_"+src;
   thumbnailOptions.src = path.join(SITES_FOLDER, site, options.path, src);
-  thumbnailOptions.dst = path.join(SITES_FOLDER, site, options.path, src);
+  thumbnailOptions.dst = path.join(SITES_FOLDER, site, options.thumbnail.path, src);
   // sails.log.debug("[FileService.generateThumbnail] thumbnailOptions", JSON.stringify(thumbnailOptions, null, 2));
   fs.mkdirs(path.dirname(thumbnailOptions.dst), function(err) {
     if(err) {
@@ -198,7 +449,7 @@ var generateRescrop = function (site, file, options, callback) {
   file.rescropName = "rescrop_"+file.uploadedAs;
   var rescropOptions = options.rescrop;
   rescropOptions.src = path.join(SITES_FOLDER, site, options.path, file.uploadedAs);
-  rescropOptions.dst = path.join(SITES_FOLDER, site, options.path, file.rescropName);
+  rescropOptions.dst = path.join(SITES_FOLDER, site, options.rescrop.path, file.rescropName);
   // sails.log.debug("[FileService.generateRescrop] rescropOptions", JSON.stringify(rescropOptions, null, 2));
   fs.mkdirs(path.dirname(rescropOptions.dst), function(err) {
     if(err) return callback(err);
@@ -234,8 +485,9 @@ var setImageInfoForOriginal = function (options, file, callback) {
 var setImageInfoForPreview = function (site, options, file, callback) {
   // sails.log.debug("[GalleryService.setInfoForOriginal]", "options", options, "file", file);
   if(UtilityService.isUndefined(file) || UtilityService.isUndefined(file.savedTo)) callback(new Error("file.savedTo is undefined"));
-  var src = path.join(SITES_FOLDER, site, options.path, getPreviewName(file));
+  var src = options.preview.dst || path.join(SITES_FOLDER, site, options.path, getPreviewName(file));
   easyimg.info(src).then( function(preview) {
+    file.preview = preview;
     delete preview.path;
     callback(null, preview);
   }, callback); // error
@@ -285,20 +537,10 @@ var convertImageIterator = function (site, file, relativePathInSiteFolder, optio
     },
     originalInfo: function (callback) {
       setImageInfoForOriginal(options, file, callback);
-    },
-    // thumbnailInfo: function (callback) {
-    //   setImageInfoForThumbnail(options, file, callback);
-    // },
-    // rescropInfo: function (callback) {
-    //   setImageInfoForRescrop(options, file, callback);
-    // }
+    }
   },
   function(err, results) {
     if (err) return callback(err);
-    if(results.originalInfo) file.original = results.originalInfo;
-    if(results.thumbnailInfo) file.thumb = results.thumbnailInfo;
-    if(results.rescropInfo) file.rescrop = results.rescropInfo;
-    // sails.log.debug("[FileService.convertImageIterator] file", file);
     callback(null, file);
   });
 }
@@ -323,9 +565,11 @@ var convertFileIterator = function (site, file, relativePathInSiteFolder, option
     }
   ],
   function(err, results) {
-    if (err) return callback(err);
+    if(err) return callback(err);
     if(file.isPDF) return PDFService.convertPDFIterator(site, file, relativePathInSiteFolder, options, callback);
+    if(file.hasConvertToPdfSupport) return DocumentService.convertDocumentPreviewIterator(site, file, relativePathInSiteFolder, options, callback);
     if(file.isImage) return convertImageIterator(site, file, relativePathInSiteFolder, options, callback);
+    sails.log.debug("[FileService.convertFileIterator] finish");
     return callback(null, file);
   });
 };
@@ -351,7 +595,6 @@ var upload = function (req, relativePathInSiteFolder, callback) {
       sails.log.error(err);
       return callback(err);
     } else {
-
       MultisiteService.getCurrentSiteConfig(host, function (err, config) {
         if(err) return res.serverError(err);
         site = config.name;
@@ -382,12 +625,23 @@ var parseFileOptions = function (req, path) {
     path: path,
     thumbnail: {
       width: 300,
-      path: path
+      path: path,
+      prefix: 'thumb_'
     },
     rescrop: {
       width: 960 * 3, // width og bootstrap content width * 3 for hidpi
       cropwidth: 960 * 3,
       cropheight: 720 * 3,
+      prefix: 'rescrop_'
+    },
+    preview: {
+      path: path,
+      prefix: 'preview_'
+    },
+    document: {
+      path: path,
+      outputFormat: 'pdf',
+      prefix: 'converted_',
     }
   }
   options = UtilityService.extend(true, defaults, options);
@@ -431,6 +685,7 @@ var removeFromFilesystem = function (site, file, relativePathInSiteFolder, callb
  */
 module.exports = {
   isImage: isImage,
+  getConvertedName: getConvertedName,
   hasPreview: hasPreview,
   getPreviewName: getPreviewName,
   generateThumbnail: generateThumbnail,
