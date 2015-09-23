@@ -649,8 +649,8 @@ var parseFileOptions = function (req, path) {
   var defaults = {
     path: path,
     thumbnail: {
-      width: 300,
       path: path,
+      width: 300,
       prefix: 'thumb_'
     },
     rescrop: {
