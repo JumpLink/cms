@@ -14,7 +14,7 @@ var fs = require('fs-extra');
 /**
  * Generate preview image from odf
  */
-var generatePreview = function (site, file, options, callback) {
+var generatePreview = function (site, file, options, relativePathInSiteFolder, callback) {
   file.previewName = FileService.getPreviewName(file);
   sails.log.debug(sails.config.paths.public, sails.config.paths.sites, site, options.path, file.uploadedAs);
   if(UtilityService.isUndefined(options.preview.src)) options.preview.src = path.resolve(sails.config.paths.public, sails.config.paths.sites, site, options.path, file.uploadedAs);
@@ -43,13 +43,13 @@ var convertPDFIterator = function (site, file, relativePathInSiteFolder, options
   sails.log.debug("[PDFService.convertPDFIterator] options", options, "isImage: "+file.isImage);
   async.series({
     preview: function (callback) {
-      generatePreview(site, file, options, callback);
+      generatePreview(site, file, options, relativePathInSiteFolder, callback);
     },
     previewInfo: function (callback) {
-      FileService.setImageInfoForPreview(site, options, file, callback);
+      FileService.setImageInfoForPreview(site, file, options, relativePathInSiteFolder, callback);
     },
     thumb: function (callback) {
-      FileService.generateThumbnail(site, file, options, callback);
+      FileService.generateThumbnail(site, file, options, relativePathInSiteFolder, callback);
     }
   },
   function(err, results) {

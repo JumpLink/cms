@@ -136,7 +136,7 @@ var isPpsx = function (mime) {
  * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
  */
 var isOdt = function (mime) {
-  return mime === 'application/vnd.oasis.opendocument.text';
+  return (mime === 'application/vnd.oasis.opendocument.text');
 }
 
 /**
@@ -144,7 +144,7 @@ var isOdt = function (mime) {
  * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
  */
 var isOtt = function (mime) {
-  return mime === 'application/vnd.oasis.opendocument.text-template';
+  return (mime === 'application/vnd.oasis.opendocument.text-template');
 }
 
 /**
@@ -152,7 +152,7 @@ var isOtt = function (mime) {
  * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
  */
 var isOth = function (mime) {
-  return mime === 'application/vnd.oasis.opendocument.text-web';
+  return (mime === 'application/vnd.oasis.opendocument.text-web');
 }
 
 /**
@@ -160,7 +160,7 @@ var isOth = function (mime) {
  * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
  */
 var isOdm = function (mime) {
-  return mime === 'application/vnd.oasis.opendocument.text-master';
+  return (mime === 'application/vnd.oasis.opendocument.text-master');
 }
 
 /**
@@ -168,7 +168,7 @@ var isOdm = function (mime) {
  * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
  */
 var isOdg = function (mime) {
-  return mime === 'application/vnd.oasis.opendocument.graphics';
+  return (mime === 'application/vnd.oasis.opendocument.graphics');
 }
 
 /**
@@ -184,7 +184,7 @@ var isOtg = function (mime) {
  * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
  */
 var isOdp = function (mime) {
-  return mime === 'application/vnd.oasis.opendocument.presentation';
+  return (mime === 'application/vnd.oasis.opendocument.presentation');
 }
 
 /**
@@ -192,7 +192,7 @@ var isOdp = function (mime) {
  * @see http://www.openoffice.org/framework/documentation/mimetypes/mimetypes.html
  */
 var isOtp = function (mime) {
-  return mime === 'application/vnd.oasis.opendocument.presentation-template';
+  return (mime === 'application/vnd.oasis.opendocument.presentation-template');
 }
 
 /**
@@ -253,6 +253,16 @@ var isOxt = function (mime) {
 
 
 
+/**
+ * Check if mime type is an pdf
+ *
+ * @alias module:PDFService.isPDF
+ */
+var isPDF = function (mime) {
+  return mime === "application/pdf";
+}
+
+
 
 var isMSWord = function (file) {
   return file.isDoc || file.isDot || file.isDocx || file.isDotx;
@@ -267,7 +277,7 @@ var isMSPowerpoint = function (file) {
 }
 
 var isOOWriter = function (file) {
-  return file.isDdt || file.isOtt;
+  return file.isOdt || file.isOtt;
 }
 
 var isOODrawing = function (file) {
@@ -284,43 +294,6 @@ var isOOSpreadsheet = function (file) {
 
 
 
-/**
- * Check if mime type is an pdf
- *
- * @alias module:PDFService.isPDF
- */
-var isPDF = function (mime) {
-  return mime === "application/pdf";
-}
-
-
-
-var hasTextIcon = function (file) {
-  return file.isApplication && file.isDoc;
-}
-
-var hasTableIcon = function (file) {
-  return file.isApplication && file.isXls;
-}
-
-var hasCodeIcon = function (file) {
-  return !file.isApplication && file.isText;
-}
-
-var hasVideoIcon = function (file) {
-  return file.isVideo;
-}
-
-var hasApplicationIcon = function (file) {
-  return file.isApplication && !file.hasTextIcon && !file.isXls;
-}
-
-var hasUnknownIcon = function (file) {
-  return !file.hasTextIcon && !file.hasTableIcon && !file.hasCodeIcon && !file.hasVideoIcon && !file.hasApplicationIcon && !file.hasPreview && !file.isPDF
-}
-
-
-
 var hasConvertToPdfSupport = function (file) {
   return file.isMSWord || file.isMSExcel || file.isMSPowerpoint || file.isOOWriter ||  file.isOODrawing || file.isOOPresentation || file.isOOSpreadsheet;
 }
@@ -333,6 +306,34 @@ var hasConvertToPdfSupport = function (file) {
 var hasPreview = function (file) {
   return (hasConvertToPdfSupport(file) || file.isPDF) && !file.isImage;
 }
+
+
+
+
+var hasTextIcon = function (file) {
+  return !file.hasPreview && file.isApplication && file.isDoc;
+}
+
+var hasTableIcon = function (file) {
+  return !file.hasPreview && file.isApplication && file.isXls;
+}
+
+var hasCodeIcon = function (file) {
+  return !file.hasPreview && !file.isApplication && file.isText;
+}
+
+var hasVideoIcon = function (file) {
+  return !file.hasPreview && file.isVideo;
+}
+
+var hasApplicationIcon = function (file) {
+  return !file.hasPreview && file.isApplication && !file.hasTextIcon && !file.isXls;
+}
+
+var hasUnknownIcon = function (file) {
+  return !file.hasPreview && !file.hasTextIcon && !file.hasTableIcon && !file.hasCodeIcon && !file.hasVideoIcon && !file.hasApplicationIcon && !file.hasPreview && !file.isPDF
+}
+
 
 /**
  * Determine what kind of file type file is
@@ -376,17 +377,21 @@ var parseFileType = function (file) {
   file.isOdi = isOdi(file.type);
   file.isOxt = isOxt(file.type);
 
-  // Groupes
-  file.isMSWord = (file.type);
-  file.isMSExcel = (file.type);
-  file.isMSPowerpoint = (file.type);
-  file.isOOWriter = (file.type);
-  file.isOODrawing = (file.type);
-  file.isOOPresentation = (file.type);
-  file.isOOSpreadsheet = (file.type);
-
-  // Other formats
+ // Other formats
   file.isPDF = isPDF(file.type);
+
+  // Groupes
+  file.isMSWord = isMSWord(file);
+  file.isMSExcel = isMSExcel(file);
+  file.isMSPowerpoint = isMSPowerpoint(file);
+  file.isOOWriter = isOOWriter(file);
+  file.isOODrawing = isOODrawing(file);
+  file.isOOPresentation = isOOPresentation(file);
+  file.isOOSpreadsheet = isOOSpreadsheet(file);
+
+  // supports
+  file.hasConvertToPdfSupport = hasConvertToPdfSupport(file);
+  file.hasPreview = hasPreview(file);
 
   // Icons
   file.hasTextIcon = hasTextIcon(file);
@@ -395,10 +400,6 @@ var parseFileType = function (file) {
   file.hasVideoIcon = hasVideoIcon(file);
   file.hasApplicationIcon = hasApplicationIcon(file);
   file.hasUnknownIcon = hasUnknownIcon(file);
-
-  // supports
-  file.hasConvertToPdfSupport = hasConvertToPdfSupport(file);
-  file.hasPreview = hasPreview(file);
 
   return file;
 }
@@ -423,29 +424,20 @@ var getPreviewName = function (file) {
  * @alias module:FileService.generateThumbnail
  * @see https://github.com/hacksparrow/node-easyimage
  */
-var generateThumbnail = function (site, file, options, callback) {
+var generateThumbnail = function (site, file, options, relativePathInSiteFolder, callback) {
   if(options === null || UtilityService.isUndefined(options) || UtilityService.isUndefined(options.thumbnail)) return callback();
-  var thumbnailOptions = options.thumbnail;
-  var src = "";
-  if(file.hasPreview) src = getPreviewName(file);
-  else src = file.uploadedAs;
-  file.thumbName = "thumb_"+src;
-  thumbnailOptions.src = path.join(SITES_FOLDER, site, options.path, src);
-  thumbnailOptions.dst = path.join(SITES_FOLDER, site, options.thumbnail.path, src);
-  // sails.log.debug("[FileService.generateThumbnail] thumbnailOptions", JSON.stringify(thumbnailOptions, null, 2));
-  fs.mkdirs(path.dirname(thumbnailOptions.dst), function(err) {
-    if(err) {
-      sails.log.error(err);
-      return callback(err);
-    }
-    easyimg.thumbnail(thumbnailOptions).then( function(image) {
-      // sails.log.debug("[FileService.generateThumbnail] Thumbnail generated", thumbnailOptions.dst);
-      file.thumb = image;
+  var srcFilename = file.hasPreview ? getPreviewName(file) : file.uploadedAs;
+  file.thumbName = getConvertedName(options.thumbnail.prefix, file.uploadedAs, ".png");
+  options.thumbnail.src = path.join(SITES_FOLDER, site, options.path, srcFilename);
+  options.thumbnail.dst = path.join(SITES_FOLDER, site, options.thumbnail.path, file.thumbName);
+  // sails.log.debug("[FileService.generateThumbnail] options.thumbnail", JSON.stringify(options.thumbnail, null, 2));
+  fs.mkdirs(path.dirname(options.thumbnail.dst), function(err) {
+    if(err) return callback(err);
+    easyimg.thumbnail(options.thumbnail).then( function(thumb) {
+      // sails.log.debug("[FileService.generateThumbnail] Thumbnail generated", options.thumbnail.dst);
+      file.thumb = thumb;
       callback(null, file);
-    }, function (err) {
-      sails.log.error(err);
-      callback(err, file);
-    });
+    }, callback);
   });
 };
 
@@ -455,17 +447,17 @@ var generateThumbnail = function (site, file, options, callback) {
  * @alias module:FileService.generateRescrop
  * @see https://github.com/hacksparrow/node-easyimage
  */
-var generateRescrop = function (site, file, options, callback) {
+var generateRescrop = function (site, file, options, relativePathInSiteFolder, callback) {
   if(options === null || UtilityService.isUndefined(options) || UtilityService.isUndefined(options.rescrop)) return callback();
-  file.rescropName = "rescrop_"+file.uploadedAs;
-  var rescropOptions = options.rescrop;
-  rescropOptions.src = path.join(SITES_FOLDER, site, options.path, file.uploadedAs);
-  rescropOptions.dst = path.join(SITES_FOLDER, site, options.rescrop.path, file.rescropName);
-  // sails.log.debug("[FileService.generateRescrop] rescropOptions", JSON.stringify(rescropOptions, null, 2));
-  fs.mkdirs(path.dirname(rescropOptions.dst), function(err) {
+  var srcFilename = file.hasPreview ? getPreviewName(file) : file.uploadedAs;
+  file.rescropName = getConvertedName(options.rescrop.prefix, file.uploadedAs, ".png");
+  options.rescrop.src = ptions.rescrop.src || path.join(SITES_FOLDER, site, options.path, srcFilename);
+  options.rescrop.dst = options.rescrop.dst || path.join(SITES_FOLDER, site, options.rescrop.path, file.rescropName);
+  // sails.log.debug("[FileService.generateRescrop] options.rescrop", JSON.stringify(options.rescrop, null, 2));
+  fs.mkdirs(path.dirname(options.rescrop.dst), function(err) {
     if(err) return callback(err);
-    easyimg.rescrop(rescropOptions).then( function(image) {
-      // sails.log.debug("[FileService.generateRescrop] rescrop generated", rescropOptions.dst);
+    easyimg.rescrop(options.rescrop).then( function(image) {
+      // sails.log.debug("[FileService.generateRescrop] rescrop generated", options.rescrop.dst);
       file.rescrop = image;
       callback(null, file);
     }, function (err) {
@@ -479,28 +471,30 @@ var generateRescrop = function (site, file, options, callback) {
  *
  * @alias module:FileService.setImageInfoForOriginal
  */
-var setImageInfoForOriginal = function (options, file, callback) {
+var setImageInfoForOriginal = function (site, file , options, relativePathInSiteFolder, callback) {
   // sails.log.debug("[GalleryService.setInfoForOriginal]", "options", options, "file", file);
-  if(UtilityService.isUndefined(file) || UtilityService.isUndefined(file.savedTo)) callback(new Error("file.savedTo is undefined"));
-  easyimg.info(file.savedTo).then( function(original) {
+  if(UtilityService.isUndefined(file) || UtilityService.isUndefined(file.uploadedAs)) callback(new Error("file.uploadedAs is undefined"));
+  var savedTo = path.join(SITES_FOLDER, site, options.path, file.uploadedAs);
+  easyimg.info(savedTo).then( function(original) {
     delete original.path;
-    callback(null, original);
+    file.original = original;
+    callback(null, file);
   }, callback); // error
 };
 
 /**
  * Get Image Information for the original Image like width, depth, size, type and etc..
  *
- * @alias module:FileService.setImageInfoForOriginal
+ * @alias module:FileService.setImageInfoForPreview
  */
-var setImageInfoForPreview = function (site, options, file, callback) {
+var setImageInfoForPreview = function (site, file, options, relativePathInSiteFolder, callback) {
   // sails.log.debug("[GalleryService.setInfoForOriginal]", "options", options, "file", file);
-  if(UtilityService.isUndefined(file) || UtilityService.isUndefined(file.savedTo)) callback(new Error("file.savedTo is undefined"));
-  var src = options.preview.dst || path.join(SITES_FOLDER, site, options.path, getPreviewName(file));
-  easyimg.info(src).then( function(preview) {
-    file.preview = preview;
+  if(UtilityService.isUndefined(options) || UtilityService.isUndefined(options.preview)) callback(new Error("file.preview is undefined"));
+  var savedTo = options.preview.dst || path.join(SITES_FOLDER, site, options.path, getPreviewName(file));
+  easyimg.info(savedTo).then( function(preview) {
     delete preview.path;
-    callback(null, preview);
+    file.preview = preview;
+    callback(null, file);
   }, callback); // error
 };
 
@@ -510,11 +504,12 @@ var setImageInfoForPreview = function (site, options, file, callback) {
  *
  * @alias module:FileService.setImageInfoForThumbnail
  */
-var setImageInfoForThumbnail = function (options, file, callback) {
+var setImageInfoForThumbnail = function (site, file, options, relativePathInSiteFolder, callback) {
   if(UtilityService.isUndefined(options.thumbnail) || UtilityService.isUndefined(options.thumbnail.dst)) callback();
   easyimg.info(options.thumbnail.dst).then( function(thumb) {
     delete thumb.path;
-    callback(null, thumb);
+    file.thumb = thumb;
+    callback(null, file);
   }, callback); // error
 };
 
@@ -523,11 +518,12 @@ var setImageInfoForThumbnail = function (options, file, callback) {
  *
  * @alias module:FileService.setImageInfoForRescrop
  */
-var setImageInfoForRescrop = function (options, file, callback) {
+var setImageInfoForRescrop = function (site, file, options, relativePathInSiteFolder, callback) {
   if(UtilityService.isUndefined(options.rescrop) || UtilityService.isUndefined(options.rescrop.dst)) callback();
   easyimg.info(options.rescrop.dst).then( function(rescrop) {
     delete rescrop.path;
-    callback(null, rescrop);
+    file.rescrop = rescrop;
+    callback(null, file);
   }, callback); // error
 };
 
@@ -541,13 +537,13 @@ var convertImageIterator = function (site, file, relativePathInSiteFolder, optio
   sails.log.debug("[FileService.convertImageIterator] options", options, "isImage: "+file.isImage);
   async.series({
     thumb: function (callback) {
-      generateThumbnail(site, file, options, callback);
+      generateThumbnail(site, file, options, relativePathInSiteFolder, callback);
     },
     rescrop: function (callback) {
-      generateRescrop(site, file, options, callback);
+      generateRescrop(site, file, options, relativePathInSiteFolder, callback);
     },
     originalInfo: function (callback) {
-      setImageInfoForOriginal(options, file, callback);
+      setImageInfoForOriginal(site, file , options, relativePathInSiteFolder, callback);
     }
   },
   function(err, results) {
@@ -564,15 +560,15 @@ var convertImageIterator = function (site, file, relativePathInSiteFolder, optio
 var convertFileIterator = function (site, file, relativePathInSiteFolder, options, callback) {
   file = parseFileType(file);
   file.uploadedAs = path.basename(file.fd);
-  file.savedTo = path.join(SITES_FOLDER, site, relativePathInSiteFolder, file.uploadedAs);
-  file.dirname = path.dirname(file.savedTo);
+  var savedTo = path.join(SITES_FOLDER, site, relativePathInSiteFolder, file.uploadedAs);
+  var dirname = path.dirname(savedTo);
   sails.log.debug("[FileService.convertFileIterator] options", "file", file);
   async.series([
     function (callback) {
-      fs.mkdirs(file.dirname, callback);
+      fs.mkdirs(dirname, callback);
     },
     function (callback) {
-      fs.move(file.fd, file.savedTo, callback);
+      fs.move(file.fd, savedTo, callback);
     }
   ],
   function(err, results) {
@@ -649,10 +645,10 @@ var parseFileOptions = function (req, path) {
       path: path,
       prefix: 'preview_'
     },
-    document: {
+    convert: {
       path: path,
       outputFormat: 'pdf',
-      prefix: 'converted_',
+      prefix: 'convert_',
     }
   }
   options = UtilityService.extend(true, defaults, options);
@@ -667,26 +663,49 @@ var removeFromFilesystem = function (site, file, relativePathInSiteFolder, callb
   var dirname = path.join(SITES_FOLDER, site, relativePathInSiteFolder);
   sails.log.debug("[FileService.removeFromFilesystem]", "dirname", dirname, file);
   async.parallel([
-    function removeFile(callback){
-      if(UtilityService.isUndefined(file.uploadedAs) || file.uploadedAs === null) return callback();
-      var filepath = path.join(dirname, file.uploadedAs);
+    function removeFile(callback) {
+      var filename = file.uploadedAs;
+      if(file.original) filename = file.original.name;
+      if(UtilityService.isUndefined(filename) || filename === null) return callback();
+      var filepath = path.join(dirname, filename);
       return fs.remove(filepath, callback);
     },
-    function removeOriginalImage(callback){
-      if(UtilityService.isUndefined(file.original) || file.original === null) return callback();
-      var filepath = path.join(dirname, file.original.name);
+    function removeOriginalImage(callback) {
+      var filename = file.originalName;
+      if(file.original) filename = file.original.name;
+      if(UtilityService.isUndefined(filename) || filename === null) return callback();
+      var filepath = path.join(dirname, filename);
       return fs.remove(filepath, callback);
     },
-    function removeThumbnailImage(callback){
-      if(UtilityService.isUndefined(file.thumb) || file.thumb === null) return callback();
-      var filepath = path.join(dirname, file.thumb.name);
+    function removeThumbnailImage(callback) {
+      var filename = file.thumbName;
+      if(file.thumb) filename = file.thumb.name;
+      if(UtilityService.isUndefined(filename) || filename === null) return callback();
+      var filepath = path.join(dirname, filename);
       return fs.remove(filepath, callback);
     },
-    function removeThumbnailImage(callback){
-      if(UtilityService.isUndefined(file.rescrop) || file.rescrop === null) return callback();
-      var filepath = path.join(dirname, file.rescrop.name);
+    function removeRescropImage(callback) {
+      var filename = file.rescropName;
+      if(file.rescrop) filename = file.rescrop.name;
+      if(UtilityService.isUndefined(filename) || filename === null) return callback();
+      var filepath = path.join(dirname, filename);
       return fs.remove(filepath, callback);
     },
+    function removePreviewImage(callback) {
+      var filename = file.previewName;
+      if(file.preview) filename = file.preview.name;
+      if(UtilityService.isUndefined(filename) || filename === null) return callback();
+      var filepath = path.join(dirname, filename);
+      return fs.remove(filepath, callback);
+    },
+    function removeConvert(callback) {
+      var filename = file.convertName;
+      if(file.convert) filename = file.convert.name;
+      if(UtilityService.isUndefined(filename) || filename === null) return callback();
+      var filepath = path.join(dirname, filename);
+      return fs.remove(filepath, callback);
+    },
+
   ],
   callback);
 }

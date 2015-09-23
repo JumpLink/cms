@@ -29,29 +29,29 @@ var convert = function (filePath, outputFormat, options, callback) {
  */
 var convertDocumentPreviewIterator = function (site, file, relativePathInSiteFolder, options, callback) {
   sails.log.debug("[DocumentService.convertDocumentPreviewIterator] options", options, "isImage: "+file.isImage);
-  
-  options.document.src = path.join(SITES_FOLDER, site, options.path, file.uploadedAs);
-  options.document.dst = path.join(SITES_FOLDER, site, options.document.path, FileService.getConvertedName(options.document.prefix, file.uploadedAs, "."+options.document.outputFormat));
+  file.convertName = FileService.getConvertedName(options.convert.prefix, file.uploadedAs, "."+options.convert.outputFormat);
+  options.convert.src = path.join(SITES_FOLDER, site, options.path, file.uploadedAs);
+  options.convert.dst = path.join(SITES_FOLDER, site, options.convert.path, file.convertName);
 
   async.series({
     convert: function (callback) {
-      convert(options.document.src, options.document.outputFormat, options.document, function (err, resultBuffer) {
+      convert(options.convert.src, options.convert.outputFormat, options.convert, function (err, resultBuffer) {
         if(err) return callback(err);
-        fs.writeFile(options.document.dst, resultBuffer, function (err) {
-          file[options.document.outputFormat+'Name'] = options.document.dst;
+        fs.writeFile(options.convert.dst, resultBuffer, function (err) {
+          file[options.convert.outputFormat+'Name'] = file.convertName;
           callback(err, file)
         });
       });
     },
     preview: function (callback) {
-      options.preview.src = options.document.dst;
-      PDFService.generatePreview(site, file, options, callback);
+      options.preview.src = options.convert.dst;
+      PDFService.generatePreview(site, file, options, relativePathInSiteFolder, callback);
     },
     previewInfo: function (callback) {
-      FileService.setImageInfoForPreview(site, options, file, callback);
+      FileService.setImageInfoForPreview(site, file, options, relativePathInSiteFolder, callback);
     },
     thumb: function (callback) {
-      FileService.generateThumbnail(site, file, options, callback);
+      FileService.generateThumbnail(site, file, options, relativePathInSiteFolder, callback);
     }
   },
   function(err, results) {

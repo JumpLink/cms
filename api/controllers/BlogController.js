@@ -128,20 +128,20 @@ var destroy = function (req, res, next) {
  * @param {!object} res - responses
  * @param {function} next
  */
-var deleteAttachment = function (req, res, next) {
+var destroyAttachment = function (req, res, next) {
   var id = req.param('blogPostID') || req.param('id');
   var attachmentUploadedAs = req.param('attachmentUploadedAs');
-  sails.log.debug("BlogController.deleteAttachment", id, attachmentUploadedAs);
+  sails.log.debug("[BlogController.destroyAttachment]", id, attachmentUploadedAs);
   BlogService.findAttachmentInPost(req.session.uri.host, id, attachmentUploadedAs, function (err, index, attachment, status, config) {
     if(err || status.code !== 200) {
       sails.log.error(status);
       return res.serverError(err);
     }
     if(index <= -1) {
-      sails.log.warn("Attachment not found");
+      sails.log.warn("[BlogController.destroyAttachment] Attachment not found");
       return res.ok();
     }
-    sails.log.debug("[BlogController.deleteAttachment] Found attachment", attachment)
+    sails.log.debug("[BlogController.destroyAttachment] Found attachment", attachment)
     FileService.removeFromFilesystem(config.name, attachment, sails.config.paths.blog, function (err) {
       if(err) { return res.serverError(err); }
       return res.ok();
@@ -161,6 +161,5 @@ module.exports = {
   find: find,
   findAll: find, // alias
   destroy: destroy,
-  deleteAttachment: deleteAttachment,
-  removeAttachment: deleteAttachment, // alias
+  destroyAttachment: destroyAttachment
 }

@@ -33,23 +33,23 @@ var find = function (host, page, callback) {
 }
 
 /**
- * Find one blog post for the current site and with id
+ * Find one blog post with current site and id
  *
  * @param {string} host - The current host on the current request to get the site config
  * @param {number} id - The id of the blog post to find
  * @param {BlockDBCallback} callback - The callback that handles the database response.
  *
- * @alias module:BlogService.findOne
+ * @alias module:BlogService.findOneById
  */
-var findOne = function (host, id, callback) {
+var findOneById = function (host, id, callback) {
   MultisiteService.getCurrentSiteConfig(host, function (err, config) {
     if(err) return callback(err, null, {code: 500, error: err});
     var query = {
       where: {
-        site: config.name
+        site: config.name,
+        id: id
       }
     };
-    if(id !== null && UtilityService.isUndefined(id)) query.where.id = id;
     Blog.findOne(query).exec(function (err, result) {
       if (err) return callback("Internal Server Error", result, {code: 500, error: err}, config);
       if (UtilityService.isUndefined(result)) return callback("Not Found", result, {code: 404}, config);
@@ -78,7 +78,7 @@ var findOne = function (host, id, callback) {
  */
 var findAttachmentInPost = function (host, id, attachmentUploadedAs, callback) {
   var found = false;
-  findOne(host, id, function (err, result, status, config) {
+  findOneById(host, id, function (err, result, status, config) {
     sails.log.debug("[BlogService.findAttachmentInPost]", err, status, result);
     if(err || status.code !== 200 || !UtilityService.isArray(result.attachments)) return callback(err, status, found);
     for (var i = 0; i < result.attachments.length && !found; i++) {
@@ -96,7 +96,7 @@ var findAttachmentInPost = function (host, id, attachmentUploadedAs, callback) {
  * @callback BlockFindAttachmentCallback
  * @param {?string} err - Error message string, if no error err is null
  * @param {(object|object[])} index - The index of the attachment, if no attachment was found, index is -1
- * @param {object} status - Statuscode of the findOne result
+ * @param {object} status - Statuscode of the findOneById result
  * @param {object} config - The current site config
  */
 
@@ -106,6 +106,6 @@ var findAttachmentInPost = function (host, id, attachmentUploadedAs, callback) {
 module.exports = {
   find: find,
   findAll: find, // alias
-  findOne: findOne,
+  findOneById: findOneById,
   findAttachmentInPost: findAttachmentInPost,
 }
