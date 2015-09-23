@@ -86,11 +86,36 @@ var upload = function (req, res) {
  */
 var find = function (req, res) {
   var page = req.param('page');
-  BlogService.find(req.session.uri.host, page, function (err, results, status, config) {
+  var limit = req.param('limit');
+  var skip = req.param('skip');
+  BlogService.find(req.session.uri.host, page, limit, skip, function (err, results, status, config) {
     if(err) return res.serverError(err);
     sails.log.debug("[BlogController.find]", status, result);
     switch(status.code) {
       case 200: return res.json(results);
+      case 400: return res.badRequest();
+      case 403: return res.forbidden();
+      case 404: return res.notFound();
+      case 500: return res.serverError(status.error);
+      default: return res.serverError("Unknown Error");
+    }
+  });
+}
+
+/**
+ * Get the number of blog posts for site and page
+ *
+ * @param {!object} req - Request
+ * @param {!object} res - responses
+ * @param {function} next
+ */
+var count = function (req, res) {
+  var page = req.param('page');
+  BlogService.count(req.session.uri.host, page, function (err, count, status, config) {
+    if(err) return res.serverError(err);
+    sails.log.debug("[BlogController.count]", count);
+    switch(status.code) {
+      case 200: return res.json({count:count});
       case 400: return res.badRequest();
       case 403: return res.forbidden();
       case 404: return res.notFound();
@@ -160,6 +185,7 @@ module.exports = {
   upload: upload,
   find: find,
   findAll: find, // alias
+  count: count,
   destroy: destroy,
   destroyAttachment: destroyAttachment
 }

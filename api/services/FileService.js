@@ -50,83 +50,93 @@ var isModel = function (mime) {
 
 
 /**
- * Microsoft Word
+ * Microsoft Word 
  * @see http://filext.com/faq/office_mime_types.php
+ * @see https://aur.archlinux.org/packages/wps-office/?comments=all (Comment by westmin)
  */
 var isDoc = function (mime) {
-  return mime === 'application/msword';
+  return mime === 'application/msword' || mime === 'application/wps-office.doc' || mime === 'application/wps-office.dot';
 }
 
 /**
  * Microsoft Word
  * @see http://filext.com/faq/office_mime_types.php
+ * @see https://aur.archlinux.org/packages/wps-office/?comments=all (Comment by westmin)
  */
 var isDocx = function (mime) {
-  return mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+  return mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || mime === 'application/wps-office.docx';
 }
 
 /**
  * Microsoft Word
  * @see http://filext.com/faq/office_mime_types.php
+ * @see https://aur.archlinux.org/packages/wps-office/?comments=all (Comment by westmin)
  */
 var isDotx = function (mime) {
-  return mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.template';
+  return mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.template' || mime === 'application/wps-office.dotx';
 }
 
 /**
  * Microsoft Excel
  * @see http://filext.com/faq/office_mime_types.php
+ * @see https://aur.archlinux.org/packages/wps-office/?comments=all (Comment by westmin)
  */
 var isXls = function (mime) {
-  return mime === 'application/vnd.ms-excel';
+  return mime === 'application/vnd.ms-excel' || mime === 'application/wps-office.xls';
 }
 
 /**
  * Microsoft Excel
  * @see http://filext.com/faq/office_mime_types.php
+ * @see https://aur.archlinux.org/packages/wps-office/?comments=all (Comment by westmin)
  */
 var isXlsx = function (mime) {
-  return mime === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+  return mime === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || mime === 'application/wps-office.xlsx';
 }
 
 /**
  * Microsoft Excel
  * @see http://filext.com/faq/office_mime_types.php
+ * @see https://aur.archlinux.org/packages/wps-office/?comments=all (Comment by westmin)
  */
 var isXltx = function (mime) {
-  return mime === 'application/vnd.openxmlformats-officedocument.spreadsheetml.template';
+  return mime === 'application/vnd.openxmlformats-officedocument.spreadsheetml.template' || mime === 'application/wps-office.xltx';
 }
 
 /**
  * Microsoft Powerpoint
  * @see http://filext.com/faq/office_mime_types.php
+ * @see https://aur.archlinux.org/packages/wps-office/?comments=all (Comment by westmin)
  */
 var isPpt = function (mime) {
-  return mime === 'application/vnd.ms-powerpoint';
+  return mime === 'application/vnd.ms-powerpoint' || mime === 'application/wps-office.ppt' || mime === 'application/wps-office.pot'  || mime === 'application/wps-office.pps';
 }
 
 /**
  * Microsoft Powerpoint
  * @see http://filext.com/faq/office_mime_types.php
+ * @see https://aur.archlinux.org/packages/wps-office/?comments=all (Comment by westmin)
  */
 var isPptx = function (mime) {
-  return mime === 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+  return mime === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' || mime === 'application/wps-office.pptx';
 }
 
 /**
  * Microsoft Powerpoint
  * @see http://filext.com/faq/office_mime_types.php
+ * @see https://aur.archlinux.org/packages/wps-office/?comments=all (Comment by westmin)
  */
 var isPotx = function (mime) {
-  return mime === 'application/vnd.openxmlformats-officedocument.presentationml.template';
+  return mime === 'application/vnd.openxmlformats-officedocument.presentationml.template' || mime === 'application/wps-office.potx';
 }
 
 /**
  * Microsoft Powerpoint
  * @see http://filext.com/faq/office_mime_types.php
+ * @see https://aur.archlinux.org/packages/wps-office/?comments=all (Comment by westmin)
  */
 var isPpsx = function (mime) {
-  return mime === 'application/vnd.openxmlformats-officedocument.presentationml.slideshow';
+  return mime === 'application/vnd.openxmlformats-officedocument.presentationml.slideshow' || mime === 'application/wps-office.ppsx';
 }
 
 
@@ -331,7 +341,7 @@ var hasApplicationIcon = function (file) {
 }
 
 var hasUnknownIcon = function (file) {
-  return !file.hasPreview && !file.hasTextIcon && !file.hasTableIcon && !file.hasCodeIcon && !file.hasVideoIcon && !file.hasApplicationIcon && !file.hasPreview && !file.isPDF
+  return !file.hasPreview && !file.isImage && !file.hasTextIcon && !file.hasTableIcon && !file.hasCodeIcon && !file.hasVideoIcon && !file.hasApplicationIcon && !file.hasPreview && !file.isPDF
 }
 
 
@@ -350,6 +360,7 @@ var parseFileType = function (file) {
   file.isModel = isModel(file.type);
 
   // MS Office
+  file.isDoc = isDoc(file.type);
   file.isDocx = isDocx(file.type);
   file.isDotx = isDotx(file.type);
   file.isXls = isXls(file.type);
@@ -425,6 +436,7 @@ var getPreviewName = function (file) {
  * @see https://github.com/hacksparrow/node-easyimage
  */
 var generateThumbnail = function (site, file, options, relativePathInSiteFolder, callback) {
+  sails.log.debug("[FileService.generateThumbnail]");
   if(options === null || UtilityService.isUndefined(options) || UtilityService.isUndefined(options.thumbnail)) return callback();
   var srcFilename = file.hasPreview ? getPreviewName(file) : file.uploadedAs;
   file.thumbName = getConvertedName(options.thumbnail.prefix, file.uploadedAs, ".png");
@@ -448,21 +460,24 @@ var generateThumbnail = function (site, file, options, relativePathInSiteFolder,
  * @see https://github.com/hacksparrow/node-easyimage
  */
 var generateRescrop = function (site, file, options, relativePathInSiteFolder, callback) {
-  if(options === null || UtilityService.isUndefined(options) || UtilityService.isUndefined(options.rescrop)) return callback();
+  sails.log.debug("[FileService.generateRescrop]");
+  if(options === null || UtilityService.isUndefined(options) || UtilityService.isUndefined(options.rescrop)) {
+    sails.log.warn("rescop options not set");
+    return callback();
+  }
   var srcFilename = file.hasPreview ? getPreviewName(file) : file.uploadedAs;
   file.rescropName = getConvertedName(options.rescrop.prefix, file.uploadedAs, ".png");
-  options.rescrop.src = ptions.rescrop.src || path.join(SITES_FOLDER, site, options.path, srcFilename);
-  options.rescrop.dst = options.rescrop.dst || path.join(SITES_FOLDER, site, options.rescrop.path, file.rescropName);
+  if(UtilityService.isUndefined(options.rescrop.src)) options.rescrop.src = path.join(SITES_FOLDER, site, options.path, srcFilename);
+  if(UtilityService.isUndefined(options.rescrop.dst)) options.rescrop.dst = path.join(SITES_FOLDER, site, options.rescrop.path, file.rescropName);
+  sails.log.debug(options.rescrop.dst, options);
   // sails.log.debug("[FileService.generateRescrop] options.rescrop", JSON.stringify(options.rescrop, null, 2));
   fs.mkdirs(path.dirname(options.rescrop.dst), function(err) {
     if(err) return callback(err);
     easyimg.rescrop(options.rescrop).then( function(image) {
-      // sails.log.debug("[FileService.generateRescrop] rescrop generated", options.rescrop.dst);
+      sails.log.debug("[FileService.generateRescrop] rescrop generated", options.rescrop.dst);
       file.rescrop = image;
       callback(null, file);
-    }, function (err) {
-      callback(err, file);
-    });
+    }, callback);
   });
 };
 
@@ -472,7 +487,7 @@ var generateRescrop = function (site, file, options, relativePathInSiteFolder, c
  * @alias module:FileService.setImageInfoForOriginal
  */
 var setImageInfoForOriginal = function (site, file , options, relativePathInSiteFolder, callback) {
-  // sails.log.debug("[GalleryService.setInfoForOriginal]", "options", options, "file", file);
+  sails.log.debug("[FileService.setImageInfoForOriginal]");
   if(UtilityService.isUndefined(file) || UtilityService.isUndefined(file.uploadedAs)) callback(new Error("file.uploadedAs is undefined"));
   var savedTo = path.join(SITES_FOLDER, site, options.path, file.uploadedAs);
   easyimg.info(savedTo).then( function(original) {
@@ -488,7 +503,7 @@ var setImageInfoForOriginal = function (site, file , options, relativePathInSite
  * @alias module:FileService.setImageInfoForPreview
  */
 var setImageInfoForPreview = function (site, file, options, relativePathInSiteFolder, callback) {
-  // sails.log.debug("[GalleryService.setInfoForOriginal]", "options", options, "file", file);
+  sails.log.debug("[FileService.setImageInfoForPreview]");
   if(UtilityService.isUndefined(options) || UtilityService.isUndefined(options.preview)) callback(new Error("file.preview is undefined"));
   var savedTo = options.preview.dst || path.join(SITES_FOLDER, site, options.path, getPreviewName(file));
   easyimg.info(savedTo).then( function(preview) {
@@ -505,6 +520,7 @@ var setImageInfoForPreview = function (site, file, options, relativePathInSiteFo
  * @alias module:FileService.setImageInfoForThumbnail
  */
 var setImageInfoForThumbnail = function (site, file, options, relativePathInSiteFolder, callback) {
+  sails.log.debug("[FileService.setImageInfoForThumbnail]");
   if(UtilityService.isUndefined(options.thumbnail) || UtilityService.isUndefined(options.thumbnail.dst)) callback();
   easyimg.info(options.thumbnail.dst).then( function(thumb) {
     delete thumb.path;
@@ -519,6 +535,7 @@ var setImageInfoForThumbnail = function (site, file, options, relativePathInSite
  * @alias module:FileService.setImageInfoForRescrop
  */
 var setImageInfoForRescrop = function (site, file, options, relativePathInSiteFolder, callback) {
+  sails.log.debug("[FileService.setImageInfoForRescrop]");
   if(UtilityService.isUndefined(options.rescrop) || UtilityService.isUndefined(options.rescrop.dst)) callback();
   easyimg.info(options.rescrop.dst).then( function(rescrop) {
     delete rescrop.path;
@@ -558,6 +575,7 @@ var convertImageIterator = function (site, file, relativePathInSiteFolder, optio
  * @alias module:FileService.convertFileIterator
  */
 var convertFileIterator = function (site, file, relativePathInSiteFolder, options, callback) {
+  sails.log.debug("[FileService.convertFileIterator]");
   file = parseFileType(file);
   file.uploadedAs = path.basename(file.fd);
   var savedTo = path.join(SITES_FOLDER, site, relativePathInSiteFolder, file.uploadedAs);
@@ -636,6 +654,7 @@ var parseFileOptions = function (req, path) {
       prefix: 'thumb_'
     },
     rescrop: {
+      path: path,
       width: 960 * 3, // width og bootstrap content width * 3 for hidpi
       cropwidth: 960 * 3,
       cropheight: 720 * 3,
@@ -663,46 +682,45 @@ var removeFromFilesystem = function (site, file, relativePathInSiteFolder, callb
   var dirname = path.join(SITES_FOLDER, site, relativePathInSiteFolder);
   sails.log.debug("[FileService.removeFromFilesystem]", "dirname", dirname, file);
   async.parallel([
-    function removeFile(callback) {
+    function removeOriginalFile(callback) {
       var filename = file.uploadedAs;
-      if(file.original) filename = file.original.name;
+      if(UtilityService.isDefined(file.originalName)) filename = file.originalName;
+      if(UtilityService.isDefined(file.original) && UtilityService.isDefined(file.original.name)) filename = file.original.name;
       if(UtilityService.isUndefined(filename) || filename === null) return callback();
       var filepath = path.join(dirname, filename);
-      return fs.remove(filepath, callback);
-    },
-    function removeOriginalImage(callback) {
-      var filename = file.originalName;
-      if(file.original) filename = file.original.name;
-      if(UtilityService.isUndefined(filename) || filename === null) return callback();
-      var filepath = path.join(dirname, filename);
+      sails.log.debug("[FileService.removeFromFilesystem.removeOriginalFile]", filepath);
       return fs.remove(filepath, callback);
     },
     function removeThumbnailImage(callback) {
       var filename = file.thumbName;
-      if(file.thumb) filename = file.thumb.name;
+      if(UtilityService.isDefined(file.thumb)) filename = file.thumb.name;
       if(UtilityService.isUndefined(filename) || filename === null) return callback();
       var filepath = path.join(dirname, filename);
+      sails.log.debug("[FileService.removeFromFilesystem.removeThumbnailImage]", filepath);
       return fs.remove(filepath, callback);
     },
     function removeRescropImage(callback) {
       var filename = file.rescropName;
-      if(file.rescrop) filename = file.rescrop.name;
+      if(UtilityService.isDefined(file.rescrop)) filename = file.rescrop.name;
       if(UtilityService.isUndefined(filename) || filename === null) return callback();
       var filepath = path.join(dirname, filename);
+      sails.log.debug("[FileService.removeFromFilesystem.removeRescropImage]", filepath);
       return fs.remove(filepath, callback);
     },
     function removePreviewImage(callback) {
       var filename = file.previewName;
-      if(file.preview) filename = file.preview.name;
+      if(UtilityService.isDefined(file.preview)) filename = file.preview.name;
       if(UtilityService.isUndefined(filename) || filename === null) return callback();
       var filepath = path.join(dirname, filename);
+      sails.log.debug("[FileService.removeFromFilesystem.removePreviewImage]", filepath);
       return fs.remove(filepath, callback);
     },
     function removeConvert(callback) {
       var filename = file.convertName;
-      if(file.convert) filename = file.convert.name;
+      if(UtilityService.isDefined(file.convert)) filename = file.convert.name;
       if(UtilityService.isUndefined(filename) || filename === null) return callback();
       var filepath = path.join(dirname, filename);
+      sails.log.debug("[FileService.removeFromFilesystem.removeConvert]", filepath);
       return fs.remove(filepath, callback);
     },
 

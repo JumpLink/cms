@@ -14,7 +14,7 @@
  * @alias module:BlogService.find
  * @alias module:BlogService.findAll
  */
-var find = function (host, page, callback) {
+var find = function (host, page, limit, skip, callback) {
   MultisiteService.getCurrentSiteConfig(host, function (err, config) {
     if(err) return callback(err, null, {code: 500, error: err}, config);
     var query = {
@@ -24,6 +24,8 @@ var find = function (host, page, callback) {
       sort: 'createdAt DESC'
     };
     if(page !== null && UtilityService.isDefined(page)) query.where.page = page;
+    if(limit !== null && UtilityService.isDefined(limit)) query.limit = limit;
+    if(skip !== null && UtilityService.isDefined(skip)) query.skip = skip;
     Blog.find(query).exec(function found(err, found) {
       if (err) return callback("Internal Server Error", {code: 500, error: err}, found, config);
       if (UtilityService.isUndefined(found) || !UtilityService.isArray(found)) return callback("Not Found", {code: 404}, found, config);
@@ -39,17 +41,17 @@ var find = function (host, page, callback) {
  * @param {number} id - The id of the blog post to find
  * @param {BlockDBCallback} callback - The callback that handles the database response.
  *
- * @alias module:BlogService.findOneById
+ * @alias module:BlogService.findOne
  */
-var findOneById = function (host, id, callback) {
+var findOne = function (host, id, callback) {
   MultisiteService.getCurrentSiteConfig(host, function (err, config) {
     if(err) return callback(err, null, {code: 500, error: err});
     var query = {
       where: {
-        site: config.name,
-        id: id
+        site: config.name
       }
     };
+    if(id !== null && UtilityService.isDefined(id)) query.where.id = id;
     Blog.findOne(query).exec(function (err, result) {
       if (err) return callback("Internal Server Error", result, {code: 500, error: err}, config);
       if (UtilityService.isUndefined(result)) return callback("Not Found", result, {code: 404}, config);
@@ -60,12 +62,36 @@ var findOneById = function (host, id, callback) {
 
 /**
  * The Callback that handle the find results of blog posts
+ *
  * @callback {(number|string)} BlockDBCallback
  * @param {?string} err - Error message string, if no error err is null
  * @param {object|array} result - The Database result, can be an array of results or one result
  * @param {object} status - The request state, contains the HTTP-Statuscode as code
  * @param {object} config - The current site config
  */
+
+/**
+ * Get the number of blog posts for site and page
+ *
+ * @param {string} host - The current host on the current request to get the site config
+ * @param {string} page - The page identifier the blog post is saved on
+ * @param {function} callback - The callback that handles the count response.
+ *
+ * @alias module:BlogService.count
+ */
+var count = function (host, page, callback) {
+  MultisiteService.getCurrentSiteConfig(host, function (err, config) {
+    if(err) return callback(err, null, {code: 500, error: err}, config);
+    var query = {
+      site: config.name
+    };
+    if(page !== null && UtilityService.isDefined(page)) query.page = page;
+    Blog.count(query).exec(function found(err, count) {
+      if (err) return callback("Internal Server Error", count, {code: 500, error: err}, found, config);
+      return callback(null, count, {code: 200}, config);
+    });
+  });
+}
 
 /**
  * Find an attachment in post with post-id and attachmentUploadedAs string
@@ -78,7 +104,7 @@ var findOneById = function (host, id, callback) {
  */
 var findAttachmentInPost = function (host, id, attachmentUploadedAs, callback) {
   var found = false;
-  findOneById(host, id, function (err, result, status, config) {
+  findOne(host, id, function (err, result, status, config) {
     sails.log.debug("[BlogService.findAttachmentInPost]", err, status, result);
     if(err || status.code !== 200 || !UtilityService.isArray(result.attachments)) return callback(err, status, found);
     for (var i = 0; i < result.attachments.length && !found; i++) {
@@ -96,7 +122,7 @@ var findAttachmentInPost = function (host, id, attachmentUploadedAs, callback) {
  * @callback BlockFindAttachmentCallback
  * @param {?string} err - Error message string, if no error err is null
  * @param {(object|object[])} index - The index of the attachment, if no attachment was found, index is -1
- * @param {object} status - Statuscode of the findOneById result
+ * @param {object} status - Statuscode of the findOne result
  * @param {object} config - The current site config
  */
 
@@ -106,6 +132,7 @@ var findAttachmentInPost = function (host, id, attachmentUploadedAs, callback) {
 module.exports = {
   find: find,
   findAll: find, // alias
-  findOneById: findOneById,
+  findOne: findOne,
+  count: count,
   findAttachmentInPost: findAttachmentInPost,
 }

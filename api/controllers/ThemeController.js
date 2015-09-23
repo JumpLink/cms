@@ -112,6 +112,10 @@ var fallback = function (req, res, next, force, route) {
   var host = req.session.uri.host;
   var url = req.path;
 
+  if(UtilityService.isUndefined(force)) {
+    force = getForce(req);
+  }
+
   sails.log.info("[ThemeController.fallback]", host, url, force, route);
 
   var _fallback = function (req, res, next, force, route) {
@@ -195,7 +199,7 @@ var modern = function(req, res, next, force, route) {
   }
 };
 
-var getForce = function (req) {
+var getForce = function (req, cb) {
   var force = null;
   if(req.param('force')) {
     force = req.param('force');
@@ -203,6 +207,7 @@ var getForce = function (req) {
   if(req.query.force) {
     force = req.query.force;
   }
+  if(UtilityService.isFunction(cb)) return cb(null, force);
   return force;
 }
 
@@ -219,7 +224,8 @@ var force = function (req, cb) {
   var error = null;
   if(isForce) isModern = (force == 'modern' && (force != 'fallback' && force != 'legacy' && force != 'noscript'));
    sails.log.debug("[ThemeController.force] error", error, "isForce", isForce, "isModern", isModern, "force", force);
-  return cb(error, isForce, isModern, force);
+  if(UtilityService.isFunction(cb)) return cb(error, isForce, isModern, force);
+  return isForce;
 }
 
 /**
