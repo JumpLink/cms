@@ -26,7 +26,7 @@ Install the system requirements, on debian based systems this looks like
 
 For the optional requirements
 
-    sudo apt install authbind spamassassin spamc
+    sudo apt install authbind spamassassin spamc unoconv
 
 And for LibreOffice (on your server [without the gui](http://askubuntu.com/questions/519082/how-to-install-libre-office-without-gui))
 
