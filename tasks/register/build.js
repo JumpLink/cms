@@ -7,7 +7,7 @@ module.exports = function (grunt) {
 		'hub:build-dev'
 	]);
   grunt.registerTask('prod', [
-    'hub:clean',
-    'hub:build-prod'
+    // 'hub:clean',
+    // 'hub:build-prod'
   ]);
 };
