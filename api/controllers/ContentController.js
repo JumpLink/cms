@@ -16,10 +16,15 @@
  */
 
 /**
- * 
+ * Setup the contents for the current site from theme.json
+ *
+ * WARN: This function removes all existing content for site and hust add the default content from theme.json.
  */
 var setup = function(req, res) {
-  res.ok();
+  SetupService.generateContent(req.session.uri.host, function (err, contents) {
+    if(err) return res.serverError(err);
+    res.json(contents);
+  });
 };
 
 /**

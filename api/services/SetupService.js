@@ -85,14 +85,14 @@ var generateRoutes = function (host, cb) {
     if(err) return cb(err);
     async.waterfall([
       function destroyAll(callback){
-        sails.log.debug("[SetupService.generateRoutes.destroyAll] destroyAll");
+        sails.log.debug("[SetupService.generateRoutes.destroyAll]");
         Routes.destroy({site:siteConfig.name}, function (error, destroyed) {
           sails.log.debug(destroyed);
           callback(error);
         });
       },
       function getNewSetup (callback){
-        sails.log.debug("getNewSetup");
+        sails.log.debug("[SetupService.generateRoutes.getNewSetup]");
         SetupService.routes(host, function(err, routes) {
           if(err) return callback(err);
           routes = UtilityService.setPropertyForEach(routes, 'site', siteConfig.name);
@@ -100,9 +100,56 @@ var generateRoutes = function (host, cb) {
         });
       },
       function createNewSetup (newRoutes, callback){
-        sails.log.debug("[SetupService.generateRoutes.createNewSetup] createNewSetup");
+        sails.log.debug("[SetupService.generateRoutes.createNewSetup]");
         //User.create(newRoutes[0], callback);
         async.map(newRoutes, Routes.create, callback);
+      },
+    ], cb);
+  });
+};
+
+/**
+ * Get content for host setup.
+ */
+var contents = function (host, cb) {
+  getThemeSetup(host, function (err, setup) {
+    if(err) sails.log.warn(err);
+    if(UtilityService.isArray(setup.contents) && setup.contents.length > 0)
+      return cb(null, setup.contents);
+    sails.log.warn("[SetupService.contents] No Setup contents for Theme found!", setup);
+    if(UtilityService.isUndefined(sails.config.setup) || UtilityService.isUndefined(sails.config.setup.fallback) || !UtilityService.isArray(sails.config.setup.fallback.contents) || sails.config.setup.fallback.contents.length <= 0)
+      return cb(new Error("[SetupService.contents] No Setup for contents found"));
+    sails.log.warn("[SetupService.contents] Use Fallback Setup for contents");
+    return cb(null, sails.config.setup.fallback.contents);
+  });
+};
+
+/**
+ * Remove all existing content for host and insert new
+ * WARN: This function removes all existing content for site and is adding just the default admin route with the default password.
+ */
+var generateContent = function (host, cb) {
+  MultisiteService.getCurrentSiteConfig(host, function (err, siteConfig) {
+    if(err) return cb(err);
+    async.waterfall([
+      function destroyAll(callback){
+        sails.log.debug("[SetupService.generateContent.destroyAll]");
+        Content.destroy({site:siteConfig.name}, function (error, destroyed) {
+          sails.log.debug(destroyed);
+          callback(error);
+        });
+      },
+      function getNewSetup (callback){
+        sails.log.debug("[SetupService.generateContent.getNewSetup]");
+        SetupService.contents(host, function(err, content) {
+          if(err) return callback(err);
+          content = UtilityService.setPropertyForEach(content, 'site', siteConfig.name);
+          callback(null, content);
+        });
+      },
+      function createNewSetup (newContent, callback){
+        sails.log.debug("[SetupService.generateContent.createNewSetup]");
+        async.map(newContent, Content.create, callback);
       },
     ], cb);
   });
@@ -277,6 +324,8 @@ module.exports = {
   generateUsers: generateUsers,
   routes: routes,
   generateRoutes: generateRoutes,
+  contents: contents,
+  generateContent: generateContent,
   members: members,
   generateMembers: generateMembers,
   timeline: timeline,
