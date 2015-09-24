@@ -75,18 +75,20 @@ var create = function(req, res, next) {
 
     if(!req.wantsJSON) {
       if(err) {
-        if(UtilityService.isArray(err) && err[0].message) return redirect('signin');
+        if(UtilityService.isArray(err) && err[0].message) return res.redirect('signin');
         return res.serverError(err);
       }
 
-      if(req.session.lastUrl) {
-        var url = req.session.lastUrl;
-        delete req.session.lastUrl;
-        sails.log.debug("redirect to last url: ",url);
-        res.redirect(url);
-      } else {
-        res.redirect('');
-      }
+      // FIXME
+      res.redirect('');
+      // if(req.session.lastUrl) {
+      //   var url = req.session.lastUrl;
+      //   delete req.session.lastUrl;
+      //   sails.log.debug("redirect to last url: ",url);
+      //   res.redirect(url);
+      // } else {
+      //   res.redirect('');
+      // }
     } else {
       if(err) return res.serverError(err);
       res.json(session);
