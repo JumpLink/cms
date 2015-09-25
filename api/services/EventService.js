@@ -25,6 +25,7 @@ var split = function(events, property) {
   var unknown = [], before = [], after = [];
   for (var i = 0; i < events.length; i++) {
     if(UtilityService.isDefined(events[i][property])) {
+      sails.log.debug("[EventService.split]", property, i, events[i][property]);
       if(events[i][property].isAfter())
         after.push(events[i]);
       else
@@ -44,9 +45,12 @@ var split = function(events, property) {
 var momentise = function(events, properties) {
   if(!UtilityService.isArray(properties)) properties = ['from', 'to'];
   for (var i = 0; i < events.length; i++) {
-    for(var property in properties) {
+    for(var k in properties) {
+      var property = properties[k];
+      sails.log.debug("[EventService.momentise property", property, i);
       if (events[i].hasOwnProperty(property)) {
         events[i][property] = moment(events[i][property]);
+        sails.log.debug("[EventService.momentise hasOwnProperty", property, i, events[i]);
       }
     }
   }
