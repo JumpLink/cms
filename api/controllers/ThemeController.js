@@ -108,31 +108,42 @@ var updateOrCreateEachByHost = function (req, res, next) {
 /**
  * 
  */
-var fallback = function (req, res, next, force, route) {
+var fallback = function (req, res, next, forceParam, route) {
   var host = req.session.uri.host;
   var url = req.path;
 
-  if(UtilityService.isUndefined(force)) {
-    force = getForce(req);
+  if(UtilityService.isUndefined(forceParam)) {
+    forceParam = getForce(req);
   }
 
-  sails.log.info("[ThemeController.fallback]", host, url, force, route);
+  sails.log.info("[ThemeController.fallback]", host, url, forceParam, route);
 
-  var _fallback = function (req, res, next, force, route) {
-    ThemeService.getController(req.session.uri.host, 'FallbackController', function (err, FallbackController) {
+  var routing = function (req, res, next, forceParam, route) {
+    var url = req.path;
+    var page = null;
+    ThemeService.getFallbackRoutes(req.session.uri.host, function (err, routeOptions) {
       if(err) return res.serverError(err);
-      else return FallbackController.fallback(req, res, next, force, route);
+      if(UtilityService.isDefined(route) && UtilityService.isDefined(route.state) && UtilityService.isDefined(route.state.name)) page = route.state.name;
+      if(UtilityService.isDefined(route) && UtilityService.isDefined(route.url) && route.url.length > 0) url = route.url;
+      // if(UtilityService.isDefined(route) && UtilityService.isDefined(route.fallback) && UtilityService.isDefined(route.fallback.url) && route.fallback.url.length > 0) url = route.fallback.url;
+      if(UtilityService.isFunction(routeOptions[route.objectName])) {
+        sails.log.debug("[ThemeController.fallback.routing]", route.objectName, url, page, "forceParam", forceParam);
+        return routeOptions[route.objectName](req, res, next, forceParam, showLegacyToast = true, page, route);
+      }
+      sails.log.error("[ThemeController.fallback.routing] Error: RouteOption '"+route.objectName+"'is not set in Theme!", route.objectName, url, page, "forceParam", forceParam);
+      return next();
     });
   }
 
   if(UtilityService.isUndefined(route)) {
     sails.log.warn("[ThemeController.fallback] route is not defined!")
     return RoutesService.findOneByUrl(host, url, function(err, isModern, route) {
+      if(err) return res.serverError(err);
       sails.log.warn("[ThemeController.fallback]", "url", url, "host", host, "route:", route);
-      return _fallback(req, res, next, force, route);
+      return routing(req, res, next, forceParam, route);
     });
   } else {
-    return _fallback(req, res, next, force, route);
+    return routing(req, res, next, forceParam, route);
   }
 
 }
@@ -140,22 +151,22 @@ var fallback = function (req, res, next, force, route) {
 /**
  * 
  */
-var signin = function (req, res, next, force) {
-  ThemeService.getController(req.session.uri.host, 'FallbackController', function (err, FallbackController) {
-    if(err) return res.serverError(err);
-    else return FallbackController.signin(req, res, next, force);
-  });
-}
+// var signin = function (req, res, next, force) {
+//   ThemeService.getController(req.session.uri.host, 'FallbackController', function (err, FallbackController) {
+//     if(err) return res.serverError(err);
+//     else return FallbackController.signin(req, res, next, force);
+//   });
+// }
 
 /**
  * 
  */
-var updateBrowser = function (req, res, next, force) {
-  ThemeService.getController(req.session.uri.host, 'FallbackController', function (err, FallbackController) {
-    if(err) return res.serverError(err);
-    else return FallbackController.updateBrowser(req, res, next, force);
-  });
-}
+// var updateBrowser = function (req, res, next, force) {
+//   ThemeService.getController(req.session.uri.host, 'FallbackController', function (err, FallbackController) {
+//     if(err) return res.serverError(err);
+//     else return FallbackController.updateBrowser(req, res, next, force);
+//   });
+// }
 
 /**
  * 
@@ -380,25 +391,25 @@ var dynamicRoute = function(req, res, next) {
  * Public functions of ThemeController
  */
 module.exports = {
-  available: available
-  , infos: infos
-  , find: find
-  , findByHost: findByHost
-  , updateOrCreate: updateOrCreate
-  , updateOrCreateByHost: updateOrCreateByHost
-  , updateOrCreateEach: updateOrCreateEach
-  , updateOrCreateEachByHost: updateOrCreateEachByHost
-  , fallback: fallback
-  , signin: signin
-  , updateBrowser: updateBrowser
-  , modern: modern
-  , view: view
-  , assets: assets
-  , likeAssets: likeAssets
-  , favicon: favicon
-  , sitemap: sitemap
-  , force: force
-  , dynamicForced: dynamicForced
-  , dynamicSupported: dynamicSupported
-  , dynamicRoute: dynamicRoute
+  available: available,
+  infos: infos,
+  find: find,
+  findByHost: findByHost,
+  updateOrCreate: updateOrCreate,
+  updateOrCreateByHost: updateOrCreateByHost,
+  updateOrCreateEach: updateOrCreateEach,
+  updateOrCreateEachByHost: updateOrCreateEachByHost,
+  fallback: fallback,
+  // signin: signin,
+  // updateBrowser: updateBrowser,
+  modern: modern,
+  view: view,
+  assets: assets,
+  likeAssets: likeAssets,
+  favicon: favicon,
+  sitemap: sitemap,
+  force: force,
+  dynamicForced: dynamicForced,
+  dynamicSupported: dynamicSupported,
+  dynamicRoute: dynamicRoute,
 };

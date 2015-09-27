@@ -33,7 +33,7 @@ module.exports.routes = {
 
   '/singedin': 'ThemeController.modern',
 
-  '/signin': 'ThemeController.signin',
+  // '/signin': 'ThemeController.signin',
 
   '/views/*': 'ThemeController.view',
 

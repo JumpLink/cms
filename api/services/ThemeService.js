@@ -313,7 +313,7 @@ var getThemeForFile = function (host, filepath, cb) {
     if(!found) {
       var error = "[ThemeService.getThemeForFile] File not found in any theme";
       // sails.log.error(error, '.');
-      return cb(error, null);
+      return cb(error+" "+filepath, null);
     }
   })
 }
@@ -462,6 +462,16 @@ var getApiModule = function (host, filepath, callback) {
 }
 
 /**
+ * Load fallbackroutes routes from theme with the highest priority,
+ * if routes not found try next theme.
+ */
+var getFallbackRoutes = function (host, callback) {
+  if(typeof(host) !== "string") return cb(new Error("[ThemeService.getFallbackRoutes] Host must be a string!"));
+  var filepath = "config/fallback/routes.js";
+  getApiModule(host, filepath, callback);
+}
+
+/**
  * Load controller from theme with the highest priority,
  * if controller not found try next theme.
  */
@@ -484,19 +494,20 @@ var getService = function (name, callback) {
  * 
  */
 module.exports = {
-  getAvailableThemes: getAvailableThemes
-  , getThemesSortedByPriority: getThemesSortedByPriority
-  , getThemeWithHighestPriority: getThemeWithHighestPriority
-  , getTheme: getTheme
-  , updateOrCreate: updateOrCreate
-  , updateOrCreateEach: updateOrCreateEach
-  , getThemeForFile: getThemeForFile
-  , getRootPathOfThemeDirname: getRootPathOfThemeDirname
-  , getThemeByDirname: getThemeByDirname
-  , getDirnameForAssetspath: getDirnameForAssetspath
-  , getThemeFullPathForFile: getThemeFullPathForFile
-  , getFile: getFile
-  , view: view
-  , getController: getController
-  , getService: getService
+  getAvailableThemes: getAvailableThemes,
+  getThemesSortedByPriority: getThemesSortedByPriority,
+  getThemeWithHighestPriority: getThemeWithHighestPriority,
+  getTheme: getTheme,
+  updateOrCreate: updateOrCreate,
+  updateOrCreateEach: updateOrCreateEach,
+  getThemeForFile: getThemeForFile,
+  getRootPathOfThemeDirname: getRootPathOfThemeDirname,
+  getThemeByDirname: getThemeByDirname,
+  getDirnameForAssetspath: getDirnameForAssetspath,
+  getThemeFullPathForFile: getThemeFullPathForFile,
+  getFile: getFile,
+  view: view,
+  getFallbackRoutes: getFallbackRoutes,
+  getController: getController,
+  getService: getService,
 };
