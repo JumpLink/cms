@@ -30,7 +30,7 @@ var beforeUpdateCreate = function(values, next) {
   if(typeof(values.role) === "undefined") {
     next();
   } else {
-    if(values.role != 'blogger' && values.role != 'siteadmin' && values.role != 'superadmin' && value.role != 'employee') {
+    if(values.role != 'blogger' && values.role != 'siteadmin' && values.role != 'superadmin' && values.role != 'employee') {
       next(new Error("[models/User.js] User must have one of the following roles: 'blogger, 'siteadmin', 'superadmin', 'employee' but is "+values.role));
     }
   }
