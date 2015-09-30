@@ -45,7 +45,7 @@ module.exports.policies = {
 
   BlogController: {
     'setup': 'developerOrBetter',
-    'create': true,
+    'create': 'bloggerOrBetter',
     'update': 'bloggerOrBetter',
     'upload': 'bloggerOrBetter',
     'find': true,
