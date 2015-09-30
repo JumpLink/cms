@@ -31,15 +31,14 @@ module.exports.routes = {
 
   '/': 'ThemeController.dynamicSupported',
 
-  '/singedin': 'ThemeController.modern',
+  '/modern': 'ThemeController.modern',
 
   // '/signin': 'ThemeController.signin',
 
   '/views/*': 'ThemeController.view',
-
   '/fallback/*': 'ThemeController.fallback',
-  
   '/assets/*': 'ThemeController.assets',
+
   '/favicon.ico': 'ThemeController.favicon',
   '/sitemap.xml': 'ThemeController.sitemap',
   '/browserconfig.xml': 'ThemeController.favicon',

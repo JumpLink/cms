@@ -61,20 +61,23 @@ var update = function (req, res, next) {
  * @param {function} next
  */
 var upload = function (req, res, next) {
-  // sails.log.debug("[GalleryController.upload]");
+  sails.log.debug("[GalleryController.upload]");
   async.waterfall([
     function (callback) {
       FileService.upload(req, sails.config.paths.gallery, callback);
     },
-    function (uploadResult, callback){
+    function (uploadResult, callback) {
+      sails.log.debug("[GalleryController.upload] uploadResult", uploadResult);
       GalleryService.find({where: {site: uploadResult.site}}, function (err, currentImages) {
         callback(err, uploadResult, currentImages);
       });
     },
     function (uploadResult, currentImages, callback){
+      sails.log.debug("[GalleryController.upload] currentImages", currentImages);
       GalleryService.setPositions(uploadResult.site, uploadResult.files, currentImages, callback);
     },
     function (newImages, callback){
+      sails.log.debug("[GalleryController.upload] newImages", newImages);
       Gallery.create(newImages, callback);
     },
     function (newImages, callback){
@@ -82,6 +85,7 @@ var upload = function (req, res, next) {
     }
   ], function (err, newImages) {
     if(err) return res.serverError(err);
+    sails.log.debug("[GalleryController.upload] result", newImages);
     res.json({
       message: newImages.length + ' file(s) uploaded successfully!',
       files:newImages

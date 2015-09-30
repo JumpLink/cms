@@ -102,7 +102,7 @@ module.exports.policies = {
     'setup': 'developerOrBetter',
     'find': true,
     'findOne': true,
-    'upload': ['authenticated', 'siteadminOrBetter']
+    'upload': 'siteadminOrBetter'
   },
 
   LocaleController: {
@@ -124,9 +124,9 @@ module.exports.policies = {
   },
 
   MultisiteController: {
-    'find': ['authenticated', 'superadmin'],
-    'findNames': ['authenticated', 'superadmin'],
-    'findHosts': ['authenticated', 'superadmin'],
+    'find': 'superadmin',
+    'findNames': 'superadmin',
+    'findHosts': 'superadmin',
   },
 
   NavigationController: {
@@ -136,22 +136,30 @@ module.exports.policies = {
 
   RoutesController: {
     'setup': 'developerOrBetter',
-    'update': ['authenticated', 'siteadminOrBetter'],
-    'destroy': ['authenticated', 'siteadminOrBetter'],
-    'create': ['authenticated', 'siteadminOrBetter'],
-    'updateOrCreate': ['authenticated', 'siteadminOrBetter'],
-    'updateOrCreateByHost': ['authenticated', 'superadmin'],
-    'updateOrCreateEach': ['authenticated', 'siteadminOrBetter'],
-    'updateOrCreateEachByHost': ['authenticated', 'superadmin'],
+    'update': 'siteadminOrBetter',
+    'destroy': 'siteadminOrBetter',
+    'create': 'siteadminOrBetter',
+    'updateOrCreate': 'siteadminOrBetter',
+    'updateOrCreateByHost': 'superadmin',
+    'updateOrCreateEach': 'siteadminOrBetter',
+    'updateOrCreateEachByHost': 'superadmin',
     'find': true,
-    'findByHost': ['authenticated', 'superadmin'],
+    'findByHost': 'superadmin',
   },
 
   SessionController: {
     'setup': 'developerOrBetter',
     'create': true,
     'subscribe': true,
-    'authenticated': true
+    'authenticated': true,
+    'bloggerOrBetter': true,
+    'developerOrBetter': true,
+    'siteadminOrBetter': true,
+    'superadmin': true,
+    'employee': true,
+    'employeeOrBetter': true,
+    'getAllPolicies': true,
+    'getUser': true
   },
 
   SetupController: {
@@ -167,12 +175,12 @@ module.exports.policies = {
     'modern': true,
     'fallback': true,
     'view': true,
-    'find': ['authenticated', 'siteadminOrBetter'],
-    'findByHost': ['authenticated', 'superadmin'],
-    'updateOrCreate': ['authenticated', 'siteadminOrBetter'],
-    'updateOrCreateByHost': ['authenticated', 'superadmin'],
-    'updateOrCreateEach': ['authenticated', 'siteadminOrBetter'],
-    'updateOrCreateEachByHost': ['authenticated', 'siteadminOrBetter'],
+    'find': 'siteadminOrBetter',
+    'findByHost': 'superadmin',
+    'updateOrCreate': 'siteadminOrBetter',
+    'updateOrCreateByHost': 'superadmin',
+    'updateOrCreateEach': 'siteadminOrBetter',
+    'updateOrCreateEachByHost': 'siteadminOrBetter',
     'dynamicForced': true,
     'dynamicSupported': true,
     'dynamicRoute': true,

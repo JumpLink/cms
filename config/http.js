@@ -116,7 +116,7 @@ var useragent = useragent.express();
  * 
  */
 var uri = function (req, res, next) {
-  // sails.log.debug(req.protocol + '://' + req.get('host') + req.originalUrl);
+  sails.log.debug(req.protocol + '://' + req.get('host') + req.originalUrl);
   // sails.log.info(parseUri(req.protocol + '://' + req.get('host') + req.originalUrl));
   req.session.uri = parseUri(req.protocol + '://' + req.get('host') + req.originalUrl);
   req.session.uri.protocol = req.protocol;

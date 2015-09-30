@@ -255,7 +255,7 @@ var view = function(req, res, next) {
     options.theme = req.param('theme');
   if(req.param('site'))
     options.site = req.param('site');
-  // sails.log.debug("[ThemeController.view]", req.session.uri.host, filepath, locals, options);
+  sails.log.debug("[ThemeController.view]", req.session.uri.host, filepath, locals, options);
   return ThemeService.view(req.session.uri.host, filepath, res, locals, options);
 };
 

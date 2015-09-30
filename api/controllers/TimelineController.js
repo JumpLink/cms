@@ -48,10 +48,15 @@ var update = function (req, res, next) {
 };
 
 /**
- * 
+ * Upload a file for a event in timeline
+ *
+ * @param {!object} req - Request
+ * @param {!object} res - responses
+ * @param {function} next
  */
 var upload = function (req, res) {
-  FileService.upload(req, sails.config.paths.timeline, null, function (err, result) {
+  FileService.upload(req, sails.config.paths.timeline, function (err, result) {
+    sails.log.debug("[TimelineController.upload] finish", err, result);
     if(err) return res.serverError(err);
     else res.json(result);
   });

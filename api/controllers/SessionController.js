@@ -2,10 +2,8 @@
  * SessionController
  * Server-side logic for managing sessions.
  * @see http://links.sailsjs.org/docs/controllers
- * @see https://github.com/shaneGirish/bcrypt-nodejs
  * @see https://www.npmjs.com/package/sails-generate-auth
  */
-var bcrypt = require('bcrypt-nodejs');
 
 /**
  * 
@@ -142,8 +140,65 @@ var destroy = function(req, res, next) {
   });
 };
 
+var bloggerOrBetter = function (req, res, next) {
+  SessionService.bloggerOrBetter(req.session.uri.host, req.session, function (err, auth) {
+    if(err) { return res.serverError(err); }
+    return res.json(auth);
+  });
+};
+
+var developerOrBetter = function (req, res, next) {
+  SessionService.developerOrBetter(req.session.uri.host, req.session, function (err, auth) {
+    if(err) { return res.serverError(err); }
+    return res.json(auth);
+  });
+};
+
+var siteadminOrBetter = function (req, res, next) {
+  SessionService.siteadminOrBetter(req.session.uri.host, req.session, function (err, auth) {
+    if(err) { return res.serverError(err); }
+    return res.json(auth);
+  });
+};
+
+var superadmin = function (req, res, next) {
+  SessionService.superadmin(req.session.uri.host, req.session, function (err, auth) {
+    if(err) { return res.serverError(err); }
+    sails.log.debug("[SessionController.superadmin]", auth);
+    return res.json(auth);
+  });
+};
+
+var employee = function (req, res, next) {
+  SessionService.employee(req.session.uri.host, req.session, function (err, auth) {
+    if(err) { return res.serverError(err); }
+    return res.json(auth);
+  });
+};
+
+var employeeOrBetter = function (req, res, next) {
+  SessionService.employeeOrBetter(req.session.uri.host, req.session, function (err, auth) {
+    if(err) { return res.serverError(err); }
+    return res.json(auth);
+  });
+};
+
+var getAllPolicies = function (req, res, next) {
+  SessionService.getAllPolicies(req.session.uri.host, req.session, function (err, result) {
+    if(err) { return res.serverError(err); }
+    return res.json(result);
+  });
+};
+
+var getUser = function (req, res, next) {
+  SessionService.getUser(req.session.uri.host, req.session, function (err, result) {
+    if(err) { return res.serverError(err); }
+    return res.json(result);
+  });
+}
+
 /**
- * 
+ * Public API Functions
  */
 module.exports = {
   setup:setup,
@@ -151,6 +206,14 @@ module.exports = {
   subscribe:subscribe,
   create:create,
   authenticated:authenticated,
-  destroy:destroy
+  destroy:destroy,
+  bloggerOrBetter: bloggerOrBetter,
+  developerOrBetter: developerOrBetter,
+  siteadminOrBetter: siteadminOrBetter,
+  superadmin: superadmin,
+  employee: employee,
+  employeeOrBetter: employeeOrBetter,
+  getAllPolicies: getAllPolicies,
+  getUser: getUser,
 };
 

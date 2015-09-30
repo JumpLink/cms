@@ -6,16 +6,15 @@
  * @see http://sailsjs.org/#!documentation/policies
  */
 var bloggerOrBetter = function(req, res, next) {
-
-  // User is allowed, proceed to the next policy,
-  // or if this is the last policy, the controller  
-  if (req.session.user.role === 'blogger' || req.session.user.role === 'siteadmin' || req.session.user.role === 'superadmin') {
+  SessionService.bloggerOrBetter(req.session.uri.host, req.session, function (err, isBloggerOrBetter) {
+    if(err) return res.serverError(err);
+    // User is not allowed
+    // (default res.forbidden() behavior can be overridden in `config/403.js)
+    if(!isBloggerOrBetter) {
+      return res.forbidden("You need to be a blogger or better to do that");
+    }
     return next();
-  }
-
-  // User is not allowed
-  // (default res.forbidden() behavior can be overridden in `config/403.js)
-  return res.forbidden();
+  });
 };
 
 /**

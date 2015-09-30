@@ -89,18 +89,208 @@ var create = function(host, email, password, session, callback) {
 /**
  * 
  */
-var authenticated = function(host, session, cb) {
-  MultisiteService.getCurrentSiteConfig(host, function (err, conf) {
-    if(err) { return cb(err); }
-    return cb(null, session.authenticated === true && session.site === conf.name);
-  });
-  
+var isAuthenticated = function(conf, session, callback) {
+  var isAuthenticated = session.authenticated === true && session.site === conf.name;
+  if(UtilityService.isFunction(callback)) {
+    return callback(null, isAuthenticated);
+  }
+  return isAuthenticated;
 };
+
+/**
+ * 
+ */
+var authenticated = function(host, session, callback) {
+  MultisiteService.getCurrentSiteConfig(host, function (err, conf) {
+    if(err) {
+      return callback(err);
+    }
+    sails.log.debug("[SessionService.authenticated]", "session", session);
+    return callback(null, isAuthenticated(conf, session));
+  });
+};
+
+/**
+ * 
+ */
+var isBloggerOrBetter = function (conf, session, callback) {
+  var isBloggerOrBetter = isAuthenticated(conf, session) && (session.user.role === 'blogger' || session.user.role === 'siteadmin' || session.user.role === 'superadmin');
+  if(UtilityService.isFunction(callback)) {
+    return callback(null, isBloggerOrBetter);
+  }
+  return isBloggerOrBetter;
+}
+
+/**
+ * 
+ */
+var bloggerOrBetter = function (host, session, callback) {
+  MultisiteService.getCurrentSiteConfig(host, function (err, conf) {
+    if(err) {
+      return callback(err);
+    }
+    return callback(null, isBloggerOrBetter(conf, session));
+  });
+}
+
+/**
+ * 
+ */
+var isDeveloperOrBetter = function (conf, session, callback) {
+  var isDeveloperOrBetter = isAuthenticated(conf, session) && (session.user.role === 'development' || session.user.role === 'superadmin');
+  if(UtilityService.isFunction(callback)) {
+    return callback(null, isDeveloperOrBetter);
+  }
+  return isDeveloperOrBetter;
+}
+
+/**
+ * 
+ */
+var developerOrBetter = function (host, session, callback) {
+  MultisiteService.getCurrentSiteConfig(host, function (err, conf) {
+    if(err) {
+      return callback(err);
+    }
+    return callback(null, isDeveloperOrBetter(conf, session));
+  });
+}
+
+/**
+ * 
+ */
+var isSiteadminOrBetter = function (conf, session, callback) {
+  var isSiteadminOrBetter = isAuthenticated(conf, session) && (session.user.role === 'siteadmin' || session.user.role === 'superadmin');
+  if(UtilityService.isFunction(callback)) {
+    return callback(null, isSiteadminOrBetter);
+  }
+  return isSiteadminOrBetter;
+}
+
+/**
+ * 
+ */
+var siteadminOrBetter = function (host, session, callback) {
+  MultisiteService.getCurrentSiteConfig(host, function (err, conf) {
+    if(err) {
+      return callback(err);
+    }
+    return callback(null, isSiteadminOrBetter(conf, session));
+  });
+}
+
+/**
+ * 
+ */
+var isSuperadmin = function (conf, session, callback) {
+  var isSuperadmin = isAuthenticated(conf, session) && session.user.role === 'superadmin';
+  if(UtilityService.isFunction(callback)) {
+    return callback(null, isSuperadmin);
+  }
+  return isSuperadmin;
+}
+
+/**
+ * 
+ */
+var superadmin = function (host, session, callback) {
+  MultisiteService.getCurrentSiteConfig(host, function (err, conf) {
+    if(err) {
+      return callback(err);
+    }
+    return callback(null, isSuperadmin(conf, session));
+  });
+}
+
+/**
+ * 
+ */
+var isEmployee = function (conf, session, callback) {
+  var isEmployee = isAuthenticated(conf, session) && session.user.role === 'employee';
+  if(UtilityService.isFunction(callback)) {
+    return callback(null, isEmployee);
+  }
+  return isEmployee;
+}
+
+/**
+ * 
+ */
+var employee = function (host, session, callback) {
+  MultisiteService.getCurrentSiteConfig(host, function (err, conf) {
+    if(err) {
+      return callback(err);
+    }
+    return callback(null, isEmployee(conf, session));
+  });
+}
+
+/**
+ * 
+ */
+var isEmployeeOrBetter = function (conf, session, callback) {
+  var isEmployeeOrBetter = isAuthenticated(conf, session) && (session.user.role === 'employee' || session.user.role === 'blogger' || session.user.role === 'siteadmin' || session.user.role === 'superadmin');
+  if(UtilityService.isFunction(callback)) {
+    return callback(null, isEmployeeOrBetter);
+  }
+  return isEmployeeOrBetter;
+}
+
+/**
+ * 
+ */
+var employeeOrBetter = function (host, session, callback) {
+  MultisiteService.getCurrentSiteConfig(host, function (err, conf) {
+    if(err) {
+      return callback(err);
+    }
+    return callback(null, isEmployeeOrBetter(conf, session));
+  });
+}
+
+var getAllPolicies = function (host, session, callback) {
+  var results = {};
+  MultisiteService.getCurrentSiteConfig(host, function (err, conf) {
+    if(err) {
+      return callback(err);
+    }
+    results.authenticated = isAuthenticated(conf, session);
+    results.bloggerOrBetter = isBloggerOrBetter(conf, session);
+    results.developerOrBetter = isDeveloperOrBetter(conf, session);
+    results.siteadminOrBetter = isSiteadminOrBetter(conf, session);
+    results.superadmin = isSuperadmin(conf, session);
+    results.employee = isEmployee(conf, session);
+    results.employeeOrBetter = isEmployeeOrBetter(conf, session);
+    return callback(null, results);
+  });
+};
+
+var getUser = function (host, session, callback) {
+  var results = {};
+  MultisiteService.getCurrentSiteConfig(host, function (err, conf) {
+    if(err) {
+      return callback(err);
+    }
+    if(session.site !== conf.name) {
+      return callback("session is not the session for the current site.");
+    }
+    return callback(null, session.user);
+  });
+};
+
 
 /**
  * The following functions are public.
  */
 module.exports = {
   create:create,
-  authenticated: authenticated
+  authenticated: authenticated,
+  bloggerOrBetter: bloggerOrBetter,
+  developerOrBetter: developerOrBetter,
+  siteadminOrBetter: siteadminOrBetter,
+  superadmin: superadmin,
+  employee: employee,
+  employeeOrBetter: employeeOrBetter,
+  getAllPolicies: getAllPolicies,
+  getUser: getUser
 };

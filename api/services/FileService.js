@@ -440,6 +440,7 @@ var generateThumbnail = function (site, file, options, relativePathInSiteFolder,
   if(options === null || UtilityService.isUndefined(options) || UtilityService.isUndefined(options.thumbnail)) return callback();
   var srcFilename = file.hasPreview ? getPreviewName(file) : file.uploadedAs;
   file.thumbName = getConvertedName(options.thumbnail.prefix, file.uploadedAs, ".png");
+  sails.log.debug("[FileService.generateThumbnail] SITES_FOLDER", SITES_FOLDER, "site", site, "options.path", options.path, "srcFilename", srcFilename);
   options.thumbnail.src = path.join(SITES_FOLDER, site, options.path, srcFilename);
   options.thumbnail.dst = path.join(SITES_FOLDER, site, options.thumbnail.path, file.thumbName);
   // sails.log.debug("[FileService.generateThumbnail] options.thumbnail", JSON.stringify(options.thumbnail, null, 2));

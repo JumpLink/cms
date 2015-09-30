@@ -8,15 +8,16 @@
  *
  */
 var developerOrBetter = function(req, res, next) {
-
-  // Allways allowed on development-mode
-  if (sails.config.environment === 'development' || req.session.user.role === 'superadmin') {
+  SessionService.developerOrBetter(req.session.uri.host, req.session, function (err, isDeveloperOrBetter) {
+    if(err) return res.serverError(err);
+    // User is not allowed
+    // (default res.forbidden() behavior can be overridden in `config/403.js)
+    if(!isDeveloperOrBetter) return res.forbidden();
+    if(!isDeveloperOrBetter) {
+      return res.forbidden("You must be in developermode or a user with more credentials to do that");
+    }
     return next();
-  }
-
-  // Not allowed
-  // (default res.forbidden() behavior can be overridden in `config/403.js)
-  return res.forbidden();
+  });
 };
 
 /**

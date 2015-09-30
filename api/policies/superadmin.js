@@ -6,16 +6,15 @@
  * @see http://sailsjs.org/#!documentation/policies
  */
 var superadmin = function(req, res, next) {
-
-  // User is allowed, proceed to the next policy,
-  // or if this is the last policy, the controller  
-  if (req.session.user.role === 'superadmin') {
+  SessionService.superadmin(req.session.uri.host, req.session, function (err, isSuperadmin) {
+    if(err) return res.serverError(err);
+    // User is not allowed
+    // (default res.forbidden() behavior can be overridden in `config/403.js)
+    if(!isSuperadmin) {
+      return res.forbidden("You need to be a superadmin to do that");
+    }
     return next();
-  }
-
-  // User is not allowed
-  // (default res.forbidden() behavior can be overridden in `config/403.js)
-  return res.forbidden();
+  });  
 };
 
 /**

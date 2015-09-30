@@ -1,4 +1,6 @@
 {
 	"You are not permitted to perform this action.": "You are not permitted to perform this action.",
-	"No record found with the specified `id`.": "No record found with the specified `id`."
+	"No record found with the specified `id`.": "No record found with the specified `id`.",
+	"You need to be authenticated to do that": "You need to be authenticated to do that",
+	"You need to be a superadmin to do that": "You need to be a superadmin to do that"
 }

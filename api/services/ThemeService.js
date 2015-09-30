@@ -388,6 +388,7 @@ var getFile = function (host, filepath, options, cb) {
     "[ThemeService.getFile] Not found!",
     "[ThemeService.getFile] Host must be a string!"
   ];
+  sails.log.debug("[ThemeService.getFile]");
 
   if(typeof(host) !== "string") return cb(new Error(errors[1]));
 
@@ -441,7 +442,7 @@ var view = function (host, filepath, res, locals, options) {
   getFile(host, filepath, options, function (err, fullpath) {
     if(err) { sails.log.error(err); return res.serverError(err); }
     // fullpath = path.join('../', fullpath); // WORKAROUND root of view for themes
-    // sails.log.debug("fullpath", fullpath);
+    sails.log.debug("[ThemeService.view] fullpath", fullpath);
     return res.view(fullpath, locals);
   });
 }
