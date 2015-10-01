@@ -193,7 +193,10 @@ module.exports.policies = {
   
   UserController: {
     'setup': 'developerOrBetter',
-    'find': true,
+    'update': 'siteadminOrBetter', // TODO the user self
+    'destroy': 'siteadminOrBetter',
+    'create': 'siteadminOrBetter',
+    'find': 'siteadminOrBetter', // TODO the user self or everyone?
   },
 
   VWHeritageController: {

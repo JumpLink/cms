@@ -146,13 +146,18 @@ var destroy = function(req, res, next) {
         callback(err, config);
       });
     },
-    function (config, file, callback) {
-      Gallery.destroy({id:id, site:config.name}, callback);
+  ], function (err, config) {
+    if(err) {
+      sails.log.error(err);
     }
-  ], function (err, destroyed) {
-    if(err) return res.serverError(err);
-    Gallery.publishDestroy(id);
-    res.ok();
+    // delete file from db even on an error
+    Gallery.destroy({id:id, site:config.name}, function (err, result) {
+      if(err) {
+        return res.serverError(err);
+      }
+      Gallery.publishDestroy(id);
+      res.ok();
+    });
   });
 };
 
