@@ -107,6 +107,41 @@ var replace = function (req, res, next) {
 };
 
 /**
+ * Usually used for pages with fixed content blocks (get one content block by name).
+ */
+var find = function (req, res) {
+  var query;
+  MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, conf) {
+    if(err) { return res.serverError(err); }
+    query = {
+      where: {
+        name: req.param('name'),
+        page: req.param('page'),
+        site: conf.name
+      }
+    };
+
+    if(req.param('type')) {
+      query.where.type = req.param('type');
+    }
+
+    // sails.log.debug("query", query)
+    Content.findOne(query).exec(function found (err, content) {
+      if (err) return res.serverError(err);
+      if (content instanceof Array) content = content[0];
+
+      // not found
+      if (UtilityService.isUndefined(content) || UtilityService.isUndefined(content.id) || content.id === null) {
+        res.notFound(query.where);
+      } else {
+        // sails.log.debug("found", found);
+        res.json(content);
+      }
+    });
+  });
+};
+
+/**
  * Usually used for pages where you can add and remove new content blocks (get sll content blocks by page).
  */
 var findAll = function (req, res) {
@@ -150,41 +185,6 @@ var findAllWithImage = function (req, res) {
     ContentService.resolveAllWithImage(page, site, type, function (err, data) {
       if(err) { return res.serverError(err); }
       res.json({contents:data.contents, images:data.images});
-    });
-  });
-};
-
-/**
- * Usually used for pages with fixed content blocks (get one content block by name).
- */
-var find = function (req, res) {
-  var query;
-  MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, conf) {
-    if(err) { return res.serverError(err); }
-    query = {
-      where: {
-        name: req.param('name'),
-        page: req.param('page'),
-        site: conf.name
-      }
-    };
-
-    if(req.param('type')) {
-      query.where.type = req.param('type');
-    }
-
-    // sails.log.debug("query", query)
-    Content.findOne(query).exec(function found (err, content) {
-      if (err) return res.serverError(err);
-      if (content instanceof Array) content = content[0];
-
-      // not found
-      if (UtilityService.isUndefined(content) || UtilityService.isUndefined(content.id) || content.id === null) {
-        res.notFound(query.where);
-      } else {
-        // sails.log.debug("found", found);
-        res.json(content);
-      }
     });
   });
 };

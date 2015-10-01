@@ -64,9 +64,13 @@ module.exports.policies = {
 
   ContentController: {
     'setup': 'developerOrBetter',
+    'replaceAll': 'siteadminOrBetter',
+    'replace': 'siteadminOrBetter',
     'find': true,
     'findAll': true,
-    'findAllWithImage': true
+    'findAllWithImage': true,
+    'destroy': 'siteadminOrBetter',
+    'exporting': 'siteadminOrBetter',
   },
 
   DocsController: {
