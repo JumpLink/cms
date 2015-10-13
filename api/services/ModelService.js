@@ -8,7 +8,7 @@ var extend = require('node.extend');
  * 
  */
 var updateOrCreate = function (modelName, data, query, callback, extendFound) {
-  // sails.log.debug("updateOrCreate", modelName, data);
+  sails.log.debug("[ModelService.updateOrCreate]", modelName, data);
   // sails.log.debug("global[modelName]", global[modelName]);
 
   if (typeof query == 'undefined') {

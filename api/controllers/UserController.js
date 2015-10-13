@@ -109,6 +109,37 @@ var find = function (req, res) {
 };
 
 /**
+ * find themes for any passed host from database and isert priority from database (or from local.json if no priority is set).
+ * Only for superadmins!
+ */
+var findByHost = function (req, res, next) {
+  var host = req.param('host');
+  // sails.log.debug("[ThemeController.findByHost]", host);
+  UserService.find(host, {}, function found(err, found) {
+    if (err) return res.serverError(err);
+    res.json(found);
+  });
+}
+
+/**
+ * Update or create route (eg. position) for any passed host.
+ * Only for superadmins!
+ *
+ * @param req.param.host Host to save route for
+ */
+var updateOrCreateByHost = function (req, res, next) {
+  var data = req.params.all();
+  var host = data.host;
+  delete data.host;
+  sails.log.debug("[UserController.updateOrCreateByHost]", host, data);
+  UserService.updateOrCreate(host, data.user, function (err, result) {
+    if(err) return res.serverError(err);
+    sails.log.debug("[UserController.updateOrCreateByHost]", "result", result);
+    return res.json(result);
+  });
+}
+
+/**
  * 
  */
 module.exports = {
@@ -116,5 +147,7 @@ module.exports = {
   update:update,
   destroy:destroy,
   create:create,
-  find:find
+  find:find,
+  findByHost:findByHost,
+  updateOrCreateByHost: updateOrCreateByHost
 };
