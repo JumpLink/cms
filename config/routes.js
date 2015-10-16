@@ -33,10 +33,14 @@ module.exports.routes = {
 
   '/modern': 'ThemeController.modern',
 
+  // '/fallback': 'ThemeController.redirectFallbackUrl',
+  // '/fallback/*': 'ThemeController.redirectallbackUrl',
+  '/fallback': 'ThemeController.fallback',
+  '/fallback/*': 'ThemeController.fallback',
+
   // '/signin': 'ThemeController.signin',
 
   '/views/*': 'ThemeController.view',
-  '/fallback/*': 'ThemeController.fallback',
   '/assets/*': 'ThemeController.assets',
 
   '/favicon.ico': 'ThemeController.favicon',

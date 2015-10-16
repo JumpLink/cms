@@ -106,20 +106,39 @@ var updateOrCreateEachByHost = function (req, res, next) {
 }
 
 /**
- * 
+ * Used when browser and url is deteted for fallback mode.
+ * If the route is found in database, the theme with the highest priority is used to show the fallback theme layout file.
  */
-var fallback = function (req, res, next, forceParam, route) {
+var fallback = function (req, res, next, forceParam, route, forceFromUrl) {
   var host = req.session.uri.host;
   var url = req.path;
 
-  if(UtilityService.isUndefined(forceParam)) {
-    forceParam = getForce(req);
+  /**
+   * If forceFromUrl is undefined, set it!
+   */
+  if(UtilityService.isUndefined(forceFromUrl)) {
+    forceFromUrl = isForceByUrl(req);
+    forceParam = 'fallback'
   }
 
-  sails.log.info("[ThemeController.fallback]", host, url, forceParam, route);
+  /**
+   * If site is forced from url and not from param, reset the url stringth have not fallback in string.
+   */
+  if(forceFromUrl) {
+    url = resetFallbackUrl(req);
+  }
+  
+  /**
+   * If forceParam is undefined, set it!
+   */
+  if(UtilityService.isUndefined(forceParam)) {
+    forceParam = getForceFromParam(req);
+  }
+
+  sails.log.info("[ThemeController.fallback]", host, url, forceParam, route, forceFromUrl);
 
   var routing = function (req, res, next, forceParam, route) {
-    var url = req.path;
+    // var url = req.path;
     var page = null;
     ThemeService.getFallbackRoutes(req.session.uri.host, function (err, routeOptions) {
       if(err) return res.serverError(err);
@@ -135,6 +154,9 @@ var fallback = function (req, res, next, forceParam, route) {
     });
   }
 
+  /**
+   * If route is undefined, find and set it!
+   */
   if(UtilityService.isUndefined(route)) {
     sails.log.warn("[ThemeController.fallback] route is not defined!")
     return RoutesService.findOneByUrl(host, url, function(err, isModern, route) {
@@ -169,7 +191,8 @@ var fallback = function (req, res, next, forceParam, route) {
 // }
 
 /**
- * 
+ * Used when browser and url is deteted as ready or forced for modern theme.
+ * If the route is find in database, the theme with the highest priority is used. to show the page
  */
 var modern = function(req, res, next, force, route) {
   var user = null;
@@ -194,12 +217,15 @@ var modern = function(req, res, next, force, route) {
         RoutesService.find(host, {}, function(err, routes) {
           // routes = JSON.stringify(routes);
           // sails.log.debug("[ThemeController.modern]", routes);
-          return ThemeService.view(host, filepath, res, {force: force, url: url, authenticated: authenticated, user: user, site: site, config: {paths: sails.config.paths, environment: sails.config.environment}, routes: routes});
+          return ThemeService.view(host, filepath, res, {force: force, url: url, authenticated: authenticated, user: user, site: site, config: {paths: sails.config.paths, environment: sails.config.environment}, routes: routes, route:route});
         });
       });
     });
   }
 
+  /**
+   * If route is undefined, find and set it!
+   */
   if(UtilityService.isUndefined(route)) {
     sails.log.warn("[ThemeController.modern] route is not defined!")
     return RoutesService.findOne(host, {url: url}, function(err, route) {
@@ -210,7 +236,42 @@ var modern = function(req, res, next, force, route) {
   }
 };
 
-var getForce = function (req, cb) {
+/**
+ * Checks if url begins with "/fallback".
+ */
+var isForceByUrl = function (req) {
+  return req.path.substring(0, 9) === "/fallback";
+}
+
+/**
+ * /fallback/index -> /index
+ * /fallback -> /
+ */
+var resetFallbackUrl = function (req) {
+  var path = req.path;
+  var newPath = path;
+  if(isForceByUrl(req)) {
+    newPath = path.replace('/fallback', '/').replace('//', '/');
+  }
+  sails.log.debug("[ThemeController.resetFallbackUrl] "+path+" -> "+newPath);
+  return newPath;
+}
+
+/**
+ * /fallback/index -> /index?force=fallback
+ * /fallback -> /?force=fallback
+ */
+var redirectFallbackUrl = function (req, res) {
+  var newPath = resetFallbackUrl(req);
+  newPath += "?force=fallback";
+  sails.log.debug("[ThemeController.resetFallbackUrl] "+path+" -> "+newPath);
+  return res.redirect(newPath);
+}
+
+/**
+ * Get the force param string from request 
+ */
+var getForceFromParam = function (req, cb) {
   var force = null;
   if(req.param('force')) {
     force = req.param('force');
@@ -228,14 +289,20 @@ var getForce = function (req, cb) {
  * TODO move to new service?
  */
 var force = function (req, cb) {
-  var force = getForce(req);
+  var force = getForceFromParam(req);
+  var fromUrl = false;
+  if(isForceByUrl(req)) {
+    force = "fallback";
+    fromUrl = true;
+  }
   var isForce = false;
+
   if(force != null) isForce = true;
   var isModern = null;
   var error = null;
   if(isForce) isModern = (force == 'modern' && (force != 'fallback' && force != 'legacy' && force != 'noscript'));
    sails.log.debug("[ThemeController.force] error", error, "isForce", isForce, "isModern", isModern, "force", force);
-  if(UtilityService.isFunction(cb)) return cb(error, isForce, isModern, force);
+  if(UtilityService.isFunction(cb)) return cb(error, isForce, isModern, force, fromUrl);
   return isForce;
 }
 
@@ -320,16 +387,16 @@ var robots = function () {
 
 /**
  * Check if
- * * URL is forced with force paramr
+ * * URL is forced with force param
  * and render modern or fallback view
  */
 var dynamicForced = function(req, res, next, route) {
   // Check if modem or fallback mode is forced
-  force(req, function (err, isForce, isModernForce, forceParam) {
+  force(req, function (err, isForce, isModernForce, forceParam, fromUrl) {
     if(err) return next(err);
     if(isForce) {
       if(isModernForce) return modern(req, res, next, forceParam, route);
-      return fallback(req, res, next, forceParam, route);
+      return fallback(req, res, next, forceParam, route, fromUrl);
     }
     next(); // next step if url is not forced
   });
@@ -344,18 +411,18 @@ var dynamicForced = function(req, res, next, route) {
  */
 var dynamicSupported = function(req, res, next, route) {
   // Check if modem or fallback mode is forced
-  force(req, function (err, isForce, isModernForce, forceParam) {
+  force(req, function (err, isForce, isModernForce, forceParam, fromUrl) {
     if(err) return next(err);
     if(isForce) {
       if(isModernForce) return modern(req, res, next, forceParam, route);
-      return fallback(req, res, next, forceParam, route);
+      return fallback(req, res, next, forceParam, route, fromUrl);
     }
     // if url is not force check if browser is supported
     var isSupported = UseragentService.supported(req);
     // if'browser is supported call modern view
     if(isSupported) return modern(req, res, next, forceParam, route);
     // orherwise show the fallback view
-    return fallback(req, res, next, forceParam, route);
+    return fallback(req, res, next, forceParam, route, false);
   }, route);
 };
 
@@ -383,7 +450,7 @@ var dynamicRoute = function(req, res, next) {
     // if route is found and modern, check if browser is supported
     if(isModern) return dynamicSupported(req, res, next, route); 
     // if route is not modern use fallback
-    return fallback(req, res, next, forceParam, route);
+    return fallback(req, res, next, forceParam, route, false);
   });
 };
 
@@ -399,6 +466,7 @@ module.exports = {
   updateOrCreateByHost: updateOrCreateByHost,
   updateOrCreateEach: updateOrCreateEach,
   updateOrCreateEachByHost: updateOrCreateEachByHost,
+  redirectFallbackUrl: redirectFallbackUrl,
   fallback: fallback,
   // signin: signin,
   // updateBrowser: updateBrowser,

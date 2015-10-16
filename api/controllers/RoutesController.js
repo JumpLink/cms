@@ -159,7 +159,29 @@ var updateOrCreateEachByHost = function (req, res, next) {
  * 
  */
 var find = function (req, res, next) {
-  RoutesService.find(req.session.uri.host, {}, function found(err, found) {
+  var data = req.params.all();
+  var where = {};
+  sails.log.debug("[RoutesController.find]", data);
+  if(UtilityService.isDefined(data.objectName)) {
+    where.objectName = data.objectName
+  }
+  RoutesService.find(req.session.uri.host, {where:where}, function found(err, found) {
+    if (err) return res.serverError(err);
+    res.json(found);
+  });
+};
+
+/**
+ * 
+ */
+var findOne = function (req, res, next) {
+  var data = req.params.all();
+  var where = {};
+  sails.log.debug("[RoutesController.find]", data);
+  if(UtilityService.isDefined(data.objectName)) {
+    where.objectName = data.objectName
+  }
+  RoutesService.findOne(req.session.uri.host, {where:where}, function found(err, found) {
     if (err) return res.serverError(err);
     res.json(found);
   });
@@ -196,6 +218,7 @@ module.exports = {
   updateOrCreateEach: updateOrCreateEach,
   updateOrCreateEachByHost: updateOrCreateEachByHost,
   find: find,
+  findOne: findOne,
   findByHost: findByHost,
   getCanonicalUrl: getCanonicalUrl
 };
