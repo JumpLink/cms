@@ -14,12 +14,10 @@
 * [Spamassassin and Spamc](https://en.wikipedia.org/wiki/SpamAssassin) to enable email spam protection
 * [unoconv](https://github.com/dagwieers/unoconv) to convert documents
 
-## Install
-
-### Requirements
+## Install Requirements
 
 Install the system requirements, on debian based systems this looks like
-
+l
     sudo apt install imagemagick ghostscript poppler-utils
 
 ### Optional Requirements
@@ -32,7 +30,7 @@ And for LibreOffice (on your server [without the gui](http://askubuntu.com/quest
 
     sudo apt install libreoffice --no-install-recommends
 
-### CMS
+## Install CMS
 
 Clone this git-repo and install the dependencies with NPM:
 
@@ -40,7 +38,7 @@ Clone this git-repo and install the dependencies with NPM:
     cd cms
     npm install
 
-### Themes
+### Install Themes
 
 Install the required themes
 
@@ -60,16 +58,6 @@ go into each theme, install the theme dependencies with bower and NPM and build 
     cd ../docs
     npm install; bower install; grunt build-dev
     ...
-    
-### Test
-
-To test if the CMS is running, run
-
-    node cms
-    
-within the CMS folder.
-
-## Setup
 
 ## Server configuration
 
@@ -147,3 +135,81 @@ and enable it in `/etc/default/spamassassin`.
             proxy_set_header Host $host;
         }
     }
+
+
+
+## CMS Configuration
+
+Create an new file as `[cms-path]/config/local.json`
+
+The basic file looks like this:
+
+```
+{
+  "environment": "development",
+  "port": 1337,
+  "secret": "AnyStringAsScret123456",
+  "paths": {
+    "public": "./public",
+    "fallback": "fallback",
+    "sites": "sites",
+    "members": "assets/images/members",
+    "gallery": "assets/images/gallery",
+    "timeline": "assets/files/timeline",
+    "blog": "assets/files/blog",
+    "files": "assets/files",
+    "uploads": "uploads"
+  },
+  "sites":[
+  ]
+}
+```
+
+You need to add sites for the admin and docs theme:
+
+```
+  "sites":[
+    {
+      "name": "admin",
+      "domains": [
+        "admin"
+      ],
+      "fallback": {
+        "theme": "admin"
+      }
+    },
+    {
+      "name": "docs",
+      "domains": [
+        "docs"
+      ],
+      "fallback": {
+        "theme": "docs"
+      }
+    }
+  ]
+```
+
+To make this sites locally available on your dev box you need to insert the domains in your `/etc/hosts` file:
+
+    [...]
+    127.0.1.1       docs
+    127.0.1.1       admin
+
+### Setup basic Routes
+
+Start the CMS by running
+
+    node cms
+    
+within the CMS folder.
+
+By default the CMS dosn't knows any theme routes, so at first you need to create them by call the following url in your webbrowser:
+
+ * [http://admin:1337/routes/setup](admin:1337/routes/setup)
+ * [http://docs:1337/routes/setup](docs:1337/routes/setup)
+
+
+
+
+
