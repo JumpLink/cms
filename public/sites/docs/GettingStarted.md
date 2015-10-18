@@ -111,7 +111,7 @@ and enable it in `/etc/default/spamassassin`.
     <VirtualHost *:80>
         ServerAdmin info@domain.io
         ServerName domain.io
-        ServerAlias sub.domain.io sub.domain2.com domain2.com
+        ServerAlias admin.yourdomain.io cms.yourdomain.io domain2.com
         RewriteEngine On
         RewriteCond %{REQUEST_URI}  ^/socket.io            [NC]
         RewriteCond %{QUERY_STRING} transport=websocket    [NC]
@@ -125,7 +125,7 @@ and enable it in `/etc/default/spamassassin`.
 
     server {
         listen x.x.x.x:80;
-        server_name sub.domain.io domain.io sub.domain2.com domain2.com;
+        server_name admin.yourdomain.io cms.yourdomain.io domain2.com;
         location ~ ^/ {
             client_max_body_size 500M;
             proxy_pass http://127.0.0.1:1337;
