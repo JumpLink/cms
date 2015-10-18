@@ -137,7 +137,7 @@ var bloggerOrBetter = function (host, session, callback) {
  * 
  */
 var isDeveloperOrBetter = function (conf, session, callback) {
-  var isDeveloperOrBetter = isAuthenticated(conf, session) && (session.user.role === 'development' || session.user.role === 'superadmin');
+  var isDeveloperOrBetter = isAuthenticated(conf, session) && (sails.config.environment === 'development' || session.user.role === 'superadmin');
   if(UtilityService.isFunction(callback)) {
     return callback(null, isDeveloperOrBetter);
   }
