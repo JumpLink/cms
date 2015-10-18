@@ -12,7 +12,6 @@ var developerOrBetter = function(req, res, next) {
     if(err) return res.serverError(err);
     // User is not allowed
     // (default res.forbidden() behavior can be overridden in `config/403.js)
-    if(!isDeveloperOrBetter) return res.forbidden();
     if(!isDeveloperOrBetter) {
       return res.forbidden("You must be in developermode or a user with more credentials to do that");
     }

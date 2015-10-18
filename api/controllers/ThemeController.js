@@ -159,8 +159,13 @@ var fallback = function (req, res, next, forceParam, route, forceFromUrl) {
    */
   if(UtilityService.isUndefined(route)) {
     sails.log.warn("[ThemeController.fallback] route is not defined!")
-    return RoutesService.findOneByUrl(host, url, function(err, isModern, route) {
-      if(err) return res.serverError(err);
+    //IMPORTANT: If route is not found, call next!
+    return RoutesService.findOneByUrl(host, url, function (err, isModern, route) {
+      if (err) {
+        if(err === "not found") return next(); // if not found go back to config/routes.js and try the next
+        return next(err);
+      }
+      // if(err) return res.serverError(err);
       sails.log.warn("[ThemeController.fallback]", "url", url, "host", host, "route:", route);
       return routing(req, res, next, forceParam, route);
     });
@@ -442,7 +447,7 @@ var dynamicRoute = function(req, res, next) {
 
   sails.log.debug("check", url, host);
   // Çheck url for modern or fallback
-  RoutesService.findOneByUrl(host, url, function found(err, isModern, route) {
+  RoutesService.findOneByUrl(host, url, function (err, isModern, route) {
     if (err) {
       if(err === "not found") return next(); // if not found go back to config/routes.js and try the next
       return next(err);

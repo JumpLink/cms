@@ -109,13 +109,6 @@ var findOneByUrl = function(host, url, callback) {
         found = true;
         return callback(null, true, result[i]);
       }
-      // fallback url
-      // if(result[i].fallback.url === url) {
-      //   sails.log.debug("[ThemeController.findOneByUrl] Fallback route found!");
-      //   found = true;
-      //   return callback(null, false, result[i]);
-      // }
-      // alternative modern url
       if(UtilityService.isDefined(result[i].alternativeUrls)) {
         for (var k = result[i].alternativeUrls.length - 1; k >= 0 && !found; k--) {
           if(result[i].alternativeUrls[k] === url) {
@@ -125,18 +118,8 @@ var findOneByUrl = function(host, url, callback) {
           }
         };
       }
-      // alternative fallback url
-      // if(UtilityService.isDefined(result[i].fallback.alternativeUrls)) {
-      //   for (var k = result[i].fallback.alternativeUrls.length - 1; k >= 0 && !found; k--) {
-      //     if(result[i].fallback.alternativeUrls[k] === url) {
-      //       sails.log.debug("[ThemeController.findOneByUrl] Alternative fallback route found!", url, result[i].url);
-      //       found = true;
-      //       return callback(null, false, result[i]);
-      //     }
-      //   };
-      // }
     };
-    sails.log.warn("[ThemeController.check] Route not found!", url);
+    sails.log.warn("[RoutesService.findOneByUrl] Route not found!", url);
     if(!found) return callback("not found");
   });
 };
