@@ -206,8 +206,8 @@ within the CMS folder.
 
 By default the CMS dosn't knows any theme routes, so at first you need to create them by call the following url in your webbrowser:
 
- * [http://admin:1337/routes/setup](admin:1337/routes/setup)
- * [http://docs:1337/routes/setup](docs:1337/routes/setup)
+ * [http://admin:1337/routes/setup](http://admin:1337/routes/setup)
+ * [http://docs:1337/routes/setup](http://docs:1337/routes/setup)
 
 
 
