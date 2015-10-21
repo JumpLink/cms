@@ -180,9 +180,7 @@ var generateSitemap = function (protocol, host, callback) {
     sitemapOptions.urls = results.urls;
     sails.log.debug("[RoutesService.generateSitemap]", results, sitemapOptions);
     var sitemap = sm.createSitemap(sitemapOptions);
-    sitemap.toXML( function(xml) {
-      return callback(null, xml);
-    });
+    sitemap.toXML(callback);
   });
 }
 
