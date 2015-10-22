@@ -377,7 +377,7 @@ var sitemap = function (req, res, next) {
   var host = req.session.uri.host;
   RoutesService.generateSitemap(protocol, host, function (err, sitemapXml) {
     if(err) return next(err);
-    sails.log.debug("[ThemeController.sitemap]", sitemapXml.toString());
+    sails.log.debug("[ThemeController.sitemap]", sitemapXml);
     return res.xml(sitemapXml);
   });
 }

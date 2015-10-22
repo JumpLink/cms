@@ -54,7 +54,10 @@ module.exports.policies = {
 
   CMSController: {
     'setup': 'developerOrBetter',
-    'infoUser': true
+    'infoUser': true,
+    'InfoAdmin': 'developerOrBetter',
+    'restart': 'developerOrBetter',
+    'stop': 'developerOrBetter',
   },
 
   ConfigController: {

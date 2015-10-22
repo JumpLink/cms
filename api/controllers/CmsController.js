@@ -30,10 +30,32 @@ var infoAdmin = function(req, res) {
 };
 
 /**
- * 
+ * Restart the CMS
+ */
+var restart = function(req, res) {
+  sails.log.debug("[CmsService.restart]");
+  CmsService.restart(function () {
+    res.ok();
+  });
+};
+
+/**
+ * Stop the CMS
+ */
+var stop = function(req, res) {
+  sails.log.debug("[CmsService.stop]");
+  CmsService.restart(function () {
+    res.ok();
+  });
+};
+
+/**
+ * Public API
  */
 module.exports = {
   setup: setup,
   infoUser: infoUser,
-  infoAdmin: infoAdmin
+  infoAdmin: infoAdmin,
+  restart: restart,
+  stop: stop,
 };

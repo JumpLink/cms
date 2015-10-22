@@ -10,9 +10,14 @@
  */
 module.exports.bootstrap = function(cb) {
   if(sails.config.emailReception) EmailService.start();
-  /**
-   * It's very important to trigger this callback method when you are finished with the bootstrap!
-   * Otherwise your server will never lift, since it's waiting on the bootstrap)
-   */
-  cb();
+  sails.pm2 = require('pm2');
+  sails.pm2.connect(function() {
+
+    /**
+     * It's very important to trigger this callback method when you are finished with the bootstrap!
+     * Otherwise your server will never lift, since it's waiting on the bootstrap)
+     */
+    cb();
+
+  });
 };
