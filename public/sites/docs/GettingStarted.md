@@ -10,7 +10,7 @@
 
 ### Optinal Requirements
 * [Authbind](https://en.wikipedia.org/wiki/Authbind) to receive emails with user rights on port 25
-* [Forever](https://github.com/foreverjs/forever) to ensure that the cms runs continuously on your Server
+* [PM2](https://github.com/Unitech/pm2) to ensure that the cms runs continuously on your Server
 * [Spamassassin and Spamc](https://en.wikipedia.org/wiki/SpamAssassin) to enable email spam protection
 * [unoconv](https://github.com/dagwieers/unoconv) to convert documents
 
@@ -79,22 +79,22 @@ Now you can start applications with authbind to allow this applications to acces
     
 More informations about how you and why you need to configure authbind can you found [on mailin](https://github.com/Flolagale/mailin) which uses the CMS for the mail reception.
 
-### Forever
-You can use [forever](https://github.com/foreverjs/forever) to ensure that the cms runs continuously on your Server. To use forever install it with npm
+### PM2
+You need to use [PM2](https://github.com/Unitech/pm2) to ensure that the cms runs continuously on your Server. To use PM2 install it with npm
 
-    npm install forever -g
+    npm install pm2 -g
     
-Start the cms app with forever and authbind
+Start the cms app with pm2 and authbind
 
-    authbind --deep forever start cms.js
+    authbind --deep pm2 start cms.js
 
-If this works, configure your cronjob to start the cms with forever on each reboot automatically.
+If this works, configure your cronjob to start the cms with pm2 on each reboot automatically.
 
     crontab -e
     
-An example line with authbind, forever and for node.js installed with nvm (you need to customize this, if you want to use it) could be:
+An example line with authbind, pm2 and for node.js installed with nvm (you need to customize this, if you want to use it) could be:
 
-    @reboot (/usr/bin/authbind --deep /home/[user]/.nvm/versions/node.js/[version]/bin/node /root/.nvm/versions/io.js/[version]/bin/forever start /home/[user]/cms/cms.js)
+    @reboot (/usr/bin/authbind --deep /home/[user]/.nvm/versions/node.js/[version]/bin/node /root/.nvm/versions/io.js/[version]/bin/pm2 start /home/[user]/cms/cms.js)
 
 ### Email spam protection
 
