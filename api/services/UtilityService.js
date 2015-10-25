@@ -67,8 +67,19 @@ UlilityService.$filter = function(filtername) {
     case 'orderBy':
       return underscore.sortBy;
     break;
+    case 'where':
+      return underscore.where;
+    break;
+    default:
+      return underscore.where;
+    break;
   }
 };
+
+/**
+ * @see http://underscorejs.org/#where
+ */
+UlilityService.where = underscore.where;
 
 /**
  * Invert the order of an array

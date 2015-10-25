@@ -125,6 +125,31 @@ var findOneByUrl = function(host, url, callback) {
 };
 
 /**
+ * Find Route by state name
+ * callback(err, route);
+ */
+var findOneByStateName = function(host, stateName, callback) {
+  sails.log.debug("[ThemeController.findOneByStateName]", host, stateName);
+  find(host, {}, function found(err, result) {
+    if (err) {
+      return callback(err);
+    }
+    var found = false;
+    for (var i = result.length - 1; i >= 0 && !found; i--) {
+      if(UtilityService.isDefined(result[i].state) && UtilityService.isDefined(result[i].state.name) && result[i].state.name === stateName) {
+        sails.log.debug("[ThemeController.findOneByStateName] Route found!", stateName, result[i].state.name);
+        found = true;
+        return callback(null, result[i]);
+      }
+    }
+    sails.log.warn("[RoutesService.findOneByStateName] Route not found!", stateName);
+    if(!found) {
+      return callback("not found");
+    }
+  });
+};
+
+/**
  *
  * @see https://github.com/ekalinin/sitemap.js
  */
@@ -196,5 +221,6 @@ module.exports = {
   findOneByFallbackUrl: findOneByFallbackUrl,
   findOneByUrl: findOneByUrl,
   isModern: findOneByUrl, // Alias
+  findOneByStateName: findOneByStateName,
   generateSitemap: generateSitemap,
 }
