@@ -145,6 +145,7 @@ module.exports.policies = {
     'setup': 'developerOrBetter',
     'update': 'siteadminOrBetter',
     'destroy': 'siteadminOrBetter',
+    'exportByHost': 'superadmin',
     'create': 'siteadminOrBetter',
     'updateOrCreate': 'siteadminOrBetter',
     'updateOrCreateByHost': 'superadmin',

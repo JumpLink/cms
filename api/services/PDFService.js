@@ -31,7 +31,8 @@ var generatePreview = function (site, file, options, relativePathInSiteFolder, c
       sails.log.error(err);
       return callback(err, file);
     });
-  });}
+  });
+};
 
 /**
  * Convert image file for upload.
@@ -57,7 +58,7 @@ var convertPDFIterator = function (site, file, relativePathInSiteFolder, options
     // sails.log.debug("[PDFService.convertImageIterator] file", file);
     callback(null, file);
   });
-}
+};
 
 /**
  * public functions

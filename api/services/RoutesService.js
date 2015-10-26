@@ -5,6 +5,28 @@ var sm = require('sitemap');
 var async = require('async');
 
 /**
+ * Export akk routes for any host.
+ * Only for superadmins!
+ */
+var exportByHost = function (host, options, callback) {
+  find(host, {}, function (err, routes) {
+    if (err) {
+      return callback(err);
+    }
+    routes = ExportService.cleanup(routes, options);
+    return callback(null, routes);
+  });
+};
+
+/**
+ * Export akk routes for any host.
+ * Only for superadmins!
+ */
+var importByHost = function (host, data, options, callback) {
+  ExportImportService("Routes", host, data, options, callback);
+};
+
+/**
  * 
  */
 var updateOrCreate = function(host, route, callback) {
@@ -222,6 +244,8 @@ var generateSitemap = function (protocol, host, callback) {
  * Public functions
  */
 module.exports = {
+  importByHost: importByHost,
+  exportByHost: exportByHost,
   updateOrCreate: updateOrCreate,
   updateOrCreateEach: updateOrCreateEach,
   find: find,
