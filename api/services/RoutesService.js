@@ -14,7 +14,7 @@ var updateOrCreate = function(host, route, callback) {
     // modelName, data, query, callback, extendFound
     ModelService.updateOrCreate('Routes', route, {id: route.id, site: route.site}, callback);
   });
-}
+};
 
 /**
  * 
@@ -24,11 +24,11 @@ var updateOrCreateEach = function(host, routes, callback) {
     if(err) callback(err);
     for (var i = routes.length - 1; i >= 0; i--) {
       routes[i].site = config.name;
-    };
+    }
     // modelName, datas, propertyNames, callback, extendFound
     ModelService.updateOrCreateEach('Routes', routes, ['id', 'site'], callback);
   });
-}
+};
 
 /**
  * 
@@ -86,7 +86,7 @@ var findOneByFallbackUrl = function (host, url, callback) {
           found = true;
           route = routes[i];
         }
-      };
+      }
       if(found) return callback(null, route, config);
       return callback("not found");
     });
@@ -99,7 +99,7 @@ var findOneByFallbackUrl = function (host, url, callback) {
  */
 var findOneByUrl = function(host, url, callback) {
   sails.log.debug("[ThemeController.findOneByUrl]", host, url);
-  find(host, {}, function found(err, result) {
+  find(host, {}, function (err, result) {
     if (err) return callback(err);
     var found = false;
     for (var i = result.length - 1; i >= 0 && !found; i--) {
@@ -116,9 +116,9 @@ var findOneByUrl = function(host, url, callback) {
             found = true;
             return callback(null, true, result[i]);
           }
-        };
+        }
       }
-    };
+    }
     sails.log.warn("[RoutesService.findOneByUrl] Route not found!", url);
     if(!found) return callback("not found");
   });
@@ -130,21 +130,30 @@ var findOneByUrl = function(host, url, callback) {
  */
 var findOneByStateName = function(host, stateName, callback) {
   sails.log.debug("[ThemeController.findOneByStateName]", host, stateName);
-  find(host, {}, function found(err, result) {
+  return find(host, {}, function (err, result) {
     if (err) {
-      return callback(err);
+      if(UtilityService.isFunction(callback)) {
+        return callback(err);
+      }
+      return err;
     }
     var found = false;
     for (var i = result.length - 1; i >= 0 && !found; i--) {
       if(UtilityService.isDefined(result[i].state) && UtilityService.isDefined(result[i].state.name) && result[i].state.name === stateName) {
         sails.log.debug("[ThemeController.findOneByStateName] Route found!", stateName, result[i].state.name);
         found = true;
-        return callback(null, result[i]);
+        if(UtilityService.isFunction(callback)) {
+          return callback(null, result[i]);
+        }
+        return result[i];
       }
     }
     sails.log.warn("[RoutesService.findOneByStateName] Route not found!", stateName);
     if(!found) {
-      return callback("not found");
+      if(UtilityService.isFunction(callback)) {
+        return callback("Route with statename '"+stateName+"'not found!");
+      }
+      return "Route with statename '"+stateName+"'not found!";
     }
   });
 };
@@ -179,10 +188,10 @@ var getSitemapUrls = function (host, callback) {
       //     routes[i].alternativeUrls[k]
       //   };
       // }
-    };
+    }
     callback(err, sitemapUrls);
   });
-}
+};
 
 /**
  * Generate sitemap.xml
@@ -207,7 +216,7 @@ var generateSitemap = function (protocol, host, callback) {
     var sitemap = sm.createSitemap(sitemapOptions);
     sitemap.toXML(callback);
   });
-}
+};
 
 /**
  * Public functions
@@ -223,4 +232,4 @@ module.exports = {
   isModern: findOneByUrl, // Alias
   findOneByStateName: findOneByStateName,
   generateSitemap: generateSitemap,
-}
+};

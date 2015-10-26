@@ -30,7 +30,14 @@ UlilityService.isNumber = function (n) {
  * @see http://stackoverflow.com/questions/4020796/finding-the-max-value-of-an-attribute-in-an-array-of-objects
  */
 UlilityService.max = function (array, key) {
-  return Math.max.apply(Math,array.map(function(o){ if(UlilityService.isNumber) return o[key]; else 0}))
+  return Math.max.apply(Math,array.map(function(o) {
+    if(UlilityService.isNumber) {
+      return o[key];
+    }
+    else {
+      return 0;
+    }
+  }));
 };
 
 /**
@@ -56,6 +63,11 @@ UlilityService.isFunction = underscore.isFunction;
 UlilityService.isArray = underscore.isArray;
 
 /**
+ * 
+ */
+UlilityService.isString = underscore.isString;
+
+/**
  * Server compatibility filter to angular.
  * Returns a (stably) sorted copy of list, ranked in ascending order by the results of running each value through iteratee.
  * Iteratee may also be the string name of the property to sort by (eg. length).
@@ -66,13 +78,10 @@ UlilityService.$filter = function(filtername) {
   switch (filtername) {
     case 'orderBy':
       return underscore.sortBy;
-    break;
     case 'where':
       return underscore.where;
-    break;
     default:
       return underscore.where;
-    break;
   }
 };
 
@@ -88,9 +97,9 @@ UlilityService.invertOrder = function (array) {
   var result = [];
   for (var i = array.length - 1; i >= 0; i--) {
     result.push(array[i]);
-  };
+  }
   return result;
-}
+};
 
 /**
  * Get an array of dirs in path.
@@ -121,11 +130,11 @@ UlilityService.getDirs = function(srcpath, cb) {
           return cb(false);
         }
         cb(stats.isDirectory());
-      })
-    }
+      });
+    };
     async.filter(files, iterator, cb);
   });
-}
+};
 
 /**
  * Sort an array by property 
@@ -133,8 +142,9 @@ UlilityService.getDirs = function(srcpath, cb) {
  * @see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
  */
 UlilityService.sortArrayByProperty = function(array, propertyName, inverse) {
-  if (inverse)
-    var sorter = function (a, b) {
+  var sorter = null;
+  if (inverse) {
+    sorter = function (a, b) {
       if (a[propertyName] > b[propertyName] ) {
         return 1;
       }
@@ -144,8 +154,8 @@ UlilityService.sortArrayByProperty = function(array, propertyName, inverse) {
       // a must be equal to b
       return 0;
     };
-  else
-    var sorter = function (a, b) {
+  } else {
+    sorter = function (a, b) {
       if (a[propertyName] < b[propertyName] ) {
         return 1;
       }
@@ -153,12 +163,13 @@ UlilityService.sortArrayByProperty = function(array, propertyName, inverse) {
         return -1;
       }
       // a must be equal to b
-      return 
+      return 0;
     };
+  }
   
   array.sort(sorter);
   return array;
-}
+};
 
 /**
  * Set the same property value for each element in values.
@@ -172,18 +183,18 @@ UlilityService.sortArrayByProperty = function(array, propertyName, inverse) {
 UlilityService.setPropertyForEach = function (values, propertyName, value) {
   for (var i = values.length - 1; i >= 0; i--) {
     values[i][propertyName] = value;
-  };
+  }
   return values;
-}
+};
 
 /**
- * This functions sets a position property identical wit the current array index.
+ * This functions sets a position property identical with the current array index.
  * Useful for objects they requiring a position property.
  */
 UlilityService.fixPosition = function (obj) {
   for (var i = 0; i < obj.length; i++) {
       obj[i].position = i+1;
-  };
+  }
   return obj;
 };
 
