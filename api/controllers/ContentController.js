@@ -28,6 +28,43 @@ var setup = function(req, res) {
 };
 
 /**
+ * Export all contents for any host.
+ * Only for superadmins!
+ */
+var exportByHost = function (req, res, next) {
+  var host = req.param('host');
+  var options = {
+    id: true,
+    site: true,
+  };
+  ContentService.exportByHost(host, options, function (err, routes) {
+    if (err) {
+      return res.serverError(err);
+    }
+    res.json(routes);
+  });
+};
+
+/**
+ * Export all contents for any host.
+ * Only for superadmins!
+ */
+var updateOrCreateByHostByTitleAndPage = function (req, res, next) {
+  var data = req.params.all();
+  var content = data.content;
+  var host = data.host;
+  delete data.content.importOptions; // delete import info if set
+  ContentService.updateOrCreateByHostByTitleAndPage(host, content, function (err, content) {
+    if (err) {
+      return res.serverError(err);
+    }
+    res.json(content);
+  });
+};
+
+
+
+/**
  * 
  */
 var replaceAll = function (req, res, next) {
@@ -40,7 +77,7 @@ var replaceAll = function (req, res, next) {
     for (var i = 0; i < datas.length; i++) {
       datas[i].site = site;
       datas[i].page = page;
-    };
+    }
 
     var queryParams = ['page', 'site', 'name'];
 
@@ -60,7 +97,7 @@ var replaceAll = function (req, res, next) {
         // TODO TESTME
         for (var i = result.length - 1; i >= 0; i--) {
           Member.publishUpdate(result[i].id, result[i]);
-        };
+        }
         
         res.status(201);
         return res.json(result);
@@ -108,41 +145,41 @@ var replace = function (req, res, next) {
 
 /**
  * Usually used for pages with fixed content blocks (get one content block by name).
+ * TODO rename to findOne
  */
 var find = function (req, res) {
-  var query;
-  MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, conf) {
-    if(err) { return res.serverError(err); }
-    query = {
-      where: {
-        name: req.param('name'),
-        page: req.param('page'),
-        site: conf.name
-      }
-    };
-
-    if(req.param('type')) {
-      query.where.type = req.param('type');
+  var query = {
+    where: {
+      name: req.param('name'),
+      page: req.param('page'),
     }
+  };
+  if(req.param('type')) {
+    query.where.type = req.param('type');
+  }
+  // sails.log.debug("query", query)
+  ContentService.findOne(req.session.uri.host, query, function (err, contents) {
+    if (err) return res.serverError(err);
+    res.json(contents);
+  });
+};
 
-    // sails.log.debug("query", query)
-    Content.findOne(query).exec(function found (err, content) {
-      if (err) return res.serverError(err);
-      if (content instanceof Array) content = content[0];
-
-      // not found
-      if (UtilityService.isUndefined(content) || UtilityService.isUndefined(content.id) || content.id === null) {
-        res.notFound(query.where);
-      } else {
-        // sails.log.debug("found", found);
-        res.json(content);
-      }
-    });
+/**
+ * Find all contents for host
+ * Only for superadmins
+ */
+var findByHost = function (req, res) {
+  var host = req.param('host');
+  // sails.log.debug("query", query)
+  ContentService.find(host, {}, function (err, contents) {
+    if (err) return res.serverError(err);
+    res.json(contents);
   });
 };
 
 /**
  * Usually used for pages where you can add and remove new content blocks (get sll content blocks by page).
+ * TODO rename to find
  */
 var findAll = function (req, res) {
   var query;
@@ -217,7 +254,7 @@ var destroy = function(req, res) {
     }
 
     // sails.log.debug"destroy content", query);
-    Content.findOne(query).exec(function found(err, content) {
+    Content.findOne(query).exec(function (err, content) {
       if (err) return res.serverError(err);
       if (typeof(content) === 'undefined') return res.notFound();
       Content.destroy({id:content.id, site:conf.name}, function (err, destroyed) {
@@ -233,28 +270,15 @@ var destroy = function(req, res) {
 /**
  * 
  */
-var exporting = function (req, res) {
-  MultisiteService.getCurrentSiteConfig(req.session.uri.host, function (err, conf) {
-    if(err) { return res.serverError(err); }
-    var query = { where: { site: conf.name }};
-    Content.find(query).exec(function found(err, found) {
-      if (err) return res.serverError(err);
-      if (UtilityService.isUndefined(found) || !found instanceof Array) { res.notFound(query.where); }
-      else { res.json(found); }
-    });
-  });
-};
-
-/**
- * 
- */
 module.exports = {
-  setup:setup,
-  replaceAll:replaceAll,
-  replace:replace,
-  findAll:findAll,
-  findAllWithImage:findAllWithImage,
-  find:find,
-  destroy:destroy,
-  exporting:exporting
+  setup: setup,
+  exportByHost: exportByHost,
+  updateOrCreateByHostByTitleAndPage: updateOrCreateByHostByTitleAndPage,
+  replaceAll: replaceAll,
+  replace: replace,
+  findAll: findAll,
+  findAllWithImage: findAllWithImage,
+  find: find,
+  findByHost: findByHost,
+  destroy: destroy
 };

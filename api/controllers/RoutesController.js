@@ -252,7 +252,7 @@ var findOne = function (req, res, next) {
 };
 
 /**
- * 
+ * Only for superadmins
  */
 var findByHost = function (req, res, next) {
   var host = req.param('host');

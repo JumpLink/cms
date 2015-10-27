@@ -21,11 +21,11 @@ var getForCurrentSite = function (host, callback) {
     // sails.log.debug("[ConfigService.js] getForCurrentSite", result);
     callback(null, result);
   });
-}
+};
 
 /**
  * public functions
  */
 module.exports = {
   getForCurrentSite:getForCurrentSite
-}
+};

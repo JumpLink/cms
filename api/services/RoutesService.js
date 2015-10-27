@@ -5,7 +5,7 @@ var sm = require('sitemap');
 var async = require('async');
 
 /**
- * Export akk routes for any host.
+ * Export all routes for any host.
  * Only for superadmins!
  */
 var exportByHost = function (host, options, callback) {

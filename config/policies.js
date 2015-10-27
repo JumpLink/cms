@@ -67,9 +67,12 @@ module.exports.policies = {
 
   ContentController: {
     'setup': 'developerOrBetter',
+    'exportByHost': 'superadmin',
+    'updateOrCreateByHostByTitleAndPage': 'superadmin',
     'replaceAll': 'siteadminOrBetter',
     'replace': 'siteadminOrBetter',
     'find': true,
+    'findByHost': 'superadmin',
     'findAll': true,
     'findAllWithImage': true,
     'destroy': 'siteadminOrBetter',
