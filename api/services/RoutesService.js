@@ -13,17 +13,9 @@ var exportByHost = function (host, options, callback) {
     if (err) {
       return callback(err);
     }
-    routes = ExportService.cleanup(routes, options);
+    routes = ImportExportService.cleanup(routes, options);
     return callback(null, routes);
   });
-};
-
-/**
- * Export akk routes for any host.
- * Only for superadmins!
- */
-var importByHost = function (host, data, options, callback) {
-  ExportImportService("Routes", host, data, options, callback);
 };
 
 /**
@@ -35,6 +27,18 @@ var updateOrCreate = function(host, route, callback) {
     route.site = config.name;
     // modelName, data, query, callback, extendFound
     ModelService.updateOrCreate('Routes', route, {id: route.id, site: route.site}, callback);
+  });
+};
+
+/**
+ * 
+ */
+var updateOrCreateByObjectNameAndNavbar = function(host, route, callback) {
+  MultisiteService.getCurrentSiteConfig(host, function (err, config) {
+    if(err) callback(err);
+    route.site = config.name;
+    // modelName, data, query, callback, extendFound
+    ModelService.updateOrCreate('Routes', route, {navbar: route.navbar, objectName: route.objectName, site: route.site}, callback);
   });
 };
 
@@ -244,9 +248,9 @@ var generateSitemap = function (protocol, host, callback) {
  * Public functions
  */
 module.exports = {
-  importByHost: importByHost,
   exportByHost: exportByHost,
   updateOrCreate: updateOrCreate,
+  updateOrCreateByObjectNameAndNavbar: updateOrCreateByObjectNameAndNavbar,
   updateOrCreateEach: updateOrCreateEach,
   find: find,
   findALL: find, // Alias

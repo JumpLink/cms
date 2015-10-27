@@ -21,31 +21,61 @@ var SITES_FOLDER = path.resolve(sails.config.paths.public, sails.config.paths.si
  */
 var isImage = function (mime) {
   return mime.match('image.*') !== null;
-}
+};
 
+/**
+ * Check if mime type is a text file
+ *
+ * @alias module:FileService.isText
+ */
 var isText = function (mime) {
   return mime.match('text.*') !== null;
-}
+};
 
+/**
+ * Check if mime type is an video
+ *
+ * @alias module:FileService.isVideo
+ */
 var isVideo = function (mime) {
   return mime.match('video.*') !== null;
-}
+};
 
+/**
+ * Check if mime type is an audio
+ *
+ * @alias module:FileService.isAudio
+ */
 var isAudio = function (mime) {
   return mime.match('audio.*') !== null;
-}
+};
 
+/**
+ * Check if mime type is any application
+ *
+ * @alias module:FileService.isApplication
+ */
 var isApplication = function (mime) {
   return mime.match('application.*') !== null;
-}
+};
 
+/**
+ * Check if mime type is multipart
+ *
+ * @alias module:FileService.isMultipart
+ */
 var isMultipart = function (mime) {
   return mime.match('multipart.*') !== null;
-}
+};
 
+/**
+ * Check if mime type is model
+ *
+ * @alias module:FileService.isModel
+ */
 var isModel = function (mime) {
   return mime.match('model.*') !== null;
-}
+};
 
 
 
@@ -56,7 +86,7 @@ var isModel = function (mime) {
  */
 var isDoc = function (mime) {
   return mime === 'application/msword' || mime === 'application/wps-office.doc' || mime === 'application/wps-office.dot';
-}
+};
 
 /**
  * Microsoft Word
@@ -65,7 +95,7 @@ var isDoc = function (mime) {
  */
 var isDocx = function (mime) {
   return mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || mime === 'application/wps-office.docx';
-}
+};
 
 /**
  * Microsoft Word
@@ -74,7 +104,7 @@ var isDocx = function (mime) {
  */
 var isDotx = function (mime) {
   return mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.template' || mime === 'application/wps-office.dotx';
-}
+};
 
 /**
  * Microsoft Excel
@@ -83,7 +113,7 @@ var isDotx = function (mime) {
  */
 var isXls = function (mime) {
   return mime === 'application/vnd.ms-excel' || mime === 'application/wps-office.xls';
-}
+};
 
 /**
  * Microsoft Excel
@@ -92,7 +122,7 @@ var isXls = function (mime) {
  */
 var isXlsx = function (mime) {
   return mime === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || mime === 'application/wps-office.xlsx';
-}
+};
 
 /**
  * Microsoft Excel
@@ -101,7 +131,7 @@ var isXlsx = function (mime) {
  */
 var isXltx = function (mime) {
   return mime === 'application/vnd.openxmlformats-officedocument.spreadsheetml.template' || mime === 'application/wps-office.xltx';
-}
+};
 
 /**
  * Microsoft Powerpoint
@@ -110,7 +140,7 @@ var isXltx = function (mime) {
  */
 var isPpt = function (mime) {
   return mime === 'application/vnd.ms-powerpoint' || mime === 'application/wps-office.ppt' || mime === 'application/wps-office.pot'  || mime === 'application/wps-office.pps';
-}
+};
 
 /**
  * Microsoft Powerpoint
@@ -119,7 +149,7 @@ var isPpt = function (mime) {
  */
 var isPptx = function (mime) {
   return mime === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' || mime === 'application/wps-office.pptx';
-}
+};
 
 /**
  * Microsoft Powerpoint
@@ -128,7 +158,7 @@ var isPptx = function (mime) {
  */
 var isPotx = function (mime) {
   return mime === 'application/vnd.openxmlformats-officedocument.presentationml.template' || mime === 'application/wps-office.potx';
-}
+};
 
 /**
  * Microsoft Powerpoint
@@ -137,7 +167,7 @@ var isPotx = function (mime) {
  */
 var isPpsx = function (mime) {
   return mime === 'application/vnd.openxmlformats-officedocument.presentationml.slideshow' || mime === 'application/wps-office.ppsx';
-}
+};
 
 
 
@@ -147,7 +177,7 @@ var isPpsx = function (mime) {
  */
 var isOdt = function (mime) {
   return (mime === 'application/vnd.oasis.opendocument.text');
-}
+};
 
 /**
  * OpenDocument Text Template
@@ -155,7 +185,7 @@ var isOdt = function (mime) {
  */
 var isOtt = function (mime) {
   return (mime === 'application/vnd.oasis.opendocument.text-template');
-}
+};
 
 /**
  * HTML Document Template
@@ -163,7 +193,7 @@ var isOtt = function (mime) {
  */
 var isOth = function (mime) {
   return (mime === 'application/vnd.oasis.opendocument.text-web');
-}
+};
 
 /**
  * OpenDocument Master Document
@@ -171,7 +201,7 @@ var isOth = function (mime) {
  */
 var isOdm = function (mime) {
   return (mime === 'application/vnd.oasis.opendocument.text-master');
-}
+};
 
 /**
  * OpenDocument Drawing
@@ -179,7 +209,7 @@ var isOdm = function (mime) {
  */
 var isOdg = function (mime) {
   return (mime === 'application/vnd.oasis.opendocument.graphics');
-}
+};
 
 /**
  * OpenDocument Drawing Template
@@ -187,7 +217,7 @@ var isOdg = function (mime) {
  */
 var isOtg = function (mime) {
   return mime === 'application/vnd.oasis.opendocument.graphics-template';
-}
+};
 
 /**
  * OpenDocument Presentation
@@ -195,7 +225,7 @@ var isOtg = function (mime) {
  */
 var isOdp = function (mime) {
   return (mime === 'application/vnd.oasis.opendocument.presentation');
-}
+};
 
 /**
  * OpenDocument Presentation Template
@@ -203,7 +233,7 @@ var isOdp = function (mime) {
  */
 var isOtp = function (mime) {
   return (mime === 'application/vnd.oasis.opendocument.presentation-template');
-}
+};
 
 /**
  * OpenDocument Spreadsheet
@@ -211,7 +241,7 @@ var isOtp = function (mime) {
  */
 var isOds = function (mime) {
   return mime === 'application/vnd.oasis.opendocument.spreadsheet';
-}
+};
 
 /**
  * OpenDocument Spreadsheet Template
@@ -219,7 +249,7 @@ var isOds = function (mime) {
  */
 var isOts = function (mime) {
   return mime === 'application/vnd.oasis.opendocument.spreadsheet-template';
-}
+};
 
 /**
  * OpenDocument Chart
@@ -227,7 +257,7 @@ var isOts = function (mime) {
  */
 var isOdc = function (mime) {
   return mime === 'application/vnd.oasis.opendocument.chart';
-}
+};
 
 /**
  * OpenDocument Formula
@@ -235,7 +265,7 @@ var isOdc = function (mime) {
  */
 var isOdf = function (mime) {
   return mime === 'application/vnd.oasis.opendocument.formula';
-}
+};
 
 /**
  * OpenDocument Database
@@ -243,7 +273,7 @@ var isOdf = function (mime) {
  */
 var isOdb = function (mime) {
   return mime === 'application/vnd.oasis.opendocument.database';
-}
+};
 
 /**
  * OpenDocument Image
@@ -251,7 +281,7 @@ var isOdb = function (mime) {
  */
 var isOdi = function (mime) {
   return mime === 'application/vnd.oasis.opendocument.image';
-}
+};
 
 /**
  * OpenOffice.org extension
@@ -259,7 +289,7 @@ var isOdi = function (mime) {
  */
 var isOxt = function (mime) {
   return mime === 'application/vnd.openofficeorg.extension';
-}
+};
 
 
 
@@ -270,43 +300,43 @@ var isOxt = function (mime) {
  */
 var isPDF = function (mime) {
   return mime === "application/pdf";
-}
+};
 
 
 
 var isMSWord = function (file) {
   return file.isDoc || file.isDot || file.isDocx || file.isDotx;
-}
+};
 
 var isMSExcel = function (file) {
   return file.isXls || file.isXlt || file.isXla || file.isXlsx || file.isXltx;
-}
+};
 
 var isMSPowerpoint = function (file) {
   return file.isPpt || file.isPot || file.isPps || file.isPpa || file.isPptx || file.isPotx || file.isPpsx;
-}
+};
 
 var isOOWriter = function (file) {
   return file.isOdt || file.isOtt;
-}
+};
 
 var isOODrawing = function (file) {
   return file.isOdg || file.isOtg;
-}
+};
 
 var isOOPresentation = function (file) {
   return file.isOdp || file.isOtp;
-}
+};
 
 var isOOSpreadsheet = function (file) {
   return file.isOds || file.isOts;
-}
+};
 
 
 
 var hasConvertToPdfSupport = function (file) {
   return file.isMSWord || file.isMSExcel || file.isMSPowerpoint || file.isOOWriter ||  file.isOODrawing || file.isOOPresentation || file.isOOSpreadsheet;
-}
+};
 
 /**
  * Check if file has an preview image
@@ -315,34 +345,31 @@ var hasConvertToPdfSupport = function (file) {
  */
 var hasPreview = function (file) {
   return (hasConvertToPdfSupport(file) || file.isPDF) && !file.isImage;
-}
-
-
-
+};
 
 var hasTextIcon = function (file) {
   return !file.hasPreview && file.isApplication && file.isDoc;
-}
+};
 
 var hasTableIcon = function (file) {
   return !file.hasPreview && file.isApplication && file.isXls;
-}
+};
 
 var hasCodeIcon = function (file) {
   return !file.hasPreview && !file.isApplication && file.isText;
-}
+};
 
 var hasVideoIcon = function (file) {
   return !file.hasPreview && file.isVideo;
-}
+};
 
 var hasApplicationIcon = function (file) {
   return !file.hasPreview && file.isApplication && !file.hasTextIcon && !file.isXls;
-}
+};
 
 var hasUnknownIcon = function (file) {
-  return !file.hasPreview && !file.isImage && !file.hasTextIcon && !file.hasTableIcon && !file.hasCodeIcon && !file.hasVideoIcon && !file.hasApplicationIcon && !file.hasPreview && !file.isPDF
-}
+  return !file.hasPreview && !file.isImage && !file.hasTextIcon && !file.hasTableIcon && !file.hasCodeIcon && !file.hasVideoIcon && !file.hasApplicationIcon && !file.hasPreview && !file.isPDF;
+};
 
 
 /**
@@ -413,21 +440,21 @@ var parseFileType = function (file) {
   file.hasUnknownIcon = hasUnknownIcon(file);
 
   return file;
-}
+};
 
 /**
  * Append prefix and change extension of filename
  */
 var getConvertedName = function (prefix, filename, newExtension) {
   return prefix+path.basename(filename, path.extname(filename))+newExtension;
-}
+};
 
 /**
  * Get filename fpr preview files
  */
 var getPreviewName = function (file) {
   return getConvertedName("preview_", file.uploadedAs, ".png");
-}
+};
 
 /**
  * Create square thumbnails.
@@ -568,7 +595,7 @@ var convertImageIterator = function (site, file, relativePathInSiteFolder, optio
     if (err) return callback(err);
     callback(null, file);
   });
-}
+};
 
 /**
  * Convert general file for upload
@@ -670,10 +697,10 @@ var parseFileOptions = function (req, path) {
       outputFormat: 'pdf',
       prefix: 'convert_',
     }
-  }
+  };
   options = UtilityService.extend(true, defaults, options);
   return options;
-}
+};
 
 /**
  *
@@ -727,7 +754,7 @@ var removeFromFilesystem = function (site, file, relativePathInSiteFolder, callb
 
   ],
   callback);
-}
+};
 
 /**
  * Public functions

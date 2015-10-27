@@ -24,7 +24,7 @@ var exportByHost = function (req, res, next) {
   var options = {
     id: true,
     site: true,
-  }
+  };
   RoutesService.exportByHost(host, options, function (err, routes) {
     if (err) {
       return res.serverError(err);
@@ -49,8 +49,8 @@ var importByHost = function (req, res, next) {
     options = {};
     RoutesService.importByHost(host, data, options, function (err, result) {
       if(err) { return res.serverError(err); }
-      res.json(result):
-    })
+      res.json(result);
+    });
     return callback(null, result);
   });
 };
@@ -139,13 +139,35 @@ var createByHost = function(req, res, next) {
  */
 var updateOrCreate = function (req, res, next) {
   var data = req.params.all();
-  sails.log.debug("[RoutesController.updateOrCreate]", data);
-  RoutesService.updateOrCreate(req.session.uri.host, data, function (err, result) {
+  var route = data.route;
+  sails.log.debug("[RoutesController.updateOrCreate]", data, route);
+  RoutesService.updateOrCreate(req.session.uri.host, route, function (err, result) {
     if(err) return res.serverError(err);
     sails.log.debug("[RoutesController.updateOrCreate]", "result", result);
     return res.json(result);
   });
 };
+
+/**
+ * Update or create route for any passed host.
+ * If an update or create is needed is checked by ObjectName, Navbar and Sitename.
+ * Only for superadmins!
+ *
+ * @param req.param.host Host to save route for
+ */
+var updateOrCreateByHostByObjectNameAndNavbar = function (req, res, next) {
+  var data = req.params.all();
+  var route = data.route;
+  var host = data.host;
+  delete data.route.importOptions; // delete import info if set
+  sails.log.debug("[RoutesController.updateOrCreateByHostByObjectNameAndNavbar]", data, route);
+  RoutesService.updateOrCreateByObjectNameAndNavbar(host, route, function (err, result) {
+    if(err) return res.serverError(err);
+    sails.log.debug("[RoutesController.updateOrCreateByHostByObjectNameAndNavbar]", "result", result);
+    return res.json(result);
+  });
+};
+
 
 /**
  * Update or create route (eg. position) for any passed host.
@@ -155,10 +177,10 @@ var updateOrCreate = function (req, res, next) {
  */
 var updateOrCreateByHost = function (req, res, next) {
   var data = req.params.all();
+  var route = data.route;
   var host = data.host;
-  delete data.host;
-  sails.log.debug("[RoutesController.updateOrCreateByHost]", host, data);
-  RoutesService.updateOrCreate(host, data, function (err, result) {
+  sails.log.debug("[RoutesController.updateOrCreateByHost]", host, route, data);
+  RoutesService.updateOrCreate(host, route, function (err, result) {
     if(err) return res.serverError(err);
     sails.log.debug("[RoutesController.updateOrCreateByHost]", "result", result);
     return res.json(result);
@@ -170,8 +192,9 @@ var updateOrCreateByHost = function (req, res, next) {
  */
 var updateOrCreateEach = function (req, res, next) {
   var data = req.params.all();
-  sails.log.debug("[RoutesController.updateOrCreateEach]", data);
-  RoutesService.updateOrCreateEach(req.session.uri.host, data.routes, function (err, result) {
+  var routes = data.routes;
+  sails.log.debug("[RoutesController.updateOrCreateEach]", data, routes);
+  RoutesService.updateOrCreateEach(req.session.uri.host, routes, function (err, result) {
     if(err) return res.serverError(err);
     sails.log.debug("[RoutesController.updateOrCreateEach]", "result", result);
     return res.json(result);
@@ -256,6 +279,7 @@ module.exports = {
   exportByHost: exportByHost,
   create: create,
   updateOrCreate: updateOrCreate,
+  updateOrCreateByHostByObjectNameAndNavbar: updateOrCreateByHostByObjectNameAndNavbar,
   updateOrCreateByHost: updateOrCreateByHost,
   updateOrCreateEach: updateOrCreateEach,
   updateOrCreateEachByHost: updateOrCreateEachByHost,

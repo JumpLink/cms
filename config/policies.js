@@ -112,6 +112,10 @@ module.exports.policies = {
     'upload': 'siteadminOrBetter'
   },
 
+  ImportExportController: {
+    'upload': 'siteadminOrBetter'
+  },
+
   LocaleController: {
     'setup': 'developerOrBetter',
   },
@@ -146,6 +150,7 @@ module.exports.policies = {
     'update': 'siteadminOrBetter',
     'destroy': 'siteadminOrBetter',
     'exportByHost': 'superadmin',
+    'updateOrCreateByHostByObjectNameAndNavbar': 'superadmin',
     'create': 'siteadminOrBetter',
     'updateOrCreate': 'siteadminOrBetter',
     'updateOrCreateByHost': 'superadmin',
