@@ -20,7 +20,7 @@ var setPositions = function (site, files, images, callback) {
     last_position++;
     files[i].position = last_position; // set position
     files[i].site = site; // set site for each file
-  };
+  }
   callback(null, files);
 };
 
@@ -31,7 +31,7 @@ var publishEachCreate = function (newImages, callback) {
     // sails.log.debug("Gallery.publishCreate(file);", file);
   });
   callback(null, newImages);
-}
+};
 
 /**
  * 
@@ -50,6 +50,23 @@ var find = function (query, callback) {
   });
 };
 
+/**
+ * 
+ */
+var findOne = function (query, callback) {
+  if(!query.sort) query.sort = 'position';
+  sails.log.debug("[GalleryService.findOne]", query);
+  Gallery.findOne(query).exec(function found(err, image) {
+    if (err) return callback(err);
+    if (UtilityService.isUndefined(image)) {
+      callback("not found");
+    } else {
+      images = UtilityService.fixPosition(image);
+      callback(null, image);
+    }
+  });
+};
+
 /*
  *  { images: [], content: "", .. } => {"contentname1": {}, "contentname3": {}, ..}
  */
@@ -58,9 +75,9 @@ var convertImageArrayToObject = function (images) {
   var result = {};
   for (var i = images.length - 1; i >= 0; i--) {
     result[images[i].content] = images[i].images;
-  };
+  }
   return result;
-}
+};
 
 /**
  * 
@@ -81,7 +98,7 @@ var findForContent = function (content, callback) {
         site: content.site,
         content: content.name,
         page: content.page
-      }
+      };
       callback(null, result);
     }
   });
@@ -94,6 +111,7 @@ module.exports = {
   setPositions: setPositions,
   publishEachCreate: publishEachCreate,
   find: find,
+  findOne: findOne,
   findForContent: findForContent,
   convertImageArrayToObject: convertImageArrayToObject,
-}
+};

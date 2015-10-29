@@ -111,9 +111,36 @@ var find = function (req, res, next) {
       }
     };
     if(req.param('content')) query.where.content = req.param('content');
+    if(req.param('id')) query.where.id = req.param('id');
     GalleryService.find(query, function (err, images) {
       if (err) return res.serverError(err);
       else res.json(images);
+    });
+  });
+};
+
+/**
+ * Find one images of current site and if set, only for certain content
+ *
+ * @param {!object} req - Request
+ * @param {!object} res - responses
+ * @param {function} next
+ */
+var findOne = function (req, res, next) {
+  var query;
+  var host = req.session.uri.host;
+  MultisiteService.getCurrentSiteConfig(host, function (err, config) {
+    if(err) { return res.serverError(err); }
+    query = {
+      where: {
+        site: config.name
+      }
+    };
+    if(req.param('content')) query.where.content = req.param('content');
+    if(req.param('id')) query.where.id = req.param('id');
+    GalleryService.findOne(query, function (err, image) {
+      if (err) return res.serverError(err);
+      else res.json(image);
     });
   });
 };
@@ -170,5 +197,6 @@ module.exports = {
   upload: upload,
   create: upload, // Alias
   find: find,
+  findOne: findOne,
   destroy: destroy
 };
