@@ -67,9 +67,21 @@ If you are on your local maschine you need to "simulate" the domain to test your
 
 ## Try it out
 
-Okay, now you have created a new theme and a new site wich should use or new theme, run the cms `node cms` and open your browser with domain we have chooed: [http://tutorial:1337/](http://tutorial:1337/).
+Okay, now you have created a new theme and a new site wich should use our new theme, run the cms `node cms` and open your browser with domain we have chooed: [http://tutorial:1337/](http://tutorial:1337/).
 Now you should see just "Hello World", if not, something is wrong.
 
 ## Compare
 I have pushed this tutorial to [a github repository](https://github.com/JumpLink/cms-tutorial-theme).
 To compare your version with mine, please clone my repository and run `git checkout -f step-0` 
+
+## Step 1: Our first route with angular and AngularUI Router
+
+Third party libraries musst be installed in the assets folder to make them from the cms loadable, so you should create a .bowerrc (if you are using bower) e.g. with the following desitination folder:
+
+```json
+{
+  "directory": "assets/third-party/"
+}
+```
+After that you can install [AngularJS](https://angularjs.org/) and [AngularUI Router](https://github.com/angular-ui/ui-router) with bower `bower install angular angular-ui-router`.
+
