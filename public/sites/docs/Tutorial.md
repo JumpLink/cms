@@ -197,7 +197,7 @@ The other parts are later important.
 
 If the route is defined in your theme.json setup you can call [http://tutorial:1327/routes/setup](http://tutorial:1327/routes/setup) and the CMS will take the routes objects from your theme.json and will insert them in his database for the current site with the domain you call in your browser. Please note: This is only possible in the `develoment` mode!
 
-To remove the `#` from the url you need to add the base tag to your html head:
+To remove the `#` from the url you need to add the base tag `base(href="/")` to your html head:
 ```jade
 doctype html
 html(ng-app="jumplink.cms.tutorial")
@@ -213,7 +213,7 @@ html(ng-app="jumplink.cms.tutorial")
   script(src="/assets/js/config/routes.js")
 ```
 
-and to activate the angular html5Mode in your `app.js` with
+and to activate the angular html5Mode in your `app.js` with `$locationProvider.html5Mode(true);`:
 ```javascript
 tutorial.config( function($stateProvider, $locationProvider) {
   $locationProvider.html5Mode(true);
