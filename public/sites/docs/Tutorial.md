@@ -149,7 +149,9 @@ Now, go to [http://tutorial:1327/#/helloworld](http://tutorial:1327/#/helloworld
 This is working because the url the cms processed is just `http://tutorial:1327/`,the rest `#/helloworld` is just a [Fragment identifier](https://en.wikipedia.org/wiki/Fragment_identifier) and processed from the client/browser.
 If you try to call [http://tutorial:1327/helloworld](http://tutorial:1327/helloworld) the site is not found and the cms prints the error message `[RoutesService.findOneByUrl] Route not found! /helloworld`. The CMS tries also to find any Controller that match this route but there is no `HelloworldController`. So you need to regist this route in the CMS Database.
 
-You can do this by insert a setup json object into your theme.json or by creating this route in the cms admin, the theme.json could look like
+#### Regist / insert your new route in the CMS database
+
+You can do this by insert a setup json object into your theme.json or by creating this route in the cms admin, the theme.json could look like this
 
 ```json
 {
@@ -176,7 +178,6 @@ You can do this by insert a setup json object into your theme.json or by creatin
         "fallback": {
           "url": ""
         },
-        "site": "admin",
         "main": true,
         "key": "helloworld",
         "objectName": "layoutHelloworld",
@@ -189,7 +190,12 @@ You can do this by insert a setup json object into your theme.json or by creatin
 }
 ```
 
-If the route is defined in your theme.json you can call [http://tutorial:1327/routes/setup](http://tutorial:1327/routes/setup) and the CMS will take the routes objects from your theme.json and will save it in his database for the current site with the domain you call in your browser. Please note: This is only possible in the `develoment` mode!
+In this step the important entries are
+ * `main: true` If this route is not a main route it will be ignored from the cms
+ * `url` To let the CMS find your route
+The other parts are later important.
+
+If the route is defined in your theme.json setup you can call [http://tutorial:1327/routes/setup](http://tutorial:1327/routes/setup) and the CMS will take the routes objects from your theme.json and will insert them in his database for the current site with the domain you call in your browser. Please note: This is only possible in the `develoment` mode!
 
 To remove the `#` from the url you need to add the base tag to your html head:
 ```jade
@@ -222,6 +228,8 @@ tutorial.config( function($stateProvider, $locationProvider) {
   });
 });
 ```
+
+Now you should be able to call [http://tutorial:1327/helloworld](http://tutorial:1327/helloworld) and to see your `helloworld/index.jade` template file.
 
 ## Compare
 To compare your version with mine, please clone my repository and run `git checkout -f step-1` 
