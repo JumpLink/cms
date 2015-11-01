@@ -99,7 +99,7 @@ Third party libraries musst be installed in the assets folder to make them from 
 ```
 After that you can install AngularJS and AngularUI Router with bower `bower install angular angular-ui-router`.
 
-Create a `js/config/app.js` file with the following content
+Create a `[theme root]/assets/js/config/app.js` file with the following content
 
 ```javascript
 var tutorial = angular.module('jumplink.cms.tutorial', ['ui.router']);
@@ -107,7 +107,7 @@ var tutorial = angular.module('jumplink.cms.tutorial', ['ui.router']);
 
 ### First route
 
-Create an new file called `tutorial/assets/config/routes`
+Create an new file called `[theme root]/assets/config/routes.js`
 ```javascript
 tutorial.config( function($stateProvider) {
   // Hello World
@@ -120,6 +120,12 @@ tutorial.config( function($stateProvider) {
     }
   });
 });
+```
+
+Content of `[theme root]/views/modern/helloworld/index.jade`
+
+``` jade
+h1 Hello World from template file!
 ```
 
 And modify your init.jade file to let angular know that this is an angular app, add
@@ -138,4 +144,7 @@ html(ng-app="jumplink.cms.tutorial")
   script(src="/assets/js/config/app.js")
   script(src="/assets/js/config/routes.js")
 ```
+
+Open your browser and go to [http://tutorial:1337/](http://tutorial:1337/), you will NOT see the content of your new template file because this is the wrong route.
+Now, go to [http://tutorial:1327/#/helloworld](http://tutorial:1327/#/helloworld) and you should see the content of your new template file in your browser.
 
