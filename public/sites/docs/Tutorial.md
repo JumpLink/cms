@@ -241,3 +241,12 @@ To compare your version with mine, please clone my repository and run `git check
 
 Thinks you need to know (and how it works) before you start with this step:
 
+* ...
+
+Now we need the [jumplink-cms-angular](https://github.com/JumpLink/cms-angular) module:
+
+```
+bower install JumpLink/cms-angular --save
+```
+
+
