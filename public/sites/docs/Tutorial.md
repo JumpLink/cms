@@ -148,3 +148,5 @@ html(ng-app="jumplink.cms.tutorial")
 Open your browser and go to [http://tutorial:1337/](http://tutorial:1337/), you will NOT see the content of your new template file because this is the wrong route.
 Now, go to [http://tutorial:1327/#/helloworld](http://tutorial:1327/#/helloworld) and you should see the content of your new template file in your browser.
 
+## Compare
+To compare your version with mine, please clone my repository and run `git checkout -f step-1` 
