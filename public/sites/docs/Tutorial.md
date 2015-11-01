@@ -4,7 +4,7 @@ All steps of this tutorial are pushed to a github repository: https://github.com
 
 ## Step 0: Start to create a new theme
 
-Thinks you need to know how it works before you start with this step:
+Thinks you need to know (and how it works) before you start with this step:
 
 * [Jade](http://jade-lang.com/)
 
@@ -44,7 +44,7 @@ html
 ### assets/images/preview.png
 This image is just for a preview of the theme in the admin theme
 
-## Create a new site use the new theme
+### Create a new site use the new theme
 
 Modify your cms config file `[cms root]/config/local.json` and add the new object as a parent of `sites`:
 
@@ -70,17 +70,17 @@ If you are on your local maschine you need to "simulate" the domain to test your
 127.0.1.1       tutorial
 ```
 
-## Try it out
+### Try it out
 
 Okay, now you have created a new theme and a new site wich should use our new theme, run the cms `node cms` and open your browser with domain we have chooed: [http://tutorial:1337/](http://tutorial:1337/).
 Now you should see just "Hello World", if not, something is wrong.
 
-## Compare
+### Compare
 To compare your version with mine, please clone my totorial repository and run `git checkout -f step-0` 
 
 ## Step 1: Our first route with AngularJS and AngularUI Router
 
-Thinks you need to know how it works before you start with this step:
+Thinks you need to know (and how it works) before you start with this step:
 
 * [Bower](http://bower.io/)
 * [AngularJS](https://angularjs.org/)
@@ -234,5 +234,10 @@ tutorial.config( function($stateProvider, $locationProvider) {
 
 Now you should be able to call [http://tutorial:1327/helloworld](http://tutorial:1327/helloworld) and to see your `helloworld/index.jade` template file.
 
-## Compare
+### Compare
 To compare your version with mine, please clone my repository and run `git checkout -f step-1` 
+
+## Step 2: Our first route with AngularJS and AngularUI Router
+
+Thinks you need to know (and how it works) before you start with this step:
+
