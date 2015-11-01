@@ -4,18 +4,17 @@ All steps of this tutorial are pushed to a github repository: https://github.com
 
 ## Step 0: Start to create a new theme
 
-Thinks you need to know before you start with this step:
+Thinks you need to know how it works before you start with this step:
 
-* Jade
-
+* [Jade](http://jade-lang.com/)
 
 To create a new theme create a folder in `[cms root]/public/themes`, the new theme foldername will be the identifer for the theme.
 We call our theme `tutorial`.
 
 Each theme requires at least the following files:
-theme.json
-views/modern/init.jade
-assets/images/preview.png
+* theme.json
+* views/modern/init.jade
+* assets/images/preview.png
 
 ### theme.json
 A minimal theme.json could look like
@@ -77,19 +76,18 @@ Okay, now you have created a new theme and a new site wich should use our new th
 Now you should see just "Hello World", if not, something is wrong.
 
 ## Compare
-I have pushed this tutorial to [a github repository](https://github.com/JumpLink/cms-tutorial-theme).
-To compare your version with mine, please clone my repository and run `git checkout -f step-0` 
+To compare your version with mine, please clone my totorial repository and run `git checkout -f step-0` 
 
-## Step 1: Our first route with angular and AngularUI Router
+## Step 1: Our first route with AngularJS and AngularUI Router
 
-Thinks you need to know before you start with this tutorial:
+Thinks you need to know how it works before you start with this step:
 
-* Bower
+* [Bower](http://bower.io/)
 * [AngularJS](https://angularjs.org/)
 * [AngularUI Router](https://github.com/angular-ui/ui-router)
 
 
-### Install Angular and AngularUI Router
+### Install AngularJS and AngularUI Router
 Third party libraries musst be installed in the assets folder to make them from the cms loadable, so you should create a .bowerrc (if you are using bower) e.g. with the following desitination folder:
 
 ```json
@@ -147,6 +145,83 @@ html(ng-app="jumplink.cms.tutorial")
 
 Open your browser and go to [http://tutorial:1337/](http://tutorial:1337/), you will NOT see the content of your new template file because this is the wrong route.
 Now, go to [http://tutorial:1327/#/helloworld](http://tutorial:1327/#/helloworld) and you should see the content of your new template file in your browser.
+
+This is working because the url the cms processed is just `http://tutorial:1327/`,the rest `#/helloworld` is just a [Fragment identifier](https://en.wikipedia.org/wiki/Fragment_identifier) and processed from the client/browser.
+If you try to call [http://tutorial:1327/helloworld](http://tutorial:1327/helloworld) the site is not found and the cms prints the error message `[RoutesService.findOneByUrl] Route not found! /helloworld`. The CMS tries also to find any Controller that match this route but there is no `HelloworldController`. So you need to regist this route in the CMS Database.
+
+You can do this by insert a setup json object into your theme.json or by creating this route in the cms admin, the theme.json could look like
+
+```json
+{
+  "name": "JumpLink CMS Tutorial Theme",
+  "version": "0.0.1",
+  "description": "Theme to learn how you can create your own CMS Theme for JumpLink CMS",
+  "image": "assets/images/preview.png",
+  "modernview": "views/modern/init.jade",
+  "license": "MIT",
+  "setup": {
+    "routes": [
+      {
+        "position": 1,
+        "match": "/*helloworld*",
+        "title": "Hello World",
+        "state": {
+          "name": "layout.helloworld",
+          "customstate": false,
+          "url": "",
+          "views": "",
+          "resolve": "",
+          "parent": "layout"
+        },
+        "fallback": {
+          "url": ""
+        },
+        "site": "admin",
+        "main": true,
+        "key": "helloworld",
+        "objectName": "layoutHelloworld",
+        "sitetitle": "Tutorial - Hello World",
+        "url": "/helloworld",
+        "navbar": "header"
+      }
+    ]
+  }
+}
+```
+
+If the route is defined in your theme.json you can call [http://tutorial:1327/routes/setup](http://tutorial:1327/routes/setup) and the CMS will take the routes objects from your theme.json and will save it in his database for the current site with the domain you call in your browser. Please note: This is only possible in the `develoment` mode!
+
+To remove the `#` from the url you need to add the base tag to your html head:
+```jade
+doctype html
+html(ng-app="jumplink.cms.tutorial")
+  head
+    base(href="/")
+    title JumpLink CMS Tutorial
+  body
+    | Hello World
+    span(ui-view="layout")
+  script(src="/assets/third-party/angular/angular.js")
+  script(src="/assets/third-party/angular-ui-router/release/angular-ui-router.js")
+  script(src="/assets/js/config/app.js")
+  script(src="/assets/js/config/routes.js")
+```
+
+and to activate the angular html5Mode in your `app.js` with
+```javascript
+tutorial.config( function($stateProvider, $locationProvider) {
+  $locationProvider.html5Mode(true);
+  // Hello World
+  $stateProvider.state('helloworld', {
+    url: '/helloworld',
+    views: {
+      'layout' : {
+        templateUrl: '/views/modern/helloworld/index.jade',
+      },
+    }
+  });
+});
+```
 
 ## Compare
 To compare your version with mine, please clone my repository and run `git checkout -f step-1` 
