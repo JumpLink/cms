@@ -1,5 +1,5 @@
 # Tutorial
-## Start to create a new theme
+## Step 0: Start to create a new theme
 To create a new theme create a folder in `[cms root]/public/themes`, the new theme foldername will be the identifer for the theme.
 We call or theme `tutorial`.
 
@@ -22,6 +22,7 @@ A minimal theme.json could look like
 ```
 
 ### views/modern/init.jade
+A minimal init.jade could look like
 
 ```jade
 doctype html
@@ -51,3 +52,17 @@ Modify your cms config file `[cms root]/config/local.json` and add the new objec
   }
 }
 ```
+* `name` is the Name of your site and is needed as a identifier in the cms database to distinguish the site from each other sites
+* `domains` you can insert multiple domains in this array, the cms decides on the basis of the domain which site (and the related theme) it will be loaded
+* `fallback.theme` The theme that will be used if no theme was set up (in the admin) for the current site, this must be the same as the folder name of your new theme
+
+If you are on your local maschine you need to "simulate" the domain to test your site, so you need to add you domain to your `/etc/hosts` file, for or this case like that:
+```
+[...]
+127.0.1.1       tutorial
+```
+
+## Try it out
+
+Okay, now you have created a new theme and a new site wich should use or new theme, run the cms `node cms` and open your browser with domain we have chooed: [http://tutorial:1337/](http://tutorial:1337/).
+Now you should see just "Hello World", if not, something is wrong.
