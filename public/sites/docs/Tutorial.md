@@ -1,8 +1,14 @@
 # Tutorial
 
-All steps of this tutorial are 
+All steps of this tutorial are pushed to a github repository: https://github.com/JumpLink/cms-tutorial-theme
 
 ## Step 0: Start to create a new theme
+
+Thinks you need to know before you start with this step:
+
+* Jade
+
+
 To create a new theme create a folder in `[cms root]/public/themes`, the new theme foldername will be the identifer for the theme.
 We call our theme `tutorial`.
 
@@ -76,6 +82,14 @@ To compare your version with mine, please clone my repository and run `git check
 
 ## Step 1: Our first route with angular and AngularUI Router
 
+Thinks you need to know before you start with this tutorial:
+
+* Bower
+* [AngularJS](https://angularjs.org/)
+* [AngularUI Router](https://github.com/angular-ui/ui-router)
+
+
+### Install Angular and AngularUI Router
 Third party libraries musst be installed in the assets folder to make them from the cms loadable, so you should create a .bowerrc (if you are using bower) e.g. with the following desitination folder:
 
 ```json
@@ -83,5 +97,45 @@ Third party libraries musst be installed in the assets folder to make them from 
   "directory": "assets/third-party/"
 }
 ```
-After that you can install [AngularJS](https://angularjs.org/) and [AngularUI Router](https://github.com/angular-ui/ui-router) with bower `bower install angular angular-ui-router`.
+After that you can install AngularJS and AngularUI Router with bower `bower install angular angular-ui-router`.
+
+Create a `js/config/app.js` file with the following content
+
+```javascript
+var tutorial = angular.module('jumplink.cms.tutorial', ['ui.router']);
+```
+
+### First route
+
+Create an new file called `tutorial/assets/config/routes`
+```javascript
+tutorial.config( function($stateProvider) {
+  // Hello World
+  $stateProvider.state('helloworld', {
+    url: '/helloworld',
+    views: {
+      'layout' : {
+        templateUrl: '/views/modern/helloworld/index.jade',
+      },
+    }
+  });
+});
+```
+
+And modify your init.jade file to let angular know that this is an angular app, add
+
+`ng-app="jumplink.cms.tutorial"` to your html element and load your javascript files:
+```jade
+doctype html
+html(ng-app="jumplink.cms.tutorial")
+  head
+    title JumpLink CMS Tutorial
+  body
+    | Hello World
+    span(ui-view="layout")
+  script(src="/assets/third-party/angular/angular.js")
+  script(src="/assets/third-party/angular-ui-router/release/angular-ui-router.js")
+  script(src="/assets/js/config/app.js")
+  script(src="/assets/js/config/routes.js")
+```
 
