@@ -85,6 +85,9 @@ Thinks you need to know how it works before you start with this step:
 * [Bower](http://bower.io/)
 * [AngularJS](https://angularjs.org/)
 * [AngularUI Router](https://github.com/angular-ui/ui-router)
+* [Sails.js](http://sailsjs.org/)
+  * [Routes](http://sailsjs.org/documentation/concepts/routes)
+  * [Routing to Controllers]()
 
 
 ### Install AngularJS and AngularUI Router
