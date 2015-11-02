@@ -122,7 +122,7 @@ Create an new file called `[theme root]/assets/config/routes.js`
 
 Content of `[theme root]/views/modern/helloworld/index.jade`
 
-  h1 Hello World from template file!
+    h1 Hello World from template file!
 
 And modify your init.jade file to let angular know that this is an angular app, add
 
@@ -313,4 +313,4 @@ To see error on your developer console you can catch an state error event on the
       });
     }); 
 
-To [see here](https://github.com/JumpLink/cms-tutorial-theme/compare/step-1...step-2) to show all differences between step-1 and step2.
+[Show here](https://github.com/JumpLink/cms-tutorial-theme/compare/step-1...step-2) to see all differences between step-1 and step2.
