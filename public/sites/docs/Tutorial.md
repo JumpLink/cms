@@ -42,7 +42,7 @@ A minimal init.jade could look like
         | Hello World
 
 ### assets/images/preview.png
-This image is just for a preview of the theme in the admin theme
+This image is just for a preview of the theme in the admin theme.
 
 ### Create a new site use the new theme in the local.json
 
@@ -66,7 +66,7 @@ Modify your CMS config file `[cms root]/config/local.json` and add the new objec
 
 ### /etc/hosts
 
-If you are on your local machine you need to "simulate" the domain to test your site, so you need to add your domain to your `/etc/hosts` file, for our case perhaps like this:
+If you are on your local machine you need to "simulate" the domain to test your site, so you need to add your domain to your `/etc/hosts` file, in our case for example like this:
 
     [...]
     127.0.1.1       tutorial
@@ -74,12 +74,12 @@ If you are on your local machine you need to "simulate" the domain to test your 
 
 ### Try it out
 
-Okay, now you have created a new theme and a new site which should use our new theme, run the CMS `node cms` and open your browser with domain we have chosen: [http://tutorial:1337/](http://tutorial:1337/).
-Now you should see just "Hello World", if not, something is wrong.
+Okay, now you have created a new theme and a new site which should use our new theme, run the CMS `node cms` and open your browser with the domain we have chosen: [http://tutorial:1337/](http://tutorial:1337/).
+Now you should just see "Hello World", if not, something is wrong.
 
 ### Compare
 
-To compare your version with mine, please clone my totorial repository and run `git checkout -f step-0` 
+To compare your version with mine, please clone my tutorial repository and run `git checkout -f step-0` 
 
 ## Step 1: Our first route with AngularJS and AngularUI Router
 
@@ -112,7 +112,7 @@ Create a `[theme root]/assets/js/config/app.js` file with the following content
 
 ### First route in routes.js
 
-Create an new file called `[theme root]/assets/config/routes.js`
+Create a new file called `[theme root]/assets/config/routes.js`
 
     tutorial.config( function($stateProvider) {
       // Hello World
@@ -153,8 +153,8 @@ And modify your init.jade file to let angular know that this is an angular app, 
 Open your browser and go to [http://tutorial:1337/](http://tutorial:1337/), you will NOT see the content of your new template file because this is the wrong route.
 Now, go to [http://tutorial:1327/#/helloworld](http://tutorial:1327/#/helloworld) and you should see the content of your new template file in your browser.
 
-This is working because the url the CMS processed is just `http://tutorial:1327/`,the rest `#/helloworld` is just a [Fragment identifier](https://en.wikipedia.org/wiki/Fragment_identifier) and processed by the client/browser.
-If you try to call [http://tutorial:1327/helloworld](http://tutorial:1327/helloworld) but the site will not be found and the CMS prints the error message `[RoutesService.findOneByUrl] Route not found! /helloworld`. The CMS tries also to find any Controller that would match this url0 but there is no `HelloworldController`. So you need to register this route in the CMS database.
+This is working because the URL the CMS processed is just `http://tutorial:1327/`,the rest `#/helloworld` is just a [Fragment identifier](https://en.wikipedia.org/wiki/Fragment_identifier) and processed by the client/browser.
+If you try to call [http://tutorial:1327/helloworld](http://tutorial:1327/helloworld) the site will not be found and the CMS prints the error message `[RoutesService.findOneByUrl] Route not found! /helloworld`. The CMS also tries to find any Controller that would match this url, but there is no `HelloworldController`. So you need to register this route in the CMS database.
 
 #### Register / insert your new route in the CMS database
 
@@ -202,7 +202,7 @@ In this step the important entries are
 
 The other parts are important later.
 
-If the route is defined in your theme.json setup you can call [http://tutorial:1327/routes/setup](http://tutorial:1327/routes/setup) and the CMS will take the routes objects from your theme.json and will insert them in its database for the current site with the domain you call in your browser. Please note: This is only possible in the `development` mode!
+If the route is defined in your theme.json setup you can call [http://tutorial:1327/routes/setup](http://tutorial:1327/routes/setup) and the CMS will take the routes objects from your theme.json and insert them in its database for the current site with the domain you call in your browser. Please note: This is only possible in the `development` mode!
 
 To remove the `#` from the url you need to add the base tag `base(href="/")` to your html head:
 
@@ -219,7 +219,7 @@ To remove the `#` from the url you need to add the base tag `base(href="/")` to 
       script(src="/assets/js/config/app.js")
       script(src="/assets/js/config/routes.js")
 
-and to activate the angular html5Mode in your `app.js` with `$locationProvider.html5Mode(true);`:
+and to activate the angular html5Mode in your `routes.js` with `$locationProvider.html5Mode(true);`:
 
     tutorial.config( function($stateProvider, $locationProvider) {
       $locationProvider.html5Mode(true);
@@ -247,14 +247,14 @@ Now we need the [jumplink-cms-angular](https://github.com/JumpLink/cms-angular) 
 
 ### app.js
 
-Add `'jumplink.cms.routes'` as a angular dependency in your `[theme root]/assets/js/config/app.js` file.
+Add `'jumplink.cms.routes'` as an angular dependency in your `[theme root]/assets/js/config/app.js` file.
 
     var tutorial = angular.module('jumplink.cms.tutorial', [
       'ui.router',
       'jumplink.cms.routes',
     ]); 
 
-In your `[theme root]/assets/js/config/routes.js` replace `$stateProvider` and `$locationProvider` with `jlRoutesProvider`, the `jlRoutesProvider` is a provider from the jumplink-cms-angular module, is adapted to the cms and uses AngularUI Router internally.
+In your `[theme root]/assets/js/config/routes.js` replace `$stateProvider` and `$locationProvider` with `jlRoutesProvider`. The `jlRoutesProvider` is a provider from the jumplink-cms-angular module. It is adapted to the CMS and uses AngularUI Router internally.
 
     tutorial.config( function(jlRoutesProvider, jlRoutesProvider) {
       jlRoutesProvider.html5Mode(true);
@@ -271,9 +271,9 @@ In your `[theme root]/assets/js/config/routes.js` replace `$stateProvider` and `
 
 Now create some new templates:
 
- * `[theme root]/views/modern/layout.jade` - or new layout file wich will contain directives for 3 templates, the helloworld content, a footer and a toolbar.
- * `[theme root]/views/modern/footer.jade` - the simple footer example
- * `[theme root]/views/modern/toolbar.jade` - the simple toolbar example
+ * `[theme root]/views/modern/layout.jade` - our new layout file wich will contain directives for 3 templates, the helloworld content, a footer and a toolbar.
+ * `[theme root]/views/modern/footer.jade` - a simple footer example
+ * `[theme root]/views/modern/toolbar.jade` - a simple toolbar example
 
 ### layout.jade
 
@@ -282,11 +282,11 @@ Now create some new templates:
       .content(ui-view="content")
       .footer.hidden-print(ui-view="footer")
 
-the ui-view attributes are the directive for or templates, this directive comes from the AngularUI Router.
+the ui-view attributes are the directive for our templates, this directive comes from the AngularUI Router.
 
 ### routes.js
 
-For our layout file wie need to define layout in our routes.js:
+For our layout file we need to define layout in our routes.js:
 
     // basic layout
     jlRoutesProvider.state('layout', {
@@ -299,7 +299,7 @@ For our layout file wie need to define layout in our routes.js:
       }
     });
 
-Our Helloworld state needs to be based on or template state now:
+Our Helloworld state needs to be based on our template state now:
 
     // Hello World View based on the layout state (parent `layout` + state key `helloworld` = route objectname `layoutHelloworld`)
     routeOptions.layoutHelloworld = {
@@ -316,12 +316,12 @@ Our Helloworld state needs to be based on or template state now:
       }
     };
 
-At least but not last we need to init our news sates:
+Last but not least we need to init our new states:
 
     // init all routes from `routes` defined in routeOptions 
     jlRoutesProvider.setRoutes(routes, routeOptions);
 
-To see error messages on your browsers developer console you can catch the state error event on the end of our routes.js file:
+To see error messages on your browser's developer console you can catch the state error event at the end of our routes.js file:
 
     tutorial.run(function ($rootScope, $state, $window, $log) {
       $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams, error) {
@@ -356,8 +356,8 @@ Let's look at the helloworld route from step 1 again:
       "navbar": "header"
     }
 
-There is a objectName property `"objectName": "layoutHelloworld"`, the object name is generated from the key and state.parent properties.
-The parent state is `layout` and the key is `helloworld`, so "layout"+"helloworld" in the [CamelCase practice](https://en.wikipedia.org/wiki/CamelCase) results to `layoutHelloworld` and that is exactly the route object name we need to use for our state if if we want it to run this state on our `/helloworld` url.
+There is an objectName property `"objectName": "layoutHelloworld"`, the object name is generated from the key and state.parent properties.
+The parent state is `layout` and the key is `helloworld`, so "layout"+"helloworld" in the [CamelCase practice](https://en.wikipedia.org/wiki/CamelCase) results in `layoutHelloworld` and that is exactly the route object name we need to use for our state if we want it to run this state on our `/helloworld` url.
 
 ### Parent State / Layout
 
