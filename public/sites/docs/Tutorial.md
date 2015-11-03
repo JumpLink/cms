@@ -321,6 +321,7 @@ Last but not least we need to init our new states:
     // init all routes from `routes` defined in routeOptions 
     jlRoutesProvider.setRoutes(routes, routeOptions);
 
+
 To see error messages on your browser's developer console you can catch the state error event at the end of our routes.js file:
 
     tutorial.run(function ($rootScope, $state, $window, $log) {
@@ -328,6 +329,30 @@ To see error messages on your browser's developer console you can catch the stat
         $log.error("[config/routes.js] Error", error);
       });
     }); 
+
+### init.jade
+
+There is a new variable called `routes` in our routes.js file. This variable contains all routes for our current site, the problem is that it is currently not possible to load data dynamically from server before the routes.js runs, but the CMS makes them available to us within the templates, so we must only assign them to the client with `var routes = eval(!{JSON.stringify(routes)});`. This is a very bad practice and only a workaround until until there is a better way. Our init.jade now looks like this:
+
+    doctype html
+    html(ng-app="jumplink.cms.tutorial")
+      head
+        base(href="/")
+        title JumpLink CMS Tutorial
+      body
+        span(ui-view="layout")
+          | Replace me!
+      script.
+        var routes = eval(!{JSON.stringify(routes)});
+      script(src="/assets/third-party/angular/angular.js")
+      script(src="/assets/third-party/angular-ui-router/release/angular-ui-router.js")
+      script(src="/assets/third-party/sails.io.js/dist/sails.io.js")
+      script(src="/assets/third-party/angularSails/dist/ngsails.io.js")
+      script(src="/assets/third-party/jumplink-cms-angular/dist/jumplink-cms-angular.js")
+      script(src="/assets/js/config/app.js")
+      script(src="/assets/js/config/routes.js")
+
+As you can see I have also insert the new third-party libraries in this file.
 
 ### How is the `layoutHelloworld` object assigned to the `/helloworld` url?
 
