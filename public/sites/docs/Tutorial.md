@@ -256,7 +256,7 @@ Add `'jumplink.cms.routes'` as an angular dependency in your `[theme root]/asset
 
 In your `[theme root]/assets/js/config/routes.js` replace `$stateProvider` and `$locationProvider` with `jlRoutesProvider`. The `jlRoutesProvider` is a provider from the jumplink-cms-angular module. It is adapted to the CMS and uses AngularUI Router internally.
 
-    tutorial.config( function(jlRoutesProvider, jlRoutesProvider) {
+    tutorial.config( function(jlRoutesProvider) {
       jlRoutesProvider.html5Mode(true);
       // Hello World
       jlRoutesProvider.state('helloworld', {
