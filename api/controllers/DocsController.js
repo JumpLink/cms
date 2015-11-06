@@ -3,14 +3,12 @@
  *
  * @module DocsController
  *
- * @requires dox - https://github.com/tj/dox
  * @requires path - https://nodejs.org/api/path.html
  * @requires fs-extra - https://github.com/jprichardson/node-fs-extra
  *
  * @see http://sailsjs.org/#!documentation/controllers
  */
 
-var dox = require('dox');
 var fs = require('fs-extra');
 var path = require('path');
 
@@ -189,6 +187,22 @@ var all = function(req, res, next) {
 };
 
 /**
+ * Get all docs they are list in `available`
+ *
+ * @param {!object} req - Request
+ * @param {!object} res - responses
+ * @param {function} next
+ */
+var allAngular = function(req, res, next) {
+  sails.log.debug("[DocsController:all]");
+  DocsService.parseAllAngular({highlight: true, lang: 'javascript'}, function (err, jsDocObjs) {
+    if(err) return res.serverError(err);
+    res.json(jsDocObjs);
+  });
+};
+
+
+/**
  * public api functions
  */
 module.exports = {
@@ -203,5 +217,6 @@ module.exports = {
   responses: responses,
   views: views,
   available: available,
-  all: all
+  all: all,
+  allAngular: allAngular,
 };

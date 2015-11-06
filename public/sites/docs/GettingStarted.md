@@ -17,7 +17,7 @@
 ## Install Requirements
 
 Install the system requirements, on debian based systems this looks like
-l
+
     sudo apt install imagemagick ghostscript poppler-utils
 
 ### Optional Requirements

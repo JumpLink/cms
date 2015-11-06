@@ -61,7 +61,7 @@ var parseJsFile = function (jsFileObj, callback) {
     base: jsFileObj.base,
     ext: jsFileObj.ext,
     name: jsFileObj.name,
-  }
+  };
   callback(null, jsDocObj);
 };
 
@@ -72,7 +72,7 @@ var parseJsFile = function (jsFileObj, callback) {
  */
 var sort = function(available) {
   return UtilityService.$filter('orderBy')(available);
-}
+};
 
 /**
  * Read the JavaScript file
@@ -113,6 +113,7 @@ var parseDirname = function (name, dirname, options, callback) {
       });
     },
     function filterJSFiles(files, callback) {
+      console.log("files", files);
       async.filter(files, function(file, callback) {
         callback(path.extname(file) === '.js');
       }, function(jsFiles){
@@ -138,7 +139,37 @@ var parseDirname = function (name, dirname, options, callback) {
 };
 
 /**
- * Get all available docs sorted by name. 
+ * Parse all docs from dirname.
+ */
+var parseFilenames = function (files, name, dirname, options, callback) {
+  async.waterfall([
+    function filterJSFiles(callback) {
+      async.filter(files, function(file, callback) {
+        callback(path.extname(file) === '.js');
+      }, function(jsFiles){
+        callback(null, jsFiles);
+      });
+    },
+    function (jsFiles, callback) {
+      readJSFiles(jsFiles, name, dirname, callback);
+    },
+    function (jsFileObjs, callback) {
+      async.map(jsFileObjs, function (jsFileObj, callback) {
+        parseJsFile(jsFileObj, callback);
+      }, callback);
+    },
+    function (jsDocFolderObjs, callback) {
+      if(options.highlight) {
+        HighlightDocs(jsDocFolderObjs, options, callback);
+      } else {
+        callback(null, jsDocFolderObjs);
+      }
+    },
+  ], callback);
+};
+
+/**
+ * Get all available backend docs sorted by name. 
  */
 var available = function () {
   return sort([
@@ -156,7 +187,7 @@ var available = function () {
 };
 
 /**
- * Parse all available docs
+ * Parse all available docs for the backend
  */
 var parseAll = function (options, cb) {
   var available = DocsService.available();
@@ -171,8 +202,39 @@ var parseAll = function (options, cb) {
     // convert array to object
     for (var i = 0; i < available.length; i++) {
       result[available[i]] = docsArray[i];
-    };
+    }
     cb(null, result);
+  });
+};
+
+var parseAngularContent = function (options, callback) {
+  async.parallel({
+    ContentService: function (callback) {
+      var name = 'ContentService';
+      parseFilenames(['ContentService.js'], name, './public/themes/docs/assets/third-party/jumplink-cms-angular/src/content', options, callback);
+    },
+    jlContentDirective: function (callback) {
+      var name = 'jlContentDirective';
+      parseFilenames(['jlContentDirective.js'], name, './public/themes/docs/assets/third-party/jumplink-cms-angular/src/content', options, callback);
+    },
+  }, function (err, results) {
+    var result = results.ContentService.concat(results.jlContentDirective);
+    callback(err, result);
+  });
+};
+
+/**
+ * Parse all available docs for the angular module
+ */
+var parseAllAngular = function (options, cb) {
+  async.parallel({
+    content: function (callback) {
+      parseAngularContent(options, function(err, jsDocObjs){
+        callback(err, {docs:jsDocObjs, name: 'content'});
+      });
+    },
+  },function(err, results) {
+    cb(err, results);
   });
 };
 
@@ -182,5 +244,6 @@ var parseAll = function (options, cb) {
 module.exports = {
   parseDirname: parseDirname,
   available: available,
-  parseAll: parseAll
+  parseAll: parseAll,
+  parseAllAngular: parseAllAngular,
 };

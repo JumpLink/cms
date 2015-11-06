@@ -92,7 +92,8 @@ module.exports.policies = {
     'responses': true,
     'views': true,
     'available': true,
-    'all': true
+    'all': true,
+    'allAngular': true,
   },
 
   DocumentController: {
