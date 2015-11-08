@@ -207,19 +207,37 @@ var parseAll = function (options, cb) {
   });
 };
 
-var parseAngularContent = function (options, callback) {
+var parseAngularServices = function (options, callback) {
   async.parallel({
     ContentService: function (callback) {
       var name = 'ContentService';
       parseFilenames(['ContentService.js'], name, './public/themes/docs/assets/third-party/jumplink-cms-angular/src/content', options, callback);
     },
-    jlContentDirective: function (callback) {
-      var name = 'jlContentDirective';
-      parseFilenames(['jlContentDirective.js'], name, './public/themes/docs/assets/third-party/jumplink-cms-angular/src/content', options, callback);
+    ContentBootstrapService: function (callback) {
+      var name = 'ContentBootstrapService';
+      parseFilenames(['ContentBootstrapService.js'], name, './public/themes/docs/assets/third-party/jumplink-cms-angular/src/content/bootstrap', options, callback);
+    },
+    ContentMediumService: function (callback) {
+      var name = 'ContentMediumService';
+      parseFilenames(['ContentMediumService.js'], name, './public/themes/docs/assets/third-party/jumplink-cms-angular/src/content/medium', options, callback);
     },
   }, function (err, results) {
-    var result = results.ContentService.concat(results.jlContentDirective);
-    callback(err, result);
+    callback(err, results);
+  });
+};
+
+var parseAngularDirectives = function (options, callback) {
+  async.parallel({
+    jlContentBlocksDirective: function (callback) {
+      var name = 'jlContentDirective';
+      parseFilenames(['jlContentDirective.js'], name, './public/themes/docs/assets/third-party/jumplink-cms-angular/src/content/medium', options, callback);
+    },
+    ContentBootstrapService: function (callback) {
+      var name = 'jlContentBlocksDirective';
+      parseFilenames(['jlContentBlocksDirective.js'], name, './public/themes/docs/assets/third-party/jumplink-cms-angular/src/content/medium', options, callback);
+    },
+  }, function (err, results) {
+    callback(err, results);
   });
 };
 
@@ -228,9 +246,14 @@ var parseAngularContent = function (options, callback) {
  */
 var parseAllAngular = function (options, cb) {
   async.parallel({
-    content: function (callback) {
-      parseAngularContent(options, function(err, jsDocObjs){
-        callback(err, {docs:jsDocObjs, name: 'content'});
+    Services: function (callback) {
+      parseAngularServices(options, function(err, jsDocObjs){
+        callback(err, {docs:jsDocObjs, name: 'Services'});
+      });
+    },
+    Directives: function (callback) {
+      parseAngularDirectives(options, function(err, jsDocObjs){
+        callback(err, {docs:jsDocObjs, name: 'Directives'});
       });
     },
   },function(err, results) {
