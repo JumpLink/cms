@@ -9,9 +9,15 @@ var stringStartsWith = function (string, prefix) {
   return string.slice(0, prefix.length) == prefix;
 };
 
-var rescope = function (imagePath) {
+// http://stackoverflow.com/questions/4250364/how-to-trim-a-file-extension-from-a-string-in-javascript
+var removeExtension = function(string) {
+  return string.replace(/\.[^/.]+$/, "");
+}
+
+var rescope = function (imageItem) {
   easyimg.rescrop({
-     src:imagePath, dst:argv.dir+'/'+'rescrop_'+path.basename(imagePath),
+     src:imageItem.path,
+     dst:imageItem.rescrop,
      width:960,
      cropwidth:960,
      cropheight:720,
@@ -20,6 +26,20 @@ var rescope = function (imagePath) {
     }).then(
     function(image) {
       console.log('Resized and cropped: ' + image.width + ' x ' + image.height);
+      easyimg.convert({
+        src:imageItem.rescrop,
+        dst:imageItem.rescrop_png,
+      }).then(
+        function (file) {
+          file.should.be.a('object');
+          file.should.have.property('type');
+          file.type.should.be.equal('png');
+          file.name.should.be.equal('convert.png');
+        },
+        function (err) {
+          console.dir(err);
+        }
+      );
     },
     function (err) {
       console.dir(err);
@@ -33,7 +53,9 @@ fs.walk(argv.dir)
     item.basename = path.basename(item.path);
     // console.log(item.basename);
     if(!stringStartsWith(item.basename, 'rescrop_') && !stringStartsWith(item.basename, 'thumb_') && !stringStartsWith(item.basename, 'gallery')) {
-      items.push(item.path);
+      item.rescrop = argv.dir+'/'+'rescrop_'+item.basename;
+      item.rescrop_png = removeExtension(item.rescrop)+'.png';
+      items.push(item);
     }
     
   })
