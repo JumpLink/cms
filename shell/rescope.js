@@ -12,7 +12,7 @@ var stringStartsWith = function (string, prefix) {
 // http://stackoverflow.com/questions/4250364/how-to-trim-a-file-extension-from-a-string-in-javascript
 var removeExtension = function(string) {
   return string.replace(/\.[^/.]+$/, "");
-}
+};
 
 var rescope = function (imageItem) {
   easyimg.rescrop({
