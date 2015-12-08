@@ -178,7 +178,7 @@ var findByHost = function (req, res) {
 };
 
 /**
- * Usually used for pages where you can add and remove new content blocks (get sll content blocks by page).
+ * Usually used for pages where you can add and remove new content blocks (get all content blocks by page).
  * TODO rename to find
  */
 var findAll = function (req, res) {
@@ -187,11 +187,14 @@ var findAll = function (req, res) {
     if(err) { return res.serverError(err); }
     query = {
       where: {
-        page: req.param('page'),
         site: conf.name
       },
       sort: 'position'
     };
+
+    if(req.param('page')) {
+      query.where.page=req.param('page');
+    }
 
     if(req.param('type')) {
       query.where.type = req.param('type');

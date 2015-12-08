@@ -42,7 +42,7 @@ var attributes = {
     // , unique: true // composite keys not supported: https://github.com/balderdashy/waterline/issues/221
   },
   page: {
-    type: "string"
+    type: "array"
     , required: true
     // , unique: true // composite keys not supported: https://github.com/balderdashy/waterline/issues/221
   },
@@ -59,7 +59,7 @@ var attributes = {
     , unique: true
   },
   content: {
-    type: "string"
+    type: "json"
     , required: false
   },
   position: {
