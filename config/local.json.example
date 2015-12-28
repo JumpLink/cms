@@ -5,7 +5,10 @@
   "hookTimeout": 100000,
   "usingSSL": false,
   "emailReception": false,
-  "sendMailOnStart": true,
+  "onStart": {
+    "sendMail": true,
+    "deleteLogsAfterSend": true
+  },
   "setup": {
     "fallback": {
       "users": [

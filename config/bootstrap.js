@@ -10,7 +10,7 @@
  */
 module.exports.bootstrap = function(cb) {
   sails.log.debug("[bootstrap]", cb);
-  var fs = require('fs');
+  var fs = require('fs-extra');
   var _ = require('underscore');
   var async = require('async');
   var jade = require('jade');
@@ -47,7 +47,7 @@ module.exports.bootstrap = function(cb) {
     });
   };
 
-  var sendLogs = function () {
+  var sendLogs = function (cb) {
     sails.pm2.describe('cms', function (err, desc) {
       if(UlilityService.isDefined(err) && err !== null) {
         sails.log.error(err);
@@ -66,10 +66,21 @@ module.exports.bootstrap = function(cb) {
 
       sendStartMail(attachments, function (err, info) {
         if(UlilityService.isDefined(err) && err !== null) {
-          sails.log.error("[bootstrap] sendStartMail error", new Error(err));
-        } else {
-          sails.log.debug("[bootstrap] sendStartMail info", info);
+          sails.log.error("[bootstrap] sendStartMail error", err);
+          return cb(err);
         }
+        sails.log.debug("[bootstrap] sendStartMail info", info);
+        if(!err && sails.config.onStart.deleteLogsAfterSend) {
+          fs.remove(loggile, function (err) {
+            if (err) return sails.log.error(err);
+            sails.log.info(loggile+" removed");
+          });
+          fs.remove(errlogfile, function (err) {
+            if (err) return sails.log.error(err);
+            sails.log.info(errlogfile+" removed");
+          });
+        }
+        cb(null, info);
       });
     });
   };
@@ -79,8 +90,10 @@ module.exports.bootstrap = function(cb) {
   }
   
   sails.pm2.connect(function() {
-    if(sails.config.sendMailOnStart) {
-      sendLogs();
+    if(sails.config.onStart.sendMail) {
+      sendLogs(function(err, info){
+
+      });
     }
     /**
      * It's very important to trigger this callback method when you are finished with the bootstrap!
