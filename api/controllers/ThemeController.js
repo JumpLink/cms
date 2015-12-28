@@ -11,7 +11,7 @@ var available = function (req, res, next) {
     // sails.log.debug(dirs);
     res.json(dirs);
   });
-}
+};
 
 /**
  * 
@@ -21,7 +21,7 @@ var infos = function (req, res, next) {
     if(err) return res.serverError(err);
     res.json(themes);
   });
-}
+};
 
 /**
  * find themes for current host from database and isert priority from database (or from local.json if no priority is set).
@@ -31,7 +31,7 @@ var find = function (req, res, next) {
     if(err) return res.serverError(err);
     return res.json({available: themes});
   });
-}
+};
 
 /**
  * find themes for any passed host from database and isert priority from database (or from local.json if no priority is set).
@@ -44,7 +44,7 @@ var findByHost = function (req, res, next) {
     if(err) return res.serverError(err);
     return res.json({available: themes});
   });
-}
+};
 
 
 /**
@@ -57,7 +57,7 @@ var updateOrCreate = function (req, res, next) {
     if(err) return res.serverError(err);
     return res.json(result);
   });
-}
+};
 
 /**
  * Update or create theme (eg. priority) for any passed host.
@@ -74,7 +74,7 @@ var updateOrCreateByHost = function (req, res, next) {
     if(err) return res.serverError(err);
     return res.json(result);
   });
-}
+};
 
 /**
  * Update or create each theme (eg. priority) for current host.
@@ -86,7 +86,7 @@ var updateOrCreateEach = function (req, res, next) {
     if(err) return res.serverError(err);
     return res.json(result);
   });
-}
+};
 
 /**
  * Update or create each theme (eg. priority) for any passed host.
@@ -103,7 +103,7 @@ var updateOrCreateEachByHost = function (req, res, next) {
     if(err) return res.serverError(err);
     return res.json(result);
   });
-}
+};
 
 /**
  * Used when browser and url is deteted for fallback mode.
@@ -118,7 +118,7 @@ var fallback = function (req, res, next, forceParam, route, forceFromUrl) {
    */
   if(UtilityService.isUndefined(forceFromUrl)) {
     forceFromUrl = isForceByUrl(req);
-    forceParam = 'fallback'
+    forceParam = 'fallback';
   }
 
   /**
@@ -152,13 +152,13 @@ var fallback = function (req, res, next, forceParam, route, forceFromUrl) {
       sails.log.error("[ThemeController.fallback.routing] Error: RouteOption '"+route.objectName+"'is not set in Theme!", route.objectName, url, page, "forceParam", forceParam);
       return next();
     });
-  }
+  };
 
   /**
    * If route is undefined, find and set it!
    */
   if(UtilityService.isUndefined(route)) {
-    sails.log.warn("[ThemeController.fallback] route is not defined!")
+    sails.log.warn("[ThemeController.fallback] route is not defined!");
     //IMPORTANT: If route is not found, call next!
     return RoutesService.findOneByUrl(host, url, function (err, isModern, route) {
       if (err) {
@@ -172,28 +172,7 @@ var fallback = function (req, res, next, forceParam, route, forceFromUrl) {
   } else {
     return routing(req, res, next, forceParam, route);
   }
-
-}
-
-/**
- * 
- */
-// var signin = function (req, res, next, force) {
-//   ThemeService.getController(req.session.uri.host, 'FallbackController', function (err, FallbackController) {
-//     if(err) return res.serverError(err);
-//     else return FallbackController.signin(req, res, next, force);
-//   });
-// }
-
-/**
- * 
- */
-// var updateBrowser = function (req, res, next, force) {
-//   ThemeService.getController(req.session.uri.host, 'FallbackController', function (err, FallbackController) {
-//     if(err) return res.serverError(err);
-//     else return FallbackController.updateBrowser(req, res, next, force);
-//   });
-// }
+};
 
 /**
  * Used when browser and url is deteted as ready or forced for modern theme.
@@ -226,13 +205,13 @@ var modern = function(req, res, next, force, route) {
         });
       });
     });
-  }
+  };
 
   /**
    * If route is undefined, find and set it!
    */
   if(UtilityService.isUndefined(route)) {
-    sails.log.warn("[ThemeController.modern] route is not defined!")
+    sails.log.warn("[ThemeController.modern] route is not defined!");
     return RoutesService.findOne(host, {url: url}, function(err, route) {
       return _modern(req, res, next, force, route);
     });
@@ -246,7 +225,7 @@ var modern = function(req, res, next, force, route) {
  */
 var isForceByUrl = function (req) {
   return req.path.substring(0, 9) === "/fallback";
-}
+};
 
 /**
  * /fallback/index -> /index
@@ -260,7 +239,7 @@ var resetFallbackUrl = function (req) {
   }
   sails.log.debug("[ThemeController.resetFallbackUrl] "+path+" -> "+newPath);
   return newPath;
-}
+};
 
 /**
  * /fallback/index -> /index?force=fallback
@@ -271,7 +250,7 @@ var redirectFallbackUrl = function (req, res) {
   newPath += "?force=fallback";
   sails.log.debug("[ThemeController.resetFallbackUrl] "+path+" -> "+newPath);
   return res.redirect(newPath);
-}
+};
 
 /**
  * Get the force param string from request 
@@ -286,7 +265,7 @@ var getForceFromParam = function (req, cb) {
   }
   if(UtilityService.isFunction(cb)) return cb(null, force);
   return force;
-}
+};
 
 /**
  * Check if modern or fallback mode is forced with url parameters
@@ -302,14 +281,16 @@ var force = function (req, cb) {
   }
   var isForce = false;
 
-  if(force != null) isForce = true;
+  if(force !== null) {
+    isForce = true;
+  }
   var isModern = null;
   var error = null;
   if(isForce) isModern = (force == 'modern' && (force != 'fallback' && force != 'legacy' && force != 'noscript'));
    sails.log.debug("[ThemeController.force] error", error, "isForce", isForce, "isModern", isModern, "force", force);
   if(UtilityService.isFunction(cb)) return cb(error, isForce, isModern, force, fromUrl);
   return isForce;
-}
+};
 
 /**
  * View html or jade file from Theme / Site
@@ -343,28 +324,28 @@ var view = function(req, res, next) {
  * @see ThemeService.getFile
  */
 var assets = function (req, res, next, filepath) {
-  var filepath = decodeURIComponent(filepath || req.path);
+  filepath = decodeURIComponent(filepath || req.path);
   var theme = req.param('theme');
   var force_site = req.param('force-site');
   ThemeService.getFile(req.session.uri.host, filepath, {theme:theme, site:force_site}, function (err, fullpath) {
     if(err) return res.serverError(err);
     return res.sendfile(fullpath);
   });
-}
+};
 
 /**
  * Converts robots.txt to /assets/robots.txt so you can put it in your theme folder.
  */
 var likeAssets = function (req, res, next) {
   assets(req, res, next, path.join('/assets', req.path));
-}
+};
 
 /**
  * Converts /favicon.ico to /assets/favicons/favicon.ico so you can put it in your theme folder.
  */
 var favicon = function (req, res, next) {
   assets(req, res, next, path.join('/assets/favicons', req.path));
-}
+};
 
 /**
  * TODO
@@ -380,7 +361,7 @@ var sitemap = function (req, res, next) {
     sails.log.debug("[ThemeController.sitemap]", sitemapXml);
     return res.xml(sitemapXml);
   });
-}
+};
 
 /**
  * TODO
@@ -388,7 +369,7 @@ var sitemap = function (req, res, next) {
  */
 var robots = function () {
 
-}
+};
 
 /**
  * Check if

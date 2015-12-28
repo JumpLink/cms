@@ -41,8 +41,8 @@ var defaultPaths = {
   "gallery": "assets/images/gallery",
   "timeline": "assets/files/timeline",
   "files": "assets/files",
-  "uploads": "uploads"
-}
+  "uploads": "uploads",
+};
 
 // local_config.paths = local_config.paths || defaultPaths;
 local_config.paths = local_config.paths || defaultPaths;

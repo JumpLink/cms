@@ -1,52 +1,64 @@
 /**
  * 
  * @see https://github.com/Flolagale/mailin
+ * @see https://github.com/andris9/Nodemailer
  */
 
 var nodemailer = require('nodemailer'); // for send mails
 var mailin = null;
 
 /**
- * nodemailer send
+ * Send a mail using an existing service like gmail
+ * This is for admins or intern usage
+ *
+ * @see https://github.com/andris9/Nodemailer
+ */
+var sendWithoutHost = function (service, auth, from, to, subject, text, html, attachments, callback) {
+  // create reusable transporter object using SMTP transport
+  var transporter = nodemailer.createTransport({
+    service: service,
+    auth: auth
+  });
+
+  sails.log.debug("[EmailService.sendWithoutHost] transporter", transporter, "service", service, "auth", auth);
+
+  // NB! No need to recreate the transporter object. You can use
+  // the same transporter object for all e-mails
+
+  // setup e-mail data with unicode symbols
+  var mailOptions = {
+    from: from,        //'Fred Foo ✔ <foo@blurdybloop.com>',     // sender address
+    to: to,            //'pascal@jumplink.eu'                    // list of receivers
+    subject: subject,  //'Aufnahmeantrag',                       // Subject line
+    text: text,        // 'Hello world',                         // plaintext body
+    html: html,        //'<b>Hello world</b>'                    // html body
+    attachments: attachments,
+  };
+
+  // send mail with defined transport object
+  transporter.sendMail(mailOptions, function(error, info){
+    if(error){
+      sails.log.error(error);
+      return callback(error);
+    }
+
+    sails.log.debug('Message sent: ' + info.response);
+    callback(null, info);
+  });
+};
+
+/**
+ * Send a mail using an existing service like gmail
+ *
+ * @see https://github.com/andris9/Nodemailer
  */
 var send = function (host, from, to, subject, text, html, attachments, callback) {
 
   MultisiteService.getCurrentSiteConfig(host, function (err, config) {
     if(err) { sails.log.error(err); return callback(err); }
-    // console.log(sails.config.email);
-    // create reusable transporter object using SMTP transport
-    var transporter = nodemailer.createTransport({
-      service: config.email.service,
-      auth: config.email.auth
-    });
-
-    sails.log.debug("[EmailService.send] transporter", transporter, "config.email.service", config.email.service, "config.email.auth", config.email.auth);
-
-    // NB! No need to recreate the transporter object. You can use
-    // the same transporter object for all e-mails
-
-    // setup e-mail data with unicode symbols
-    var mailOptions = {
-      from: from          //'Fred Foo ✔ <foo@blurdybloop.com>',     // sender address
-      , to: to            //'pascal@jumplink.eu'                    // list of receivers
-      , subject: subject  //'Aufnahmeantrag',                       // Subject line
-      , text: text        // 'Hello world',                         // plaintext body
-      , html: html        //'<b>Hello world</b>'                    // html body
-      , attachments: attachments
-    };
-
-    // send mail with defined transport object
-    transporter.sendMail(mailOptions, function(error, info){
-      if(error){
-        sails.log.error(error);
-        return callback(error);
-      }
-
-      sails.log.debug('Message sent: ' + info.response);
-      callback(null, info);
-    });
+    sendWithoutHost(config.email.service, config.email.auth, from, to, subject, text, html, attachments, callback);
   });
-}
+};
 
 /**
  * Start the Mailin server. The available options are:
@@ -111,14 +123,13 @@ var receive = function (connection, data, content) {
    * Do something useful with the parsed message here.
    * Use parsed message `data` directly or use raw message `content`.
    */
-}
-
-
+};
 
 /**
  * 
  */
 module.exports = {
   send: send,
-  start: start
-}
+  sendWithoutHost: sendWithoutHost,
+  start: start,
+};

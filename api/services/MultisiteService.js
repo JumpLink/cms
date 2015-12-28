@@ -11,7 +11,7 @@ var fs = require('fs'); // var fs = require('fs-extra');
  */
 var find = function (callback) {
   callback(null, sails.config.sites);
-}
+};
 
 /**
  * Get all available site names without duplicates
@@ -22,10 +22,10 @@ var findNames = function (callback) {
     if(err) return callback(err);
     for (var i = sites.length - 1; i >= 0; i--) {
       names[sites[i].name] = sites[i].name;
-    };
+    }
     callback(null, Object.keys(names));
   });
-}
+};
 
 /**
  * Get all available site names without duplicates
@@ -36,12 +36,12 @@ var findHosts = function (callback) {
     if(err) return callback(err);
     for (var i = 0; i < sites.length; i++) {
       for (var k = 0; k < sites[i].domains.length; k++) {
-        hosts.add(sites[i].domains[k])
-      };
-    };
+        hosts.add(sites[i].domains[k]);
+      }
+    }
     callback(null, hosts.array());
   });
-}
+};
 
 /**
  * Get the corrent Site config from local.json that matchs the current host domain 
@@ -63,23 +63,60 @@ var getCurrentSiteConfig = function (host, cb) {
       var regex = sails.config.sites[i].domains[k];
       if(!sails.config.sites[i].matchsubdomain)
         regex = ".*"+regex;
-      var regex = regex.replace(/\./g , "\\\."); // www.bugwelder.com => /www\.bugwelder\.com/g
+      regex = regex.replace(/\./g , "\\\."); // www.bugwelder.com => /www\.bugwelder\.com/g
       
       var pattern = new RegExp(regex, 'g');
 
       if(pattern.test(host)) {
         // sails.log.debug("[MultisiteService.getCurrentSiteConfig] Match! "+pattern+" ("+sails.config.sites[i].domains[k]+") <=> "+host);
         found = true;
-        if (cb) return cb(null, sails.config.sites[i]);
-        else return sails.config.sites[i];
+        if (cb) {
+          return cb(null, sails.config.sites[i]);
+        }
+        return sails.config.sites[i];
       } else {
         // sails.log.debug("[services/MultisiteService.js] No match! "+pattern+" ("+sails.config.sites[i].domains[k]+") <=> "+host);
       }
-    };
-  };
+    }
+  }
 
-  if (cb) return cb(new Error(errors[0]));
-  else return new Error(errors[0]);
+  if (UlilityService.isFunction(cb)) {
+    return cb(new Error(errors[0]));
+  } else {
+    return new Error(errors[0]);
+  }
+};
+
+/**
+ * Get the Site config from local.json that matchs the name
+ *
+ * @param {string} name - The site name.
+ * @param {siteConfCallback} [cb] - The callback that handles the response.
+ * @returns {object|null} Returns the result or null if no callback is set. 
+ */
+var getSiteConfigByName = function (name, cb) {
+  var errors = [
+    "[MultisiteService.getSiteConfigByName] No site for name "+name+" in local.json defined!"
+  ];
+  // sails.log.debug("[MultisiteService.getCurrentSiteConfig] Get current site config for host: "+host);
+  
+  var found = false;
+  for (var i = 0; i < sails.config.sites.length && !found; i++) {
+    if(sails.config.sites[i].name === name) {
+      found = true;
+      if (UlilityService.isFunction(cb)) {
+        return cb(null, sails.config.sites[i]);
+      } 
+      return sails.config.sites[i];
+    }
+
+  }
+
+  if (UlilityService.isFunction(cb)) {
+    return cb(new Error(errors[0]));
+  } else {
+    return new Error(errors[0]);
+  }
 };
 
 /**
@@ -142,8 +179,8 @@ var getSiteDirname = function (host, filepath, cb) {
 
   MultisiteService.getCurrentSiteConfig(host, function (err, config) {
     if(err) {
-      var err = "[MultisiteService.getSiteDirname] No site for host defined: "+host;
-      return cb(err, null);
+      var errMessage = "[MultisiteService.getSiteDirname] No site for host defined: "+host;
+      return cb(err+errMessage, null);
     }
     getSiteDirnameFromSiteConf(config, filepath, cb);
   });
@@ -159,6 +196,7 @@ module.exports = {
   getSitePathFromSiteConf: getSitePathFromSiteConf,
   getSiteDirnameFromSiteConf: getSiteDirnameFromSiteConf,
   getCurrentSiteConfig: getCurrentSiteConfig,
+  getSiteConfigByName: getSiteConfigByName,
   getFallbackDirname: getFallbackDirname,
   getSiteDirname: getSiteDirname
 };

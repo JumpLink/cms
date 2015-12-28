@@ -42,15 +42,14 @@ module.exports = function notFound (data, options) {
 
   req.session.flash = {
     error: notFoundError
-  }
+  };
 
   // If the user-agent wants JSON, always respond with JSON
   if (req.wantsJSON) {
     return res.jsonx(notFoundError);
   }
 
-  return res.redirect('signin');
-  // TODO remove buttom code
+  //- return res.redirect('/');
 
   // Only include errors in response if application environment
   // is not set to 'production'.  In production, we shouldn't

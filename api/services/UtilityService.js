@@ -199,6 +199,19 @@ UlilityService.fixPosition = function (obj) {
 };
 
 
+UlilityService.isFile = function (filepath, cb) {
+  if(!UlilityService.isString(filepath)) {
+    return cb('filepath is not a string!');
+  }
+  fs.lstat(filepath, function (err, stats) {
+    if(err) {
+      return cb(err);
+    }
+    // sails.log.debug("[UlilityService.isFile]", stats);
+    cb(null, stats.isFile());
+  });
+};
+
 /**
  * The following functions are public.
  */

@@ -25,7 +25,7 @@ var getAvailableThemes = function (cb) {
         if(!exists) sails.log.error("[services/ThemeService.js:getAvailableThemes] Info path not found: "+themeInfoPath);
         cb(exists);
       }); 
-    }
+    };
     async.filter(dirs, iterator, cb);
   });
 };
@@ -44,11 +44,11 @@ var setPriority = function (site, theme, cb) {
 
   var errors = [
     "[services/ThemeService.js:setPriority] Theme priority not set!"
-  ]
+  ];
   
   var query = {'dirname': theme.dirname, site: site};
   // sails.log.debug('setPriority', query);
-  global.Theme.findOne(query).exec(function found(err, found) {
+  global.Theme.findOne(query).exec(function (err, found) {
     // sails.log.debug('found', found);
     if(!err && found) {
       theme.priority = found.priority;
@@ -59,7 +59,7 @@ var setPriority = function (site, theme, cb) {
       // return cb(err, theme); // do not break on error, because it is normal that new themes not found in database
     }
     if(UtilityService.isUndefined(theme.priority)) {
-      theme.priority = 0;
+      theme.priority = 1;
     }
     cb(null, theme);
   });
@@ -81,26 +81,24 @@ var setPriorities = function (themesWithInfo, cb) {
       }
       return cb(null, theme);
     });
-  }
+  };
   async.map(themesWithInfo, iterator, function (err, themesWithPriority) {
     // if the prioritySum is 0, no theme has a higher priority so this is not okay
     if(prioritySum <= 0) {
       return cb("[services/ThemeService.js:setPriorities]The priority summery is <= 0");
     }
     cb(null, themesWithPriority);
-
   });
-
-}
+};
 
 /**
  * Get Fallback Theme from local.json for site, used if no priority is found.
- * The fallback theme will have the priority `1`
+ * The fallback theme will have the priority `2`
  */
 var setPriorityForFallbackTheme = function (siteConfig, themes, callback) {
   var errors = [
     "[services/ThemeService.js] Error: Fallback theme is not defined in local.json"
-  ]
+  ];
   // sails.log.debug("[services/ThemeService.js] setPriorityForFallbackTheme");
 
   if(UtilityService.isUndefined(siteConfig.fallback) || UtilityService.isUndefined(siteConfig.fallback.theme)) {
@@ -108,10 +106,10 @@ var setPriorityForFallbackTheme = function (siteConfig, themes, callback) {
     return callback(errors[0]);
   }
 
-  // set fallback theme (defined in local.json) to 1
+  // set fallback theme (defined in local.json) to 2
   getThemeByDirnameFromThemes(themes, siteConfig.fallback.theme, function (err, theme, index) {
     if(err) return callback(err);
-    themes[index].priority = 1;
+    themes[index].priority = 2;
     callback(null, themes, themes[index], index);
   });
 };
@@ -131,11 +129,11 @@ var setThemeInfos = function (siteConfig, availableThemes, callback) {
       }
       // themeInfo.path = themePath;
       themeInfo.dirname = theme;
-      themeInfo.site = siteConfig.name
-      themeInfo.priority = 0 // default value
+      themeInfo.site = siteConfig.name;
+      themeInfo.priority = 0; // default value
       cb(null, themeInfo);
     });
-  }
+  };
   async.map(availableThemes, iterator, function (err, themes) {
     callback(err, themes);
   });
@@ -152,6 +150,31 @@ var getAvailableThemesWithInfo = function (siteConfig, cb) {
   });
 };
 
+
+/**
+ * Get themes with info sorted by priority.
+ */
+var getThemesSortedByPriorityBySiteConfig = function (config, cb) {
+  getAvailableThemesWithInfo(config, function (err, themesWithInfo) {
+    setPriorities(themesWithInfo, function (err, themesWithPriority) {
+      if(err) {
+        // sails.log.warn("[services/ThemeService.js:getThemesSortedByPriority]", err);
+        setPriorityForFallbackTheme(config, themesWithInfo, function (err, themesWithPriority, theme, index) {
+          if(err) { return cb(err); }
+          result = sortByPriority(themesWithPriority, false);
+          // sails.log.warn("[services/ThemeService.js:getThemesSortedByPriority] Fallback priority: ", themes);
+          return cb(null, result);
+        });
+      } else {
+        result = sortByPriority(themesWithPriority, false);
+        // sails.log.debug("[services/ThemeService.js] priority: ", themes);
+        // sails.log.debug("[services/ThemeService.js] Priority result without errors ");
+        return cb(err, result);
+      }
+    });
+  });
+};
+
 /**
  * Get themes with info sorted by priority.
  */
@@ -160,24 +183,18 @@ var getThemesSortedByPriority = function (host, cb) {
   // sails.log.debug("[services/ThemeService.js] getThemesSortedByPriority");
   MultisiteService.getCurrentSiteConfig(host, function (err, config) {
     if(err) return cb(err);
-    getAvailableThemesWithInfo(config, function (err, themesWithInfo) {
-      setPriorities(themesWithInfo, function (err, themesWithPriority) {
-        if(err) {
-          // sails.log.warn("[services/ThemeService.js:getThemesSortedByPriority]", err);
-          setPriorityForFallbackTheme(config, themesWithInfo, function (err, themesWithPriority, theme, index) {
-            if(err) { return cb(err); }
-            result = sortByPriority(themesWithPriority, false);
-            // sails.log.warn("[services/ThemeService.js:getThemesSortedByPriority] Fallback priority: ", themes);
-            return cb(null, result);
-          });
-        } else {
-          result = sortByPriority(themesWithPriority, false);
-          // sails.log.debug("[services/ThemeService.js] priority: ", themes);
-          // sails.log.debug("[services/ThemeService.js] Priority result without errors ");
-          return cb(err, result);
-        }
-      });
-    });
+    getThemesSortedByPriorityBySiteConfig(config, cb);
+  });
+};
+
+/**
+ * Get Theme with highest priority for host
+ */
+var getThemeWithHighestPriorityBySiteConfig = function (config, callback) {
+  getThemesSortedByPriorityBySiteConfig(config, function (err, themes) {
+    if(err) return callback(err);
+    if(!UtilityService.isArray(themes)) return callback("themes is not an array");
+    return callback(null, themes[0]);
   });
 };
 
@@ -191,7 +208,7 @@ var getThemeWithHighestPriority = function (host, callback) {
     if(!UtilityService.isArray(themes)) return callback("themes is not an array");
     return callback(null, themes[0]);
   });
-}
+};
 
 /**
  * Alias for getThemeWithHighestPriority
@@ -200,7 +217,21 @@ var getThemeWithHighestPriority = function (host, callback) {
  */
 var getTheme = function (host, callback) {
   return getThemeWithHighestPriority(host, callback);
-}
+};
+
+var getAdminConfigAndTheme = function (callback) {
+  MultisiteService.getSiteConfigByName('admin', function (err, config) {
+    if(UlilityService.isDefined(err) && err !== null) {
+      return cb(err);
+    }
+    ThemeService.getThemeWithHighestPriorityBySiteConfig(config, function(err, theme) {
+      if(UlilityService.isDefined(err) && err !== null) {
+        return cb(err);
+      }
+      callback(null, config, theme);
+    });
+  });
+};
 
 /**
  * 
@@ -211,7 +242,7 @@ var updateOrCreate = function(host, theme, cb) {
     theme.site = config.name;
     ModelService.updateOrCreate('Theme', theme, {'dirname': theme.dirname, site: theme.site}, cb);
   });
-}
+};
 
 /**
  * 
@@ -221,18 +252,17 @@ var updateOrCreateEach = function(host, themes, cb) {
     if(err) cb(err);
     for (var i = themes.length - 1; i >= 0; i--) {
       themes[i].site = config.name;
-    };
+    }
     ModelService.updateOrCreateEach('Theme', themes, ['dirname', 'site'], cb);
   });
-  
-}
+};
 
 /**
  * 
  */
 var getRootPathOfThemeDirname = function (dirname, cb) {
  return path.normalize(THEME_DIR+"/"+dirname);
-}
+};
 
 /**
  * 
@@ -271,7 +301,7 @@ var getThemeByDirnameFromThemes = function (themes, dirname, callback) {
     sails.log.error(err);
     return callback(err);
   }
-}
+};
 
 /**
  * 
@@ -281,7 +311,7 @@ var getThemeByDirname = function (dirname, callback) {
   getAvailableThemes(function (themes) {
     getThemeByDirnameFromThemes(themes, dirname, callback);
   });
-}
+};
 
 /**
  * Get theme the file was found in.
@@ -302,7 +332,7 @@ var getThemeForFile = function (host, filepath, cb) {
       //sails.log.debug(theme.name, theme.dirname);
       var rootpath = getRootPathOfThemeDirname(theme.dirname);
       var fullpath = path.join(rootpath, filepath);
-      var found = fs.existsSync(fullpath);
+      found = fs.existsSync(fullpath);
       if (found) { 
         // sails.log.debug(fullpath);
         return cb(null, theme);
@@ -315,14 +345,14 @@ var getThemeForFile = function (host, filepath, cb) {
       // sails.log.error(error, '.');
       return cb(error+" "+filepath, null);
     }
-  })
-}
+  });
+};
 
 /**
  * Function get dirname for filepath from current site folder,
  * if no site was found, it looks file in theme with the heigest priority.
  * Otherwise it will be loaded from theme with lower piority and so on..
- * If no priority is set, the fallback theme defined in local.json has the highest priority `1`.
+ * If no priority is set, the fallback theme defined in local.json has the highest priority `2`.
  */
 var getDirnameForAssetspath = function (host, filepath, cb) {
   if(typeof(host) !== "string") return cb(new Error("[ThemeService.getDirnameForAssetspath] Host must be a string!"));
@@ -350,14 +380,14 @@ var getDirnameForAssetspath = function (host, filepath, cb) {
       });
     }
   });
-}
+};
 
 /**
  * Find file in theme with the possible heigest found priority and callback this path.
  */
 var getThemeFullPathForFile = function (host, filepath, cb) {
   if(typeof(host) !== "string") return cb(new Error("[ThemeService.getThemeFullPathForFile] Host must be a string!"));
-  getThemeForFile (host, filepath, function (err, theme) {
+  getThemeForFile(host, filepath, function (err, theme) {
     if(!err && theme) {
       var rootPath = getRootPathOfThemeDirname(theme.dirname);
       var fullpath = path.join(rootPath, filepath);
@@ -373,7 +403,37 @@ var getThemeFullPathForFile = function (host, filepath, cb) {
  * Function searchs file in site in current site folder,
  * if no file was found, looks file in theme with the heigest priority.
  * Otherwise it will be loaded from theme with lower piority and so on..
- * If no priority is set, the fallback theme defined in local.json has the highest priority "1".
+ * If no priority is set, the fallback theme defined in local.json has the highest priority "2".
+ *
+ * @param {string} name - the name of the theme dirname
+ * @param {string} filepath - the relative path for the file
+ * @param {object} [options] - unused
+ * @param {callback} cb - Callback for error or the result
+ * @see ThemeService.getFile
+ */
+var getFileByThemeDirname = function (name, filepath, options, cb) {
+  var errors = [
+    "[ThemeService.getFileByThemeDirname] Not found!",
+    "[ThemeService.getFileByThemeDirname] name must be a string!"
+  ];
+  sails.log.debug("[ThemeService.getFileByThemeDirname]");
+
+  if(typeof(name) !== "string") return cb(new Error(errors[1]));
+
+  var rootpath = ThemeService.getRootPathOfThemeDirname(name);
+  var fullpath = path.join(rootpath, filepath);
+  fs.exists(fullpath, function (exists) {
+    if(!exists) return cb(errors[0]+" (In theme "+name+")");
+    return cb(null, fullpath);
+  });
+};
+
+/**
+ * Loads files (like assets) dynamically.
+ * Function searchs file in site in current site folder,
+ * if no file was found, looks file in theme with the heigest priority.
+ * Otherwise it will be loaded from theme with lower piority and so on..
+ * If no priority is set, the fallback theme defined in local.json has the highest priority "2".
  *
  * @param {string} host - the host of the coming request
  * @param {string} filepath - the relative path for the file
@@ -394,12 +454,7 @@ var getFile = function (host, filepath, options, cb) {
 
   if(options) {
     if(typeof (options.theme) === 'string') {
-      var rootpath = ThemeService.getRootPathOfThemeDirname(options.theme);
-      var fullpath = path.join(rootpath, filepath);
-      fs.exists(fullpath, function (exists) {
-        if(!exists) return cb(errors[0]+" (In theme "+options.theme+")");
-        return cb(null, fullpath);
-      });
+      return getFileByThemeDirname(options.theme, filepath, options, cb);
     }
 
     if(typeof(options.site) === 'string') {
@@ -428,7 +483,6 @@ var getFile = function (host, filepath, options, cb) {
       return cb(null, fullpath);
     });
   });
-
 };
 
 /**
@@ -445,7 +499,22 @@ var view = function (host, filepath, res, locals, options) {
     sails.log.debug("[ThemeService.view] fullpath", fullpath);
     return res.view(fullpath, locals);
   });
-}
+};
+
+/**
+ * Render view from theme with the highest priority,
+ * if view not found try next theme.
+ */
+var viewByThemeDirname = function (name, filepath, res, locals, options) {
+  if(!options) options = {};
+  var route = options.route;
+  getFileByThemeDirname(name, filepath, options, function (err, fullpath) {
+    if(err) { sails.log.error(err); return res.serverError(err); }
+    // fullpath = path.join('../', fullpath); // WORKAROUND root of view for themes
+    sails.log.debug("[ThemeService.viewThemeDirname] fullpath", fullpath);
+    return res.view(fullpath, locals);
+  });
+};
 
 /**
  * Load javascript module from api subfolder from theme with the highest priority,
@@ -460,17 +529,17 @@ var getApiModule = function (host, filepath, callback) {
       return callback(null, require(fullpath));
     }
   });
-}
+};
 
 /**
- * Load fallbackroutes routes from theme with the highest priority,
+ * Load fallback routes from theme with the highest priority,
  * if routes not found try next theme.
  */
 var getFallbackRoutes = function (host, callback) {
   if(typeof(host) !== "string") return cb(new Error("[ThemeService.getFallbackRoutes] Host must be a string!"));
   var filepath = "config/fallback/routes.js";
   getApiModule(host, filepath, callback);
-}
+};
 
 /**
  * Load controller from theme with the highest priority,
@@ -480,7 +549,7 @@ var getController = function (host, name, callback) {
   if(typeof(host) !== "string") return cb(new Error("[ThemeService.getController] Host must be a string!"));
   var filepath = "api/controllers/"+name+".js";
   getApiModule(host, filepath, callback);
-}
+};
 
 /**
  * Load controller from theme with the highest priority,
@@ -489,16 +558,19 @@ var getController = function (host, name, callback) {
 var getService = function (name, callback) {
   var filepath = "api/services/"+name+".js";
   getApiModule(host, filepath, callback);
-}
+};
 
 /**
  * 
  */
 module.exports = {
   getAvailableThemes: getAvailableThemes,
+  getThemesSortedByPriorityBySiteConfig: getThemesSortedByPriorityBySiteConfig,
   getThemesSortedByPriority: getThemesSortedByPriority,
+  getThemeWithHighestPriorityBySiteConfig: getThemeWithHighestPriorityBySiteConfig,
   getThemeWithHighestPriority: getThemeWithHighestPriority,
   getTheme: getTheme,
+  getAdminConfigAndTheme: getAdminConfigAndTheme,
   updateOrCreate: updateOrCreate,
   updateOrCreateEach: updateOrCreateEach,
   getThemeForFile: getThemeForFile,
@@ -507,7 +579,9 @@ module.exports = {
   getDirnameForAssetspath: getDirnameForAssetspath,
   getThemeFullPathForFile: getThemeFullPathForFile,
   getFile: getFile,
+  getFileByThemeDirname: getFileByThemeDirname,
   view: view,
+  viewByThemeDirname: viewByThemeDirname,
   getFallbackRoutes: getFallbackRoutes,
   getController: getController,
   getService: getService,

@@ -12,7 +12,9 @@ var setup = function(req, res) {
 };
 
 /**
- * 
+ * Send a mail using an existing service like gmail
+ *
+ * @see https://github.com/andris9/Nodemailer
  */
 var send = function(req, res, next) {
   var host = req.session.uri.host;

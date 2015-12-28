@@ -145,8 +145,9 @@ var findOneByUrl = function(host, url, callback) {
         }
       }
     }
-    sails.log.warn("[RoutesService.findOneByUrl] Route not found!", url);
-    if(!found) return callback("not found");
+    err = new Error("Route not found!");
+    sails.log.warn("[RoutesService.findOneByUrl]", err, url);
+    return callback("not found");
   });
 };
 

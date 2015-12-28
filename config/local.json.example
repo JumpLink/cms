@@ -5,6 +5,7 @@
   "hookTimeout": 100000,
   "usingSSL": false,
   "emailReception": false,
+  "sendMailOnStart": true,
   "setup": {
     "fallback": {
       "users": [
@@ -37,16 +38,39 @@
   },
   "sites":[
     {
+      "name": "admin",
+      "matchsubdomain": true,
+      "domains": [
+        "admin",
+        "admin.jumplink.eu"
+      ],
+      "fallback": {
+        "theme": "admin"
+      },
+      "email": {
+        "service": "gmail",
+        "auth": {
+          "user": "mail@gmail.com",
+          "pass": "123456"
+        },
+        "address": "mail@gmail.com",
+        "receiver": "mail2@gmail.com"
+      }
+    },
+    {
       "name": "bootstrap",
       "matchsubdomain": false,
       "domains": [
         "sub.domain.io"
       ],
       "email": {
-        "user": "mail@gmail.com",
-        "pass": "123456",
-	      "address": "mail@gmail.com"
-      },
+        "service": "gmail",
+        "auth": {
+          "user": "mail@gmail.com",
+          "pass": "123456"
+        },
+        "address": "mail@gmail.com"
+      }
       "ssl": {
         "ca": "ssl/ca-bundle.crt",
         "key": "ssl/sub.domain.io.key",
